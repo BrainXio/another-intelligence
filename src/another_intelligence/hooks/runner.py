@@ -54,9 +54,7 @@ class HookRunner:
             result = await self._run_single(event, config)
             results.append(result)
             if not result.success and config.critical:
-                raise RuntimeError(
-                    f"Critical hook failed for {event_type}: {result.error}"
-                )
+                raise RuntimeError(f"Critical hook failed for {event_type}: {result.error}")
         return results
 
     async def _run_single(self, event: BrainEvent, config: HookConfig) -> HookResult:
@@ -65,9 +63,7 @@ class HookRunner:
         # Permission check
         if self._permission_engine is not None:
             try:
-                decision = self._permission_engine.check(
-                    f"hook.execute.{config.event_type}"
-                )
+                decision = self._permission_engine.check(f"hook.execute.{config.event_type}")
                 if not decision.allowed:
                     duration_ms = (time.perf_counter() - start) * 1000
                     return HookResult(

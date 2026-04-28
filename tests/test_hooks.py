@@ -144,11 +144,7 @@ class TestHookRegistry:
     def test_load_from_settings_file(self):
         registry = HookRegistry()
         data = {
-            "hooks": {
-                "PreToolUse": [
-                    {"type": "shell", "command": "echo guard", "critical": True}
-                ]
-            }
+            "hooks": {"PreToolUse": [{"type": "shell", "command": "echo guard", "critical": True}]}
         }
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(data, f)
@@ -258,7 +254,10 @@ class TestHookRunner:
         results = await runner.run_hooks(event)
         assert len(results) == 1
         assert results[0].success is False
-        assert "NotImplementedError" in results[0].error or "require the MCP client" in results[0].error
+        assert (
+            "NotImplementedError" in results[0].error
+            or "require the MCP client" in results[0].error
+        )
 
     @pytest.mark.asyncio
     async def test_critical_hook_failure_raises(self, registry, runner):
@@ -324,7 +323,10 @@ class TestHookRunner:
         )
         # grant the hook.execute.SessionStart capability
         from another_intelligence.permissions.engine import Grant
-        engine._config.grants.append(Grant(capability="hook.execute.SessionStart", allowed_by="test"))
+
+        engine._config.grants.append(
+            Grant(capability="hook.execute.SessionStart", allowed_by="test")
+        )
         event = SessionStart(session_id="s1")
         results = await runner.run_hooks(event)
         assert len(results) == 1
