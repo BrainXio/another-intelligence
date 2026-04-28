@@ -1,3 +1,10 @@
+---
+title: "Another-Intelligence"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
 # README.md — Another-Intelligence
 
 **A persistent neuroscience-grounded digital brain**
@@ -111,7 +118,7 @@ another-intelligence/
 ## Status
 
 **Current Phase:** Foundation & v0.1 Baseline  
-**License:** Apache 2.0 (planned)  
+**License:** Apache 2.0  
 **Chat with us:** Use `ai brain` once installed.
 
 ---

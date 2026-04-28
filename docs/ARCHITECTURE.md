@@ -1,10 +1,11 @@
-# Another-Intelligence Architecture
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Another-Intelligence Architecture"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# Another-Intelligence Architecture
 
 ## 1. Vision & Goals
 
@@ -37,28 +38,28 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              Another-Intelligence                            │
+│                              Another-Intelligence                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐   │
-│   │   DigitalBrain   │────▶│   PPAC Loop      │────▶│   5 Brain Regions│   │
-│   │   (Orchestrator) │     │   (Strict Serial)│     │   (Strategist,   │   │
-│   └──────────────────┘     └──────────────────┘     │    Executor,     │   │
-│                                                     │    Reflex)       │   │
-│   ┌──────────────────┐     ┌──────────────────┐     └──────────────────┘   │
+│   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐    │
+│   │   DigitalBrain   │────▶│   PPAC Loop      │────▶│   5 Brain Regions│    │
+│   │   (Orchestrator) │     │   (Strict Serial)│     │   (Strategist,   │    │
+│   └──────────────────┘     └──────────────────┘     │    Executor,     │    │
+│                                                     │    Reflex)       │    │
+│   ┌──────────────────┐     ┌──────────────────┐     └──────────────────┘    │
 │   │   Permissions    │◀────│   Hook System    │                             │
 │   │   Engine         │     │   (Typed Events) │                             │
 │   └──────────────────┘     └──────────────────┘                             │
 │                                                                             │
 │   ┌─────────────────────────────────────────────────────────────────────┐   │
 │   │                        MCP Client (Core)                            │   │
-│   │  • Puppeteer / Playwright  • Filesystem  • Git  • Memory  • Custom   │   │
+│   │  • Puppeteer / Playwright  • Filesystem  • Git  • Memory  • Custom  │   │
 │   └─────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
-│   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐   │
-│   │   Knowledge      │     │   RPE + Memory   │     │   Plugin Loader  │   │
-│   │   Pipeline       │     │   Value Index    │     │   (Core + Ext)   │   │
-│   └──────────────────┘     └──────────────────┘     └──────────────────┘   │
+│   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐    │
+│   │   Knowledge      │     │   RPE + Memory   │     │   Plugin Loader  │    │
+│   │   Pipeline       │     │   Value Index    │     │   (Core + Ext)   │    │
+│   └──────────────────┘     └──────────────────┘     └──────────────────┘    │
 │                                                                             │
 │   Configuration: ~/.brainxio/  +  .brainxio/ (project)                      │
 │   Models: Another-Intelligence/strategist, /executor, /reflex (tiered)      │

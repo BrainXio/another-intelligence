@@ -1,10 +1,11 @@
-# PLUGIN-DEVELOPMENT.md — Plugin System Guide
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Plugin System Guide"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# PLUGIN-DEVELOPMENT.md — Plugin System Guide
 
 ## Purpose
 
@@ -158,4 +159,3 @@ Use the same TDD approach as the main project.
 **This document is the official guide for extending Another-Intelligence.**  
 All new plugins must follow this structure and be consistent with `ARCHITECTURE.md`, `PERMISSIONS.md`, and `MCP.md`.
 
-**Next documents in alphabetical order:** `PROMPTING.md`, `README.md`, `ROADMAP.md`

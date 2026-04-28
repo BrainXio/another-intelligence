@@ -1,10 +1,11 @@
-# MIGRATION.md — From Prototype to Clean Core
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "From Prototype to Clean Core"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# MIGRATION.md — From Prototype to Clean Core
 
 ## Purpose
 
@@ -100,4 +101,3 @@ The migration is considered successful when:
 **This document prevents accidental tight coupling to the prototype.**  
 It will be updated if new insights from the old codebase emerge during development.
 
-**Next documents in alphabetical order:** `PERMISSIONS.md`, `PLUGIN-DEVELOPMENT.md`, `PROMPTING.md`

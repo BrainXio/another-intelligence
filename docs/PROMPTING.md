@@ -1,10 +1,11 @@
-# PROMPTING.md — Prompt Engineering & Rules System
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Prompt Engineering & Rules System"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# PROMPTING.md — Prompt Engineering & Rules System
 
 ## Purpose
 
@@ -145,4 +146,3 @@ ai rules export
 **This document governs all prompt engineering in Another-Intelligence.**  
 Changes to prompting strategy must be reflected here first.
 
-**Next documents in alphabetical order:** `README.md`, `ROADMAP.md`, `SECURITY.md`

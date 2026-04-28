@@ -1,10 +1,11 @@
-# PERMISSIONS.md — Capability-Based Permissions System
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Capability-Based Permissions System"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# PERMISSIONS.md — Capability-Based Permissions System
 
 ## Purpose
 
@@ -144,4 +145,3 @@ uv run pytest tests/permissions/
 **This document defines the security boundary of Another-Intelligence.**  
 Any new capability must be added here first and given a clear default policy.
 
-**Next documents in alphabetical order:** `PLUGIN-DEVELOPMENT.md`, `PROMPTING.md`, `README.md`

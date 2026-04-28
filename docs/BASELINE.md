@@ -1,11 +1,11 @@
-# BASELINE.md — v0.1 Success Criteria
-
-**Version:** 0.1  
-**Status:** Draft  
-**Last Updated:** 2026-04-28  
-**Owner:** Core Team
-
 ---
+title: "v0.1 Success Criteria"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# BASELINE.md — v0.1 Success Criteria
 
 ## Purpose
 

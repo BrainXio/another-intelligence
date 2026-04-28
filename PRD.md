@@ -53,22 +53,22 @@ It replaces any dependency on proprietary agent SDKs with a clean, testable, neu
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              Another-Intelligence                            │
+│                              Another-Intelligence                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  DigitalBrain (Orchestrator)                                                │
 │    ├── PPAC Loop (strict serial)                                            │
-│    │    ├── Strategist (PFC/DLPFC-OFC)                                     │
-│    │    ├── Executor (Limbic + Basal Ganglia)                              │
-│    │    └── Reflex (Parietal LIP + Dopamine)                               │
+│    │    ├── Strategist (PFC/DLPFC-OFC)                                      │
+│    │    ├── Executor (Limbic + Basal Ganglia)                               │
+│    │    └── Reflex (Parietal LIP + Dopamine)                                │
 │    ├── Permissions Engine                                                   │
 │    ├── Hook System (typed events)                                           │
-│    ├── MCP Client (first-class)                                            │
+│    ├── MCP Client (first-class)                                             │
 │    ├── Knowledge Pipeline                                                   │
-│    ├── RPE + Memory Value Index                                            │
+│    ├── RPE + Memory Value Index                                             │
 │    └── Plugin Loader                                                        │
 │                                                                             │
 │  Configuration: ~/.brainxio/ + .brainxio/                                   │
-│  Models: Another-Intelligence/strategist, /executor, /reflex               │
+│  Models: Another-Intelligence/strategist, /executor, /reflex                │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

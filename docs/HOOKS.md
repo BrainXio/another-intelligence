@@ -1,10 +1,11 @@
-# HOOKS.md — Hook System Specification
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Hook System Specification"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# HOOKS.md — Hook System Specification
 
 ## Purpose
 
@@ -144,4 +145,3 @@ No direct port of code — only concepts.
 **This document is the definitive specification.**  
 Any new hook event must be added here first and kept consistent with `ARCHITECTURE.md` and `PERMISSIONS.md`.
 
-**Next documents in alphabetical order:** `MCP.md`, `MIGRATION.md`, `PERMISSIONS.md`

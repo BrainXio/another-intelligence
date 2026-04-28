@@ -1,0 +1,56 @@
+name: Document Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  doc-lint:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install mdformat with GFM plugin
+        run: uv pip install mdformat mdformat-gfm --system
+
+      - name: Run mdformat check
+        run: mdformat --check docs/ *.md
+
+      - name: Install yamllint
+        run: uv pip install yamllint --system
+
+      - name: Run yamllint
+        run: yamllint .
+
+      - name: Check out typos
+        uses: crate-ci/typos@v1.31.1
+        with:
+          config: .typos.toml
+
+  link-check:
+    name: Link Check (Informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run lychee link checker
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: docs/ *.md
+          fail: false

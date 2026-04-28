@@ -1,10 +1,11 @@
-# ROADMAP.md — Another-Intelligence Development Roadmap
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Another-Intelligence Development Roadmap"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# ROADMAP.md — Another-Intelligence Development Roadmap
 
 ## Vision
 

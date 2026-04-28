@@ -1,10 +1,11 @@
-# MCP.md — Model Context Protocol Integration
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Model Context Protocol Integration"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# MCP.md — Model Context Protocol Integration
 
 ## Purpose
 
@@ -167,4 +168,3 @@ uv run pytest tests/mcp/
 
 **This document is the definitive reference for all MCP usage and extension in Another-Intelligence.**
 
-**Next documents in alphabetical order:** `MIGRATION.md`, `PERMISSIONS.md`, `PLUGIN-DEVELOPMENT.md`

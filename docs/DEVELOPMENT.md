@@ -1,10 +1,11 @@
-# DEVELOPMENT.md — Development Workflow & Tooling
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
 ---
+title: "Development Workflow & Tooling"
+version: "0.1"
+status: draft
+updated: "2026-04-28"
+---
+
+# DEVELOPMENT.md — Development Workflow & Tooling
 
 ## 1. Philosophy
 
