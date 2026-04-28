@@ -27,7 +27,6 @@ from another_intelligence.knowledge import (
     KnowledgeCompiler,
     KnowledgeQuery,
 )
-from another_intelligence.memory.value_index import MemoryValueIndex
 from another_intelligence.mcp.client import (
     MCPClient,
     MCPConnection,
@@ -35,6 +34,7 @@ from another_intelligence.mcp.client import (
     MCPServerConfig,
     StdioConnection,
 )
+from another_intelligence.memory.value_index import MemoryValueIndex
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
