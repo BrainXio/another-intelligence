@@ -22,6 +22,7 @@ from another_intelligence.hooks import (
     HookRunner,
     HookType,
 )
+from another_intelligence.metrics import MetricsCollector
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
     Grant,
@@ -31,6 +32,7 @@ from another_intelligence.permissions.engine import (
 )
 from another_intelligence.reflex import Reflex, Selection
 from another_intelligence.state import ActivityPhase, StateMachine
+from another_intelligence.statusline import StatuslineRenderer
 from another_intelligence.strategist import Proposal, Strategist
 
 __version__ = "0.1.0"
@@ -52,6 +54,8 @@ __all__ = [
     "HookRunner",
     "HookType",
     "MCPToolCalled",
+    "MetricsCollector",
+    "StatuslineRenderer",
     "PermissionConfig",
     "PermissionDecision",
     "PermissionEngine",
