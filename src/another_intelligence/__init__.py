@@ -14,6 +14,13 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
+from another_intelligence.hooks import (
+    HookConfig,
+    HookRegistry,
+    HookResult,
+    HookRunner,
+    HookType,
+)
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
     Grant,
@@ -34,6 +41,11 @@ __all__ = [
     "ContextWindowChanged",
     "DigitalBrain",
     "Grant",
+    "HookConfig",
+    "HookRegistry",
+    "HookResult",
+    "HookRunner",
+    "HookType",
     "MCPToolCalled",
     "PermissionConfig",
     "PermissionDecision",
