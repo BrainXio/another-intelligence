@@ -114,6 +114,7 @@ def main(ctx: click.Context) -> None:
 # ai brain
 # ---------------------------------------------------------------------------
 
+
 @main.group()
 def brain() -> None:
     """Interact with the DigitalBrain PPAC loop."""
@@ -188,6 +189,7 @@ def brain_regions(ctx: click.Context, limit: int) -> None:
 # ai hook
 # ---------------------------------------------------------------------------
 
+
 @main.group()
 def hook() -> None:
     """Emit lifecycle hooks."""
@@ -236,10 +238,9 @@ def hook_session_end(ctx: click.Context, reason: str) -> None:
 # ai flush
 # ---------------------------------------------------------------------------
 
+
 @main.command()
-@click.confirmation_option(
-    prompt="Are you sure you want to clear all brain state and event logs?"
-)
+@click.confirmation_option(prompt="Are you sure you want to clear all brain state and event logs?")
 @click.pass_context
 def flush(ctx: click.Context) -> None:
     """Clear persisted brain state and the event log."""
@@ -252,6 +253,7 @@ def flush(ctx: click.Context) -> None:
 # ---------------------------------------------------------------------------
 # ai compile
 # ---------------------------------------------------------------------------
+
 
 @main.command()
 @click.option("--source", default="daily", help="Source directory or topic to compile.")
@@ -272,6 +274,7 @@ def compile(ctx: click.Context, source: str) -> None:
 # ---------------------------------------------------------------------------
 # ai status
 # ---------------------------------------------------------------------------
+
 
 @main.command()
 @click.option("--extended", is_flag=True, help="Show full event history and audit log.")
@@ -296,8 +299,7 @@ def status(ctx: click.Context, extended: bool) -> None:
         f"[bold]Session:[/bold]       {session_id or '[dim]none[/dim]'}",
         f"[bold]Phase:[/bold]         {phase}",
         f"[bold]Memory keys:[/bold]   {len(memory)}",
-        f"[bold]Context:[/bold]       {total_tokens} / {max_tokens} tokens "
-        f"({util:.1%})",
+        f"[bold]Context:[/bold]       {total_tokens} / {max_tokens} tokens ({util:.1%})",
     ]
     console.print(Panel("\n".join(panel_lines), title="Brain Status", border_style="blue"))
 
@@ -333,6 +335,7 @@ def status(ctx: click.Context, extended: bool) -> None:
 # ai permissions
 # ---------------------------------------------------------------------------
 
+
 @main.group()
 def permissions() -> None:
     """Inspect and test the permissions engine."""
@@ -347,7 +350,13 @@ def permissions_check(ctx: click.Context, capability: str, config: str | None) -
     engine = PermissionEngine(config_path=config)
     decision = engine.check(capability)
     console = _get_console()
-    color = "green" if decision.decision == "allow" else "red" if decision.decision == "deny" else "yellow"
+    color = (
+        "green"
+        if decision.decision == "allow"
+        else "red"
+        if decision.decision == "deny"
+        else "yellow"
+    )
     console.print(
         Panel(
             f"[bold]Capability:[/bold] {decision.capability}\n"

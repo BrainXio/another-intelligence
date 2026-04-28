@@ -28,7 +28,9 @@ class TestBrainStore:
         assert state["current_phase"] == "idle"
 
     def test_save_and_load_state(self, isolated_store: BrainStore) -> None:
-        isolated_store.save_state({"session_id": "abc", "memory": {"x": 1.0}, "current_phase": "idle"})
+        isolated_store.save_state(
+            {"session_id": "abc", "memory": {"x": 1.0}, "current_phase": "idle"}
+        )
         state = isolated_store.load_state()
         assert state["session_id"] == "abc"
         assert state["memory"]["x"] == 1.0
@@ -145,7 +147,9 @@ class TestHookCommands:
     def test_session_end_with_session(self, runner: CliRunner, tmp_path: Path) -> None:
         store = BrainStore(base_dir=tmp_path)
         runner.invoke(main, ["hook", "session-start"], obj={"store": store})
-        result = runner.invoke(main, ["hook", "session-end", "--reason", "done"], obj={"store": store})
+        result = runner.invoke(
+            main, ["hook", "session-end", "--reason", "done"], obj={"store": store}
+        )
         assert result.exit_code == 0
         assert "done" in result.output
         state = store.load_state()
