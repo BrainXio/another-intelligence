@@ -166,11 +166,15 @@ class TestFlush:
 
 
 class TestCompile:
-    def test_compile_stub(self, runner: CliRunner, tmp_path: Path) -> None:
+    def test_compile_empty_source(self, runner: CliRunner, tmp_path: Path) -> None:
         store = BrainStore(base_dir=tmp_path)
-        result = runner.invoke(main, ["compile"], obj={"store": store})
-        assert result.exit_code == 1
-        assert "not yet implemented" in result.output
+        result = runner.invoke(
+            main,
+            ["compile", "--source-dir", str(tmp_path), "--output-dir", str(tmp_path)],
+            obj={"store": store},
+        )
+        assert result.exit_code == 0
+        assert "Compiled" in result.output
 
 
 class TestStatus:
