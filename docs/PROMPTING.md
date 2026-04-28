@@ -1,16 +1,14 @@
+______________________________________________________________________
+
+## title: "Prompt Engineering & Rules System" version: "0.1" status: draft updated: "2026-04-28"
+
 # PROMPTING.md — Prompt Engineering & Rules System
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
----
 
 ## Purpose
 
 This document defines how prompting works in Another-Intelligence, how the `~/.brainxio/rules/`, `skills/`, and `agents/` directories are loaded, and best practices for maintaining high-quality, consistent behavior across all models and tiers.
 
----
+______________________________________________________________________
 
 ## 1. Prompt Construction Order
 
@@ -25,7 +23,7 @@ Every model call (Strategist, Executor, Reflex) receives a prompt built in this 
 7. **Dynamic Context** (current PPAC stage, available tools/MCP, permissions)
 8. **User Prompt / Task**
 
----
+______________________________________________________________________
 
 ## 2. Directory Structure (`~/.brainxio/` and `.brainxio/`)
 
@@ -49,7 +47,7 @@ agents/                 # Specialized personas
 └── reflex-critic.md
 ```
 
----
+______________________________________________________________________
 
 ## 3. Rules File Format
 
@@ -72,7 +70,7 @@ Clear, concise instructions...
 
 Files are concatenated in priority + alphabetical order.
 
----
+______________________________________________________________________
 
 ## 4. Skill System
 
@@ -93,22 +91,24 @@ You are in research mode. Use the following MCP tools...
 ```
 
 Activate via:
+
 - `ai brain --skill research "Topic"`
 - Or reference inside rules.
 
----
+______________________________________________________________________
 
 ## 5. Agent Personas
 
 Specialized system prompts that override or extend the base role.
 
 Example `agents/strategist-deep.md`:
+
 ```markdown
 You are Cerebro Strategist-Deep — the long-horizon DLPFC core.
 Use full 1M context on Max tier. Always compute multi-attribute expected value...
 ```
 
----
+______________________________________________________________________
 
 ## 6. Best Practices for Prompting
 
@@ -120,7 +120,7 @@ Use full 1M context on Max tier. Always compute multi-attribute expected value..
 - **Minimize token waste** — avoid redundancy with ModelFile system prompts.
 - **Test prompting changes** with `ai test-prompt "prompt here"`.
 
----
+______________________________________________________________________
 
 ## 7. Debugging Prompts
 
@@ -132,7 +132,7 @@ ai debug prompt --role strategist --task "Explain PPAC"
 ai rules export
 ```
 
----
+______________________________________________________________________
 
 ## 8. Relationship to Other Systems
 
@@ -140,9 +140,7 @@ ai rules export
 - **MCP.md** — Tools are injected dynamically into the prompt.
 - **HOOKS.md** — SessionStart can modify active rules/skills.
 
----
+______________________________________________________________________
 
-**This document governs all prompt engineering in Another-Intelligence.**  
+**This document governs all prompt engineering in Another-Intelligence.**\
 Changes to prompting strategy must be reflected here first.
-
-**Next documents in alphabetical order:** `README.md`, `ROADMAP.md`, `SECURITY.md`

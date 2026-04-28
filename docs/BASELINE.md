@@ -1,11 +1,8 @@
+______________________________________________________________________
+
+## title: "v0.1 Success Criteria" version: "0.1" status: draft updated: "2026-04-28"
+
 # BASELINE.md — v0.1 Success Criteria
-
-**Version:** 0.1  
-**Status:** Draft  
-**Last Updated:** 2026-04-28  
-**Owner:** Core Team
-
----
 
 ## Purpose
 
@@ -13,11 +10,12 @@ This document defines the **measurable baseline** that must be achieved before A
 
 All work is considered incomplete until every item in this document passes its acceptance test.
 
----
+______________________________________________________________________
 
 ## 1. Functional Baseline
 
 ### 1.1 PPAC Decision Loop
+
 - [ ] All five brain regions (Strategist, Executor, Reflex, and the two supporting stages) execute in **strict serial order** for every `decide()` call.
 - [ ] The loop completes successfully on **at least 10 diverse test prompts** covering:
   - Simple factual queries
@@ -28,17 +26,19 @@ All work is considered incomplete until every item in this document passes its a
 - [ ] Context key consistency is enforced: the key used in `propose()` must match the key used in `record_outcome()`.
 
 ### 1.2 Brain Regions
+
 - [ ] **Strategist** (PFC) produces structured proposals with multi-attribute expected values.
 - [ ] **Executor** (Limbic + Basal Ganglia) correctly assigns emotional valence and performs Go/NoGo selection.
 - [ ] **Reflex** (Parietal + Dopamine) performs noisy evidence accumulation and computes RPE.
 - [ ] Each region emits a `BrainRegionActivated` event with correct metadata (region name, timestamp, input summary, output summary).
 
 ### 1.3 Outcome Recording & Learning
+
 - [ ] Real external outcomes (test results, user feedback, system metrics) are captured and used to compute `RPE = actual − expected`.
 - [ ] When `|RPE| > 0.3`, a valid preference pair (chosen / rejected) is exported to `~/.brainxio/training_datasets/`.
 - [ ] Memory-value index is updated correctly after every outcome.
 
----
+______________________________________________________________________
 
 ## 2. Observability & Monitoring Baseline
 
@@ -48,7 +48,7 @@ All work is considered incomplete until every item in this document passes its a
 - [ ] Event log (`~/.brainxio/state/brain_activity.jsonl`) is append-only and contains every major event.
 - [ ] `ai status --extended` shows live brain state, latest RPE, active regions, and context usage.
 
----
+______________________________________________________________________
 
 ## 3. Security & Permissions Baseline
 
@@ -58,7 +58,7 @@ All work is considered incomplete until every item in this document passes its a
 - [ ] PreToolUse hooks can influence permission decisions but **cannot bypass** an explicit deny rule.
 - [ ] All permission decisions are logged with full context (who, what, why, outcome).
 
----
+______________________________________________________________________
 
 ## 4. Hook System Baseline
 
@@ -77,7 +77,7 @@ All work is considered incomplete until every item in this document passes its a
   - MCP tools
 - [ ] Hook execution is observable and logged.
 
----
+______________________________________________________________________
 
 ## 5. MCP (Model Context Protocol) Baseline
 
@@ -90,7 +90,7 @@ All work is considered incomplete until every item in this document passes its a
 - [ ] MCP tool calls go through the full Permissions + Hook pipeline.
 - [ ] `mcp.json` configuration is supported for both global (`~/.brainxio/`) and project (`.brainxio/`) scope.
 
----
+______________________________________________________________________
 
 ## 6. Knowledge & Configuration Baseline
 
@@ -99,7 +99,7 @@ All work is considered incomplete until every item in this document passes its a
 - [ ] `~/.brainxio/` and `.brainxio/` directory structure is fully functional (settings, rules, skills, agents, mcp.json).
 - [ ] Global configuration (`~/.brainxio/settings.json`) merges correctly with project-level overrides.
 
----
+______________________________________________________________________
 
 ## 7. Tooling & Developer Experience Baseline
 
@@ -108,7 +108,7 @@ All work is considered incomplete until every item in this document passes its a
 - [ ] Test suite (pytest) passes with ≥ 70% coverage on core modules.
 - [ ] `ai --help` and `ai <command> --help` are clear and complete.
 
----
+______________________________________________________________________
 
 ## 8. Definition of Done for v0.1 Baseline
 
@@ -126,7 +126,7 @@ A release candidate for v0.1 is ready **only when**:
 4. Documentation (this file + ARCHITECTURE.md + HOOKS.md + PERMISSIONS.md) is consistent and up to date.
 5. The autonomous development loop (Claude-agent-sdk + MCP servers) can successfully implement a new small feature with zero human code changes after the initial prompt.
 
----
+______________________________________________________________________
 
 ## 9. Non-Goals for v0.1
 
@@ -135,7 +135,7 @@ A release candidate for v0.1 is ready **only when**:
 - Multi-user / multi-tenant support
 - GUI installer or one-click setup
 
----
+______________________________________________________________________
 
-**This document is the contract.**  
+**This document is the contract.**\
 No feature work should begin on a module until its acceptance criteria are defined here or in a linked test file.

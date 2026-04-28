@@ -1,16 +1,14 @@
+______________________________________________________________________
+
+## title: "Plugin System Guide" version: "0.1" status: draft updated: "2026-04-28"
+
 # PLUGIN-DEVELOPMENT.md — Plugin System Guide
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
----
 
 ## Purpose
 
 This document explains how to develop, install, and distribute plugins for Another-Intelligence. The plugin system allows anyone to extend the brain with new capabilities (display backends, voice, hardware integration, custom agents, etc.) while keeping the core small and stable.
 
----
+______________________________________________________________________
 
 ## 1. Plugin Architecture Principles
 
@@ -20,20 +18,20 @@ This document explains how to develop, install, and distribute plugins for Anoth
 - **Hot-Reload Friendly** — Useful during development.
 - **Versioned & Isolated** — Plugins can specify compatible core versions.
 
----
+______________________________________________________________________
 
 ## 2. Plugin Types
 
-| Type              | Purpose                              | Example |
-|-------------------|--------------------------------------|--------|
-| **Display**       | Eyes / statusline backends           | `eyes-gtk`, `eyes-web` |
-| **Voice**         | TTS / STT engines                    | `voice-piper`, `voice-whisper` |
-| **Hardware**      | Device integration                   | `hardware-raspberrypi` |
-| **Agent**         | New brain region or specialized agent| `agent-vision` |
-| **MCP**           | Bundled MCP server                   | `mcp-memory` |
-| **Skill**         | Reusable workflow (prompt + tools)   | `skill-research` |
+| Type         | Purpose                               | Example                        |
+| ------------ | ------------------------------------- | ------------------------------ |
+| **Display**  | Eyes / statusline backends            | `eyes-gtk`, `eyes-web`         |
+| **Voice**    | TTS / STT engines                     | `voice-piper`, `voice-whisper` |
+| **Hardware** | Device integration                    | `hardware-raspberrypi`         |
+| **Agent**    | New brain region or specialized agent | `agent-vision`                 |
+| **MCP**      | Bundled MCP server                    | `mcp-memory`                   |
+| **Skill**    | Reusable workflow (prompt + tools)    | `skill-research`               |
 
----
+______________________________________________________________________
 
 ## 3. Creating a Plugin
 
@@ -87,7 +85,7 @@ class GtkEyesPlugin(Plugin):
 }
 ```
 
----
+______________________________________________________________________
 
 ## 4. Installing Plugins
 
@@ -101,7 +99,7 @@ uv pip install another-intelligence-plugin-eyes-gtk
 
 The plugin loader auto-discovers all installed plugins at `SessionStart`.
 
----
+______________________________________________________________________
 
 ## 5. Plugin Lifecycle
 
@@ -110,7 +108,7 @@ The plugin loader auto-discovers all installed plugins at `SessionStart`.
 - `on_event(event)` — Optional: receive any brain event
 - `provide_tools()` — Can expose additional MCP-style tools
 
----
+______________________________________________________________________
 
 ## 6. Development Workflow for Plugins
 
@@ -125,7 +123,7 @@ uv run pytest
 
 Use the same TDD approach as the main project.
 
----
+______________________________________________________________________
 
 ## 7. Publishing a Plugin
 
@@ -134,7 +132,7 @@ Use the same TDD approach as the main project.
 - Include clear `capabilities.json` and documentation
 - Follow semantic versioning
 
----
+______________________________________________________________________
 
 ## 8. Example Plugins (Planned)
 
@@ -143,7 +141,7 @@ Use the same TDD approach as the main project.
 - `another-intelligence-plugin-hardware-rpi`
 - `another-intelligence-plugin-mcp-memory`
 
----
+______________________________________________________________________
 
 ## 9. Best Practices
 
@@ -153,9 +151,7 @@ Use the same TDD approach as the main project.
 - Include comprehensive tests and example configurations.
 - Update `PLUGIN-DEVELOPMENT.md` if new conventions emerge.
 
----
+______________________________________________________________________
 
-**This document is the official guide for extending Another-Intelligence.**  
+**This document is the official guide for extending Another-Intelligence.**\
 All new plugins must follow this structure and be consistent with `ARCHITECTURE.md`, `PERMISSIONS.md`, and `MCP.md`.
-
-**Next documents in alphabetical order:** `PROMPTING.md`, `README.md`, `ROADMAP.md`

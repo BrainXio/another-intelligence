@@ -1,16 +1,14 @@
+______________________________________________________________________
+
+## title: "Another-Intelligence Development Roadmap" version: "0.1" status: draft updated: "2026-04-28"
+
 # ROADMAP.md — Another-Intelligence Development Roadmap
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
----
 
 ## Vision
 
 Reach a stable, self-improving, neuroscience-faithful digital brain by the end of 2026 that can run fully autonomously on Ollama infrastructure while supporting rich plugin and MCP ecosystems.
 
----
+______________________________________________________________________
 
 ## Release Phases
 
@@ -19,6 +17,7 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 **Goal:** Clean, testable core with full PPAC loop and essential systems.
 
 **Key Deliverables**
+
 - DigitalBrain + strict 5-stage PPAC
 - Strategist / Executor / Reflex agents with Ollama
 - Tiered model resolution (Max/Pro/Free/Local)
@@ -33,13 +32,14 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 
 **Timeline:** 3–5 weeks
 
----
+______________________________________________________________________
 
 ### v0.2 — Observability & Self-Improvement
 
 **Goal:** Make the brain visibly alive and learning.
 
 **Key Deliverables**
+
 - Pluggable eyes/display system (GTK + WebSocket)
 - Real-time statusline
 - Full RPE → preference dataset pipeline
@@ -53,13 +53,14 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 
 **Timeline:** 4–6 weeks after v0.1
 
----
+______________________________________________________________________
 
 ### v0.3 — Extensibility & Ecosystem
 
 **Goal:** Make it easy for others to extend.
 
 **Key Deliverables**
+
 - Mature plugin system with hot-reload
 - Official plugin registry + template
 - Advanced MCP servers (Memory vector store, Serena, custom hardware)
@@ -72,13 +73,14 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 
 **Timeline:** 5–7 weeks after v0.2
 
----
+______________________________________________________________________
 
 ### v1.0 — Production & Self-Sustaining
 
 **Goal:** A truly persistent, self-improving digital mind.
 
 **Key Deliverables**
+
 - Automated fine-tuning loop (RPE → dataset → Unsloth → hot-swap)
 - Long-term episodic memory with consolidation
 - Robust multi-tier fallback & resource optimization
@@ -91,7 +93,7 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 
 **Timeline:** Q4 2026
 
----
+______________________________________________________________________
 
 ## Future Horizons (v1.x+)
 
@@ -102,7 +104,7 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 - Research mode with paper ingestion & hypothesis generation
 - Persistent identity across years (lifelong memory)
 
----
+______________________________________________________________________
 
 ## Current Priorities (as of 2026-04-28)
 
@@ -111,7 +113,7 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 3. Achieve v0.1 baseline
 4. Hand off large implementation chunks to autonomous Claude-agent-sdk + MCP
 
----
+______________________________________________________________________
 
 ## How to Influence the Roadmap
 
@@ -120,9 +122,9 @@ Reach a stable, self-improving, neuroscience-faithful digital brain by the end o
 - Contribute to `ROADMAP.md` via PR
 - Use `ai brain` inside the repo to discuss features
 
----
+______________________________________________________________________
 
-**This roadmap is flexible and will evolve with real usage and community input.**  
+**This roadmap is flexible and will evolve with real usage and community input.**\
 All major changes will be reflected here and announced in `CHANGELOG.md`.
 
 *Let’s build something that actually thinks.*

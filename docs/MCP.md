@@ -1,10 +1,8 @@
+______________________________________________________________________
+
+## title: "Model Context Protocol Integration" version: "0.1" status: draft updated: "2026-04-28"
+
 # MCP.md — Model Context Protocol Integration
-
-**Version:** 0.1 (Draft)  
-**Status:** Living Document  
-**Last Updated:** 2026-04-28
-
----
 
 ## Purpose
 
@@ -12,7 +10,7 @@ MCP (Model Context Protocol) is a **first-class extensibility mechanism** in Ano
 
 This document defines how MCP is integrated, configured, secured, and extended.
 
----
+______________________________________________________________________
 
 ## 1. Why MCP is First-Class
 
@@ -22,7 +20,7 @@ This document defines how MCP is integrated, configured, secured, and extended.
 - Supports both local and remote MCP servers.
 - Aligns with the 2025–2026 ecosystem (Puppeteer, Playwright, Filesystem, Git, Memory, Serena, etc.).
 
----
+______________________________________________________________________
 
 ## 2. Architecture Overview
 
@@ -40,11 +38,11 @@ Individual MCP Servers (Puppeteer, Filesystem, etc.)
 PostToolUse Hook + RPE contribution
 ```
 
----
+______________________________________________________________________
 
 ## 3. Configuration (`mcp.json`)
 
-Global: `~/.brainxio/mcp.json`  
+Global: `~/.brainxio/mcp.json`\
 Project: `.brainxio/mcp.json`
 
 ```json
@@ -75,7 +73,7 @@ Project: `.brainxio/mcp.json`
 }
 ```
 
----
+______________________________________________________________________
 
 ## 4. MCP Client Implementation
 
@@ -90,7 +88,7 @@ Project: `.brainxio/mcp.json`
   4. PostToolUse hooks
   5. RPE contribution (if outcome affects learning)
 
----
+______________________________________________________________________
 
 ## 5. Tool Calling Flow
 
@@ -104,20 +102,20 @@ When a model (Strategist/Executor/Reflex) wants to use a tool:
 6. Result is returned to the model + PostToolUse hooks fire.
 7. If the tool produced a measurable outcome → RPE can be computed.
 
----
+______________________________________________________________________
 
 ## 6. Built-in / Recommended MCP Servers
 
-| Server              | Purpose                              | Recommended Implementation       | Default Permissions |
-|---------------------|--------------------------------------|----------------------------------|---------------------|
-| filesystem          | Safe file operations                 | Official @modelcontextprotocol   | Scoped read/write |
-| puppeteer/playwright| Browser automation & testing         | Official                         | Limited navigation |
-| git                 | Repository operations                | Custom lightweight               | Read + scoped commit |
-| memory              | Long-term episodic / vector store    | Custom or LanceDB-based          | Read/write index |
-| hardware            | GPIO, sensors, device control        | Custom                           | Hardware.* |
-| serena              | Code intelligence & refactoring      | Official / community             | Code.* |
+| Server               | Purpose                           | Recommended Implementation     | Default Permissions  |
+| -------------------- | --------------------------------- | ------------------------------ | -------------------- |
+| filesystem           | Safe file operations              | Official @modelcontextprotocol | Scoped read/write    |
+| puppeteer/playwright | Browser automation & testing      | Official                       | Limited navigation   |
+| git                  | Repository operations             | Custom lightweight             | Read + scoped commit |
+| memory               | Long-term episodic / vector store | Custom or LanceDB-based        | Read/write index     |
+| hardware             | GPIO, sensors, device control     | Custom                         | Hardware.\*          |
+| serena               | Code intelligence & refactoring   | Official / community           | Code.\*              |
 
----
+______________________________________________________________________
 
 ## 7. Security Model for MCP
 
@@ -128,7 +126,7 @@ When a model (Strategist/Executor/Reflex) wants to use a tool:
 - Rate limiting and timeout per server configurable.
 - Human confirmation configurable for high-impact capabilities.
 
----
+______________________________________________________________________
 
 ## 8. Developing a New MCP Server
 
@@ -140,7 +138,7 @@ When a model (Strategist/Executor/Reflex) wants to use a tool:
 
 Example minimal Python MCP server skeleton is provided in `src/another_intelligence/mcp/templates/`.
 
----
+______________________________________________________________________
 
 ## 9. Testing MCP Integration
 
@@ -155,7 +153,7 @@ ai mcp call filesystem.read --args '{"path": "README.md"}'
 uv run pytest tests/mcp/
 ```
 
----
+______________________________________________________________________
 
 ## 10. Relationship to Other Systems
 
@@ -163,8 +161,6 @@ uv run pytest tests/mcp/
 - **HOOKS.md** — MCP calls trigger PreToolUse / PostToolUse / MCPToolCalled.
 - **ARCHITECTURE.md** — MCP Client is part of the core, not a plugin.
 
----
+______________________________________________________________________
 
 **This document is the definitive reference for all MCP usage and extension in Another-Intelligence.**
-
-**Next documents in alphabetical order:** `MIGRATION.md`, `PERMISSIONS.md`, `PLUGIN-DEVELOPMENT.md`
