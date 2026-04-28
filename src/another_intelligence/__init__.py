@@ -22,8 +22,8 @@ from another_intelligence.permissions.engine import (
     PermissionDecision,
     PermissionEngine,
 )
-from another_intelligence.statusline import StatuslineRenderer
 from another_intelligence.state import ActivityPhase, StateMachine
+from another_intelligence.statusline import StatuslineRenderer
 
 __version__ = "0.1.0"
 __all__ = [

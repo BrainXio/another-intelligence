@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from another_intelligence.metrics import MetricsCollector
-from another_intelligence.state import ActivityPhase, StateMachine
+from another_intelligence.state import StateMachine
 
 
 class StatuslineRenderer:

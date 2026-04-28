@@ -1,7 +1,5 @@
 """Tests for the StatuslineRenderer observability module."""
 
-import pytest
-
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.state import ActivityPhase, StateMachine
 from another_intelligence.statusline import StatuslineRenderer
