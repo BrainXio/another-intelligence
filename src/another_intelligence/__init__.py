@@ -28,6 +28,13 @@ from another_intelligence.knowledge import (
     KnowledgeQuery,
 )
 from another_intelligence.memory.value_index import MemoryValueIndex
+from another_intelligence.mcp.client import (
+    MCPClient,
+    MCPConnection,
+    MCPRegistry,
+    MCPServerConfig,
+    StdioConnection,
+)
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
@@ -63,6 +70,10 @@ __all__ = [
     "HookType",
     "KnowledgeCompiler",
     "KnowledgeQuery",
+    "MCPClient",
+    "MCPConnection",
+    "MCPRegistry",
+    "MCPServerConfig",
     "MCPToolCalled",
     "MemoryValueIndex",
     "MetricsCollector",
@@ -81,5 +92,6 @@ __all__ = [
     "SessionStart",
     "StateMachine",
     "StatuslineRenderer",
+    "StdioConnection",
     "Strategist",
 ]

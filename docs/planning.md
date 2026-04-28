@@ -13,7 +13,7 @@ ______________________________________________________________________
 - [x] Ollama client wrapper + tiered model resolver
 - [x] Capability-based permissions engine
 - [x] Knowledge pipeline (`compile`, `query`)
-- [ ] MCP client
+- [x] MCP client
 - [ ] Hook system implementation
 - [ ] RPE learning + memory-value index
 - [ ] Plugin loader
@@ -45,3 +45,4 @@ ______________________________________________________________________
 - Ollama client + resolver
 - DigitalBrain orchestrator
 - Knowledge compiler + query
+- MCP client + registry + transport
