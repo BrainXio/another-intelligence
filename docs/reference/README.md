@@ -21,6 +21,8 @@ ______________________________________________________________________
 | `another_intelligence.models.client`      | Ollama client wrapper                    |
 | `another_intelligence.models.resolver`    | Tiered model resolver                    |
 | `another_intelligence.permissions.engine` | Capability-based permissions engine      |
+| `another_intelligence.knowledge.compiler` | Daily log → structured articles          |
+| `another_intelligence.knowledge.query`    | Knowledge base search                    |
 | `another_intelligence.mcp.client`         | MCP client + registry + transport        |
 
 ## CLI Commands
@@ -32,7 +34,21 @@ ______________________________________________________________________
 | `ai hook session-start` | Start a session and emit event       | Implemented |
 | `ai hook session-end`   | End a session and emit event         | Implemented |
 | `ai flush`              | Clear persisted state and event log  | Implemented |
-| `ai compile`            | Compile knowledge (stub)             | Stub        |
+| `ai compile`            | Compile knowledge from daily logs    | Implemented |
+| `ai query`              | Search the compiled knowledge base   | Implemented |
 | `ai status`             | Show current brain state             | Implemented |
 | `ai status --extended`  | Show state + full event history      | Implemented |
 | `ai permissions check`  | Evaluate a capability against policy | Implemented |
+
+## Exported Classes
+
+| Class               | Module                                    |
+| ------------------- | ----------------------------------------- |
+| `DigitalBrain`      | `another_intelligence.brain`              |
+| `BrainEvent`        | `another_intelligence.events`             |
+| `StateMachine`      | `another_intelligence.state`              |
+| `ContextWindow`     | `another_intelligence.context`            |
+| `PermissionEngine`  | `another_intelligence.permissions.engine` |
+| `KnowledgeCompiler` | `another_intelligence.knowledge.compiler` |
+| `KnowledgeQuery`    | `another_intelligence.knowledge.query`    |
+| `Article`           | `another_intelligence.knowledge.compiler` |

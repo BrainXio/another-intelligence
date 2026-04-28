@@ -1,81 +1,48 @@
 ______________________________________________________________________
 
-## title: "Development Planning" version: "0.1" status: draft updated: "2026-04-28"
+## title: "Project Planning" aliases: ["Planning"] tags: [planning, roadmap] created: 2026-04-28 updated: 2026-04-28
 
-# Planning — v0.1 Roadmap
+# Planning
 
-______________________________________________________________________
+## v0.1 Baseline Status
 
-## Done
+### Functional
 
-### MCP Client
-
-- [x] Native MCP client in core (`src/another_intelligence/mcp/client.py`)
-- [x] Auto-discovery via `mcp.json`
-- [x] Permissions + Hook pipeline integration
-- [x] Tool caching per session
-- [x] Stdio transport with JSON-RPC
-- [x] Event emission (`PreToolUse`, `PostToolUse`, `MCPToolCalled`)
-- [x] Full test suite (26 tests)
-
-### Core Infrastructure
-
-- [x] DigitalBrain orchestrator with strict serial PPAC loop
-- [x] Typed event bus (`BrainRegionActivated`, `RPEUpdated`, etc.)
-- [x] Activity state machine (`StateMachine`)
-- [x] Context window tracker (`ContextWindow`)
-- [x] Capability-based permissions engine
+- [x] DigitalBrain + strict 5-stage PPAC loop
+- [x] Event-driven state machine
 - [x] Ollama client wrapper + tiered model resolver
-
-### CI & Tooling
-
-- [x] pytest + coverage pipeline
-- [x] Ruff lint + format
-- [x] Pre-commit hooks
-
-______________________________________________________________________
-
-## Pending
-
-### PPAC Decision Loop Completion
-
-- [ ] End-to-end validation on 10 diverse prompts
-- [ ] Context key consistency enforcement
-- [ ] Preference dataset export when |RPE| > 0.3
+- [x] Capability-based permissions engine
+- [x] Knowledge pipeline (`compile`, `query`)
+- [x] MCP client
+- [ ] Hook system implementation
+- [ ] RPE learning + memory-value index
+- [ ] Plugin loader
 
 ### Observability
 
-- [ ] Real-time context window tracking (±5% accuracy)
-- [ ] System metrics collection (CPU, memory, latency)
-- [ ] Activity state machine display
-- [ ] `ai status --extended` command
+- [ ] Context window tracking API
+- [ ] System metrics collection
+- [ ] Statusline renderer
+- [ ] Event log persistence
 
-### Hook System
+### Tooling
 
-- [ ] Hook registration via `settings.json`
-- [ ] Shell command hooks
-- [ ] Python callable hooks
-- [ ] MCP tool hooks
+- [x] pytest suite with coverage gates
+- [x] ruff linting
+- [x] CI pipeline (GitHub Actions)
+- [ ] Full CLI command suite
+- [ ] Documentation sync automation
 
-### Knowledge Pipeline
+## In Progress
 
-- [ ] `ai compile` command
-- [ ] `ai query` command
-- [ ] `~/.brainxio/` directory structure
+- Knowledge pipeline testing and CLI integration
 
-### MCP Ecosystem
+## Done
 
-- [ ] Filesystem server integration (live)
-- [ ] Browser automation server integration (live)
-- [ ] Git server integration (live)
-
-### CLI & Commands
-
-- [ ] All `ai <command>` implementations
-- [ ] Help text completeness
-
-______________________________________________________________________
-
-**End of Planning**
-
-*Update this document before creating any PR that ships a planned item.*
+- Project skeleton + pyproject.toml
+- CI pipeline
+- Permissions engine
+- Ollama client + resolver
+- DigitalBrain orchestrator
+- Knowledge compiler + query
+- MCP client + registry + transport
