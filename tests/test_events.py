@@ -43,9 +43,7 @@ class TestBrainRegionActivated:
         assert event.metadata is None
 
     def test_with_metadata(self):
-        event = BrainRegionActivated(
-            region="executor", metadata={"option_count": 3}
-        )
+        event = BrainRegionActivated(region="executor", metadata={"option_count": 3})
         assert event.metadata == {"option_count": 3}
 
     def test_region_required(self):
@@ -83,9 +81,7 @@ class TestToolEvents:
         assert event.arguments == {"path": "/tmp"}
 
     def test_post_tool_use(self):
-        event = PostToolUse(
-            tool_name="read_file", success=True, duration_ms=42.0
-        )
+        event = PostToolUse(tool_name="read_file", success=True, duration_ms=42.0)
         assert event.tool_name == "read_file"
         assert event.success is True
         assert event.duration_ms == 42.0
@@ -99,9 +95,7 @@ class TestRPEUpdated:
     """RPE update event."""
 
     def test_creation(self):
-        event = RPEUpdated(
-            region="reflex", expected=0.5, actual=0.8, rpe=0.3
-        )
+        event = RPEUpdated(region="reflex", expected=0.5, actual=0.8, rpe=0.3)
         assert event.expected == 0.5
         assert event.actual == 0.8
         assert event.rpe == 0.3
@@ -141,9 +135,7 @@ class TestPermissionRequested:
     """Permission event."""
 
     def test_creation(self):
-        event = PermissionRequested(
-            capability="filesystem", action="write", granted=False
-        )
+        event = PermissionRequested(capability="filesystem", action="write", granted=False)
         assert event.capability == "filesystem"
         assert event.action == "write"
         assert event.granted is False

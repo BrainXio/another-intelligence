@@ -45,9 +45,7 @@ class StateMachine:
         if target == self._current:
             return
         if not self.can_transition_to(target):
-            raise ValueError(
-                f"Invalid transition from {self._current.value} to {target.value}"
-            )
+            raise ValueError(f"Invalid transition from {self._current.value} to {target.value}")
         self._current = target
         self._history.append(target)
 

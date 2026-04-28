@@ -32,9 +32,7 @@ class ContextWindow:
             self._total_tokens += token_estimate
         else:
             self._total_tokens += len(content.split()) + 2
-        return ContextWindowChanged(
-            total_tokens=self._total_tokens, max_tokens=self._max_tokens
-        )
+        return ContextWindowChanged(total_tokens=self._total_tokens, max_tokens=self._max_tokens)
 
     def reset(self) -> None:
         self._total_tokens = 0

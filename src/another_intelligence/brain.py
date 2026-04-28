@@ -50,9 +50,7 @@ class DigitalBrain:
     def memory(self) -> dict[str, float]:
         return self._memory.copy()
 
-    def register_hook(
-        self, event_type: str, callback: Callable[[BrainEvent], None]
-    ) -> None:
+    def register_hook(self, event_type: str, callback: Callable[[BrainEvent], None]) -> None:
         self._hooks.setdefault(event_type, []).append(callback)
 
     def _emit(self, event: BrainEvent) -> None:
@@ -60,9 +58,7 @@ class DigitalBrain:
         for callback in self._hooks.get(type(event).__name__, []):
             callback(event)
 
-    def decide(
-        self, query: str, options: list[str] | None = None
-    ) -> dict[str, Any]:
+    def decide(self, query: str, options: list[str] | None = None) -> dict[str, Any]:
         """Execute the strict serial PPAC loop.
 
         Returns a dict with ``chosen_action`` and ``options``.
@@ -154,9 +150,7 @@ class DigitalBrain:
             "decision_id": decision_id,
         }
 
-    def record_outcome(
-        self, decision_id: str, expected: float, actual: float
-    ) -> None:
+    def record_outcome(self, decision_id: str, expected: float, actual: float) -> None:
         """Record an external outcome and compute RPE."""
         if not decision_id:
             raise ValueError("decision_id is required")

@@ -42,7 +42,11 @@ class TestStateMachine:
         sm = StateMachine()
         sm.transition_to(ActivityPhase.PROPOSING)
         sm.transition_to(ActivityPhase.ACCUMULATING)
-        assert sm.history == [ActivityPhase.IDLE, ActivityPhase.PROPOSING, ActivityPhase.ACCUMULATING]
+        assert sm.history == [
+            ActivityPhase.IDLE,
+            ActivityPhase.PROPOSING,
+            ActivityPhase.ACCUMULATING,
+        ]
 
     def test_transition_to_same_phase_is_noop(self):
         sm = StateMachine()
