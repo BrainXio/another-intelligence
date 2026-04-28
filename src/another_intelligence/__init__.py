@@ -14,6 +14,13 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
+from another_intelligence.mcp.client import (
+    MCPClient,
+    MCPConnection,
+    MCPRegistry,
+    MCPServerConfig,
+    StdioConnection,
+)
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
     Grant,
@@ -34,6 +41,10 @@ __all__ = [
     "ContextWindowChanged",
     "DigitalBrain",
     "Grant",
+    "MCPClient",
+    "MCPConnection",
+    "MCPRegistry",
+    "MCPServerConfig",
     "MCPToolCalled",
     "PermissionConfig",
     "PermissionDecision",
@@ -45,4 +56,5 @@ __all__ = [
     "SessionEnd",
     "SessionStart",
     "StateMachine",
+    "StdioConnection",
 ]
