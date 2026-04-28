@@ -35,7 +35,7 @@ class TestBrainPreferenceExport:
     def test_export_when_rpe_exceeds_threshold(self, tmp_path: Path):
         idx = MemoryValueIndex(training_dir=str(tmp_path), export_threshold=0.0)
         brain = DigitalBrain(memory_index=idx)
-        brain._simulate_outcome = lambda action: 1.0  # force non-zero RPE
+        brain._reflex.simulate_outcome = lambda action, memory: 1.0  # force non-zero RPE
         brain.decide(query="test")
         files = list(tmp_path.iterdir())
         assert len(files) >= 1
