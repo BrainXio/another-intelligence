@@ -119,9 +119,7 @@ class PermissionEngine:
         category, action = main.split(".", 1)
         return category, action, scope
 
-    def _match_grant(
-        self, category: str, action: str, scope: str | None
-    ) -> Grant | None:
+    def _match_grant(self, category: str, action: str, scope: str | None) -> Grant | None:
         """Find the first matching grant for the given capability parts."""
         for grant in self._config.grants:
             try:
@@ -133,7 +131,11 @@ class PermissionEngine:
             if not self._match_pattern(action, g_act):
                 continue
             effective_scope = g_scope if g_scope is not None else grant.scope
-            if scope is not None and effective_scope is not None and not self._scope_matches(scope, effective_scope):
+            if (
+                scope is not None
+                and effective_scope is not None
+                and not self._scope_matches(scope, effective_scope)
+            ):
                 continue
             return grant
         return None
@@ -162,7 +164,11 @@ class PermissionEngine:
                 continue
             if not self._match_pattern(action, r_act):
                 continue
-            if r_scope is not None and scope is not None and not self._scope_matches(scope, r_scope):
+            if (
+                r_scope is not None
+                and scope is not None
+                and not self._scope_matches(scope, r_scope)
+            ):
                 continue
             return True
         return False
@@ -174,15 +180,11 @@ class PermissionEngine:
                 p_cat, p_act, _ = self._parse_capability(pattern)
             except ValueError:
                 continue
-            if self._match_pattern(category, p_cat) and self._match_pattern(
-                action, p_act
-            ):
+            if self._match_pattern(category, p_cat) and self._match_pattern(action, p_act):
                 return True
         return False
 
-    def register_hook(
-        self, hook: Callable[[PermissionDecision], PermissionDecision]
-    ) -> None:
+    def register_hook(self, hook: Callable[[PermissionDecision], PermissionDecision]) -> None:
         """Register a PreToolUse hook that can influence decisions.
 
         Hooks receive the current decision and may return a modified one.
@@ -217,9 +219,7 @@ class PermissionEngine:
         )
         self._audit_log.append(entry)
 
-    def check(
-        self, capability: str, context: dict[str, Any] | None = None
-    ) -> PermissionDecision:
+    def check(self, capability: str, context: dict[str, Any] | None = None) -> PermissionDecision:
         """Evaluate a capability request against the policy.
 
         Args:
@@ -293,9 +293,7 @@ class PermissionEngine:
             )
 
         # Escalation rules can promote allow -> ask but not deny -> anything
-        if decision.decision == "allow" and self._is_escalation_required(
-            category, action
-        ):
+        if decision.decision == "allow" and self._is_escalation_required(category, action):
             decision = PermissionDecision(
                 capability=capability,
                 allowed=False,

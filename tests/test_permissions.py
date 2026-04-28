@@ -46,9 +46,7 @@ class TestExplicitAllow:
     """Explicit grants allow matching capabilities."""
 
     def test_simple_grant_allows_capability(self) -> None:
-        config = PermissionConfig(
-            grants=[Grant(capability="filesystem.read", allowed_by="test")]
-        )
+        config = PermissionConfig(grants=[Grant(capability="filesystem.read", allowed_by="test")])
         engine = PermissionEngine()
         engine._config = config
         result = engine.check("filesystem.read")
@@ -73,9 +71,7 @@ class TestExplicitAllow:
         settings = {
             "permissions": {
                 "default_policy": "deny",
-                "grants": [
-                    {"capability": "filesystem.read", "allowed_by": "project"}
-                ],
+                "grants": [{"capability": "filesystem.read", "allowed_by": "project"}],
             }
         }
         path = tmp_path / "settings.json"
@@ -89,18 +85,14 @@ class TestScopedPermissions:
     """Scoped permissions restrict access to specific paths or domains."""
 
     def test_exact_scope_match(self) -> None:
-        config = PermissionConfig(
-            grants=[Grant(capability="filesystem.write", scope="/tmp")]
-        )
+        config = PermissionConfig(grants=[Grant(capability="filesystem.write", scope="/tmp")])
         engine = PermissionEngine()
         engine._config = config
         result = engine.check("filesystem.write:/tmp")
         assert result.decision == "allow"
 
     def test_scope_mismatch_denies(self) -> None:
-        config = PermissionConfig(
-            grants=[Grant(capability="filesystem.write", scope="/tmp")]
-        )
+        config = PermissionConfig(grants=[Grant(capability="filesystem.write", scope="/tmp")])
         engine = PermissionEngine()
         engine._config = config
         result = engine.check("filesystem.write:/home")
@@ -123,9 +115,7 @@ class TestScopedPermissions:
         assert result.decision == "allow"
 
     def test_scope_in_capability_with_grant_scope(self) -> None:
-        config = PermissionConfig(
-            grants=[Grant(capability="filesystem.write:/tmp")]
-        )
+        config = PermissionConfig(grants=[Grant(capability="filesystem.write:/tmp")])
         engine = PermissionEngine()
         engine._config = config
         assert engine.check("filesystem.write:/tmp").decision == "allow"
@@ -339,9 +329,7 @@ class TestEscalation:
 
     def test_require_confirmation_promotes_to_ask(self) -> None:
         config = PermissionConfig(
-            grants=[
-                Grant(capability="browser.navigate", require_confirmation=True)
-            ]
+            grants=[Grant(capability="browser.navigate", require_confirmation=True)]
         )
         engine = PermissionEngine()
         engine._config = config
