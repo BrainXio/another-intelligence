@@ -22,6 +22,11 @@ from another_intelligence.hooks import (
     HookRunner,
     HookType,
 )
+from another_intelligence.knowledge import (
+    Article,
+    KnowledgeCompiler,
+    KnowledgeQuery,
+)
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
@@ -39,6 +44,7 @@ __version__ = "0.1.0"
 __all__ = [
     "__version__",
     "ActivityPhase",
+    "Article",
     "AuditLogEntry",
     "BrainEvent",
     "BrainRegionActivated",
@@ -53,6 +59,8 @@ __all__ = [
     "HookResult",
     "HookRunner",
     "HookType",
+    "KnowledgeCompiler",
+    "KnowledgeQuery",
     "MCPToolCalled",
     "MetricsCollector",
     "StatuslineRenderer",

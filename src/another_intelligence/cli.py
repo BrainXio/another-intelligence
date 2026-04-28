@@ -1,7 +1,7 @@
 """CLI entry point for Another-Intelligence.
 
 Provides the ``ai`` command with sub-commands for brain decisions,
-hooks, status, and knowledge pipeline operations.
+hooks, status, knowledge pipeline operations, and permissions.
 """
 
 from __future__ import annotations
@@ -22,6 +22,8 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
+from another_intelligence.knowledge.compiler import KnowledgeCompiler
+from another_intelligence.knowledge.query import KnowledgeQuery
 from another_intelligence.permissions.engine import PermissionEngine
 from another_intelligence.state import ActivityPhase
 
@@ -104,7 +106,7 @@ def _get_console() -> Console:
 @click.version_option(version=click.style("0.1.0", fg="cyan"), prog_name="ai")
 @click.pass_context
 def main(ctx: click.Context) -> None:
-    """Another-Intelligence CLI — neuroscience-grounded digital brain."""
+    """Another-Intelligence CLI -- neuroscience-grounded digital brain."""
     ctx.ensure_object(dict)
     if "store" not in ctx.obj:
         ctx.obj["store"] = BrainStore()
@@ -134,19 +136,19 @@ def brain_decide(ctx: click.Context, query: str, option: tuple[str, ...]) -> Non
     store: BrainStore = ctx.obj["store"]
     state = store.load_state()
 
-    brain = DigitalBrain()
+    digital_brain = DigitalBrain()
     # Hydrate memory from store
     for key, value in state.get("memory", {}).items():
-        brain._memory[key] = value  # noqa: SLF001
+        digital_brain._memory[key] = value  # noqa: SLF001
 
     options = list(option) if option else None
-    result = brain.decide(query, options=options)
+    result = digital_brain.decide(query, options=options)
 
     # Persist memory and events
-    state["memory"] = brain.memory
-    state["current_phase"] = brain.state.current.value
+    state["memory"] = digital_brain.memory
+    state["current_phase"] = digital_brain.state.current.value
     store.save_state(state)
-    for event in brain.events:
+    for event in digital_brain.events:
         store.append_event(event)
 
     console = _get_console()
@@ -255,20 +257,81 @@ def flush(ctx: click.Context) -> None:
 # ---------------------------------------------------------------------------
 
 
-@main.command()
-@click.option("--source", default="daily", help="Source directory or topic to compile.")
+@main.command(name="compile")
+@click.option(
+    "--source-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    help="Directory containing daily markdown logs.",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    help="Directory to write compiled knowledge articles.",
+)
 @click.pass_context
-def compile(ctx: click.Context, source: str) -> None:
-    """Compile knowledge from source logs into structured articles.
-
-    This is a stub until the knowledge-pipeline module lands.
-    """
+def compile_(ctx: click.Context, source_dir: Path | None, output_dir: Path | None) -> None:
+    """Parse daily logs and produce structured knowledge articles."""
+    compiler = KnowledgeCompiler(
+        source_dir=source_dir,
+        output_dir=output_dir,
+    )
+    summary = compiler.compile()
     console = _get_console()
     console.print(
-        f"[bold yellow]Knowledge compilation from '{source}' is not yet implemented.[/bold yellow]\n"
-        "[dim]The knowledge-pipeline module is scheduled for Phase 3.[/dim]"
+        f"[bold green]Compiled {summary['articles']} articles from {summary['files_parsed']} files.[/bold green]"
     )
-    ctx.exit(1)
+    console.print(f"Output: {summary['output_dir']}")
+
+
+# ---------------------------------------------------------------------------
+# ai query
+# ---------------------------------------------------------------------------
+
+
+@main.command()
+@click.argument("query", default="")
+@click.option(
+    "--type",
+    "article_type",
+    type=click.Choice(["concept", "mechanism", "outcome", "connection"]),
+    help="Filter by article type.",
+)
+@click.option(
+    "--tag",
+    type=str,
+    help="Filter by tag.",
+)
+@click.option(
+    "--limit",
+    type=int,
+    default=20,
+    help="Maximum number of results.",
+)
+@click.option(
+    "--knowledge-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    help="Directory containing compiled knowledge articles.",
+)
+@click.pass_context
+def query(
+    ctx: click.Context,
+    query: str,
+    article_type: str | None,
+    tag: str | None,
+    limit: int,
+    knowledge_dir: Path | None,
+) -> None:
+    """Search the compiled knowledge base."""
+    kq = KnowledgeQuery(knowledge_dir=knowledge_dir)
+    results = kq.search(query, type=article_type, tag=tag, limit=limit)
+    console = _get_console()
+    if not results:
+        console.print("[dim]No results found.[/dim]")
+        return
+    for r in results:
+        console.print(f"[{r['type']}] {r['title']} ({r['id']})")
+        if r.get("description"):
+            console.print(f"  {r['description']}")
 
 
 # ---------------------------------------------------------------------------
@@ -366,3 +429,7 @@ def permissions_check(ctx: click.Context, capability: str, config: str | None) -
             border_style=color,
         )
     )
+
+
+if __name__ == "__main__":
+    main()
