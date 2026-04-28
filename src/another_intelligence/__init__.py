@@ -14,6 +14,7 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
+from another_intelligence.executor import Evaluation, Executor
 from another_intelligence.hooks import (
     HookConfig,
     HookRegistry,
@@ -28,7 +29,9 @@ from another_intelligence.permissions.engine import (
     PermissionDecision,
     PermissionEngine,
 )
+from another_intelligence.reflex import Reflex, Selection
 from another_intelligence.state import ActivityPhase, StateMachine
+from another_intelligence.strategist import Proposal, Strategist
 
 __version__ = "0.1.0"
 __all__ = [
@@ -40,6 +43,8 @@ __all__ = [
     "ContextWindow",
     "ContextWindowChanged",
     "DigitalBrain",
+    "Evaluation",
+    "Executor",
     "Grant",
     "HookConfig",
     "HookRegistry",
@@ -53,8 +58,12 @@ __all__ = [
     "PermissionRequested",
     "PostToolUse",
     "PreToolUse",
+    "Proposal",
     "RPEUpdated",
+    "Reflex",
+    "Selection",
     "SessionEnd",
     "SessionStart",
     "StateMachine",
+    "Strategist",
 ]
