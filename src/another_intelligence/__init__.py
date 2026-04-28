@@ -34,6 +34,7 @@ from another_intelligence.mcp.client import (
     MCPServerConfig,
     StdioConnection,
 )
+from another_intelligence.memory.value_index import MemoryValueIndex
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
@@ -43,6 +44,7 @@ from another_intelligence.permissions.engine import (
     PermissionEngine,
 )
 from another_intelligence.reflex import Reflex, Selection
+from another_intelligence.rpe import RPEEngine
 from another_intelligence.state import ActivityPhase, StateMachine
 from another_intelligence.statusline import StatuslineRenderer
 from another_intelligence.strategist import Proposal, Strategist
@@ -73,6 +75,7 @@ __all__ = [
     "MCPRegistry",
     "MCPServerConfig",
     "MCPToolCalled",
+    "MemoryValueIndex",
     "MetricsCollector",
     "PermissionConfig",
     "PermissionDecision",
@@ -81,6 +84,7 @@ __all__ = [
     "PostToolUse",
     "PreToolUse",
     "Proposal",
+    "RPEEngine",
     "RPEUpdated",
     "Reflex",
     "Selection",
