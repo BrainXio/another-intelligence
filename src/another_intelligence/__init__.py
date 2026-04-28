@@ -15,6 +15,13 @@ from another_intelligence.events import (
     SessionStart,
 )
 from another_intelligence.executor import Evaluation, Executor
+from another_intelligence.hooks import (
+    HookConfig,
+    HookRegistry,
+    HookResult,
+    HookRunner,
+    HookType,
+)
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
     Grant,
@@ -39,6 +46,11 @@ __all__ = [
     "Evaluation",
     "Executor",
     "Grant",
+    "HookConfig",
+    "HookRegistry",
+    "HookResult",
+    "HookRunner",
+    "HookType",
     "MCPToolCalled",
     "PermissionConfig",
     "PermissionDecision",
