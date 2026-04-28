@@ -1,4 +1,4 @@
-"""Another-Intelligence — A persistent neuroscience-grounded digital brain."""
+"""Capability-based permissions engine for Another-Intelligence."""
 
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
@@ -8,9 +8,7 @@ from another_intelligence.permissions.engine import (
     PermissionEngine,
 )
 
-__version__ = "0.1.0"
 __all__ = [
-    "__version__",
     "AuditLogEntry",
     "Grant",
     "PermissionConfig",
