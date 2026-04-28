@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from another_intelligence.models.client import ModelInfo, OllamaClient
+from another_intelligence.models.client import OllamaClient
 
 
 class ResolvedModel(BaseModel):

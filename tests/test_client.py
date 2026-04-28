@@ -84,7 +84,7 @@ def test_chat_structured_output_with_pydantic_model(client, mock_ollama_client):
 def test_chat_structured_output_with_dict_schema(client, mock_ollama_client):
     """chat() passes through a dict schema unchanged."""
     mock_ollama_client.chat.return_value = MagicMock(
-        message=MagicMock(role="assistant", content='{}'),
+        message=MagicMock(role="assistant", content="{}"),
         model="llama3.1",
         done=True,
     )

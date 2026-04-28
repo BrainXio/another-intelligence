@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Callable, Literal, Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any, Literal
 
 import ollama
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class ChatMessage(BaseModel):

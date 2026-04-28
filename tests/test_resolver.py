@@ -186,9 +186,15 @@ def test_resolve_local_with_no_alias_prefers_largest(resolver, mock_ollama_clien
     )
     mock_ollama_client.get_model_info.side_effect = [
         MagicMock(context_length=2048, parameter_size="1.1B", family="llama", quantization="Q4_0"),
-        MagicMock(context_length=131072, parameter_size="70B", family="llama", quantization="Q4_K_M"),
-        MagicMock(context_length=32768, parameter_size="14B", family="qwen2", quantization="Q4_K_M"),
-        MagicMock(context_length=131072, parameter_size="70B", family="llama", quantization="Q4_K_M"),
+        MagicMock(
+            context_length=131072, parameter_size="70B", family="llama", quantization="Q4_K_M"
+        ),
+        MagicMock(
+            context_length=32768, parameter_size="14B", family="qwen2", quantization="Q4_K_M"
+        ),
+        MagicMock(
+            context_length=131072, parameter_size="70B", family="llama", quantization="Q4_K_M"
+        ),
     ]
 
     result = resolver.resolve("local")
