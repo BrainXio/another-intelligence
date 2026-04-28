@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import time
-import uuid
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from pathlib import Path
@@ -174,21 +174,22 @@ class StdioConnection(MCPConnection):
         self._connected = True
         self._reader_task = asyncio.create_task(self._read_loop())
         # Initialize session per MCP spec
-        await self.send_request("initialize", {
-            "protocolVersion": "2024-11-05",
-            "capabilities": {},
-            "clientInfo": {"name": "another-intelligence", "version": "0.1.0"},
-        })
+        await self.send_request(
+            "initialize",
+            {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "another-intelligence", "version": "0.1.0"},
+            },
+        )
         await self.send_request("notifications/initialized")
 
     async def disconnect(self) -> None:
         self._connected = False
         if self._reader_task is not None:
             self._reader_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._reader_task
-            except asyncio.CancelledError:
-                pass
         if self._proc is not None and self._proc.returncode is None:
             self._proc.terminate()
             try:
@@ -311,12 +312,11 @@ class MCPClient:
                 await conn.disconnect()
         self._connections.clear()
 
-    async def list_tools(self, server_name: str | None = None) -> dict[str, list[MCPToolDefinition]]:
+    async def list_tools(
+        self, server_name: str | None = None
+    ) -> dict[str, list[MCPToolDefinition]]:
         """List tools from a specific server or all servers."""
-        if server_name is not None:
-            servers = [server_name]
-        else:
-            servers = self._registry.list_servers()
+        servers = [server_name] if server_name is not None else self._registry.list_servers()
 
         result: dict[str, list[MCPToolDefinition]] = {}
         for name in servers:
@@ -361,7 +361,9 @@ class MCPClient:
         self._emit(pre_event)
 
         # 3. Permissions check
-        decision = self._permissions.check(capability, context={"server": server_name, "tool": tool_name, "params": params})
+        decision = self._permissions.check(
+            capability, context={"server": server_name, "tool": tool_name, "params": params}
+        )
         if not decision.allowed:
             duration_ms = 0.0
             post_event = PostToolUse(

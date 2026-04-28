@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
-from collections.abc import Callable
 from pathlib import Path
 from typing import Any
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -16,13 +16,10 @@ from another_intelligence.mcp.client import (
     MCPConnection,
     MCPRegistry,
     MCPServerConfig,
-    MCPToolDefinition,
-    StdioConnection,
 )
 from another_intelligence.permissions.engine import (
     Grant,
     PermissionConfig,
-    PermissionDecision,
     PermissionEngine,
 )
 
@@ -174,12 +171,8 @@ class TestMCPClientToolListing:
         path.write_text(json.dumps(data))
         reg = MCPRegistry(path)
         client = MCPClient(reg, PermissionEngine())
-        client._connections["a"] = MockConnection(
-            reg.get("a"), tools=[{"name": "t1"}]
-        )
-        client._connections["b"] = MockConnection(
-            reg.get("b"), tools=[{"name": "t2"}]
-        )
+        client._connections["a"] = MockConnection(reg.get("a"), tools=[{"name": "t1"}])
+        client._connections["b"] = MockConnection(reg.get("b"), tools=[{"name": "t2"}])
 
         tools = asyncio.run(client.list_tools())
         assert len(tools) == 2
@@ -192,9 +185,7 @@ class TestMCPClientToolListing:
         path.write_text(json.dumps(data))
         reg = MCPRegistry(path)
         client = MCPClient(reg, PermissionEngine())
-        client._connections["fs"] = MockConnection(
-            reg.get("fs"), tools=[{"name": "read"}]
-        )
+        client._connections["fs"] = MockConnection(reg.get("fs"), tools=[{"name": "read"}])
         asyncio.run(client.list_tools("fs"))
         assert "fs" in client._tools_cache
         client.clear_cache()
@@ -209,15 +200,11 @@ class TestMCPClientCallTool:
         path = tmp_path / "mcp.json"
         path.write_text(json.dumps(data))
         reg = MCPRegistry(path)
-        config = PermissionConfig(
-            grants=[Grant(capability="mcp.fs.read", allowed_by="test")]
-        )
+        config = PermissionConfig(grants=[Grant(capability="mcp.fs.read", allowed_by="test")])
         perms = PermissionEngine()
         perms._config = config
         client = MCPClient(reg, perms)
-        client._connections["fs"] = MockConnection(
-            reg.get("fs"), tools=[{"name": "read"}]
-        )
+        client._connections["fs"] = MockConnection(reg.get("fs"), tools=[{"name": "read"}])
 
         result = asyncio.run(client.call_tool("fs", "read", {"path": "/tmp"}))
         assert result["success"] is True
@@ -267,9 +254,7 @@ class TestMCPClientEvents:
         path = tmp_path / "mcp.json"
         path.write_text(json.dumps(data))
         reg = MCPRegistry(path)
-        config = PermissionConfig(
-            grants=[Grant(capability="mcp.fs.read")]
-        )
+        config = PermissionConfig(grants=[Grant(capability="mcp.fs.read")])
         perms = PermissionEngine()
         perms._config = config
         client = MCPClient(reg, perms)
@@ -468,5 +453,4 @@ class TestMCPClientConnectionManagement:
         assert "a" not in client._connections
 
 
-# Ensure asyncio.run is available for all async tests
-import asyncio
+# asyncio is imported at the top of the file
