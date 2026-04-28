@@ -1,15 +1,12 @@
----
-title: "Another-Intelligence"
-version: "0.1"
-status: draft
-updated: "2026-04-28"
----
+______________________________________________________________________
+
+## title: "Another-Intelligence" version: "0.1" status: draft updated: "2026-04-28"
 
 # README.md — Another-Intelligence
 
 **A persistent neuroscience-grounded digital brain**
 
----
+______________________________________________________________________
 
 ## What is Another-Intelligence?
 
@@ -23,7 +20,7 @@ It implements a strict **PPAC loop** (Proposer → Predictor → Accumulator →
 
 Every decision produces real **reward prediction error (RPE)** that drives continuous self-improvement through synthetic preference datasets and future QLoRA fine-tuning.
 
----
+______________________________________________________________________
 
 ## Key Features
 
@@ -36,7 +33,7 @@ Every decision produces real **reward prediction error (RPE)** that drives conti
 - **Plugin Architecture** — Easy to add voice, hardware, new displays, etc.
 - **Autonomous Development Ready** — Designed for heavy use with Claude-agent-sdk + MCP servers.
 
----
+______________________________________________________________________
 
 ## Quick Start
 
@@ -61,22 +58,22 @@ ollama pull qwen3.5:14b
 ai brain "Explain how the PPAC loop works in simple terms"
 ```
 
----
+______________________________________________________________________
 
 ## Core Commands
 
-| Command                        | Description |
-|--------------------------------|-----------|
-| `ai brain <prompt>`            | Run full PPAC decision loop |
-| `ai status --extended`         | Live brain state, RPE, context usage |
-| `ai compile`                   | Build knowledge base from daily logs |
-| `ai query <question>`          | Semantic search over knowledge |
-| `ai flush`                     | Process session memory |
-| `ai introspect`                | Self-reflection on learning patterns |
-| `ai mcp list`                  | Show available MCP tools |
-| `ai permissions check ...`     | Test permission decisions |
+| Command                    | Description                          |
+| -------------------------- | ------------------------------------ |
+| `ai brain <prompt>`        | Run full PPAC decision loop          |
+| `ai status --extended`     | Live brain state, RPE, context usage |
+| `ai compile`               | Build knowledge base from daily logs |
+| `ai query <question>`      | Semantic search over knowledge       |
+| `ai flush`                 | Process session memory               |
+| `ai introspect`            | Self-reflection on learning patterns |
+| `ai mcp list`              | Show available MCP tools             |
+| `ai permissions check ...` | Test permission decisions            |
 
----
+______________________________________________________________________
 
 ## Project Structure
 
@@ -90,7 +87,7 @@ another-intelligence/
 └── .brainxio/                 # Project-specific config (committed)
 ```
 
----
+______________________________________________________________________
 
 ## Documentation Index
 
@@ -103,7 +100,7 @@ another-intelligence/
 - **[PROMPTING.md](docs/PROMPTING.md)** — Rules & skills system
 - **[PLUGIN-DEVELOPMENT.md](docs/PLUGIN-DEVELOPMENT.md)** — How to extend
 
----
+______________________________________________________________________
 
 ## Philosophy
 
@@ -113,15 +110,15 @@ another-intelligence/
 - Real learning (RPE) over stateless prompting
 - Security and observability by default
 
----
+______________________________________________________________________
 
 ## Status
 
-**Current Phase:** Foundation & v0.1 Baseline  
-**License:** Apache 2.0  
+**Current Phase:** Foundation & v0.1 Baseline\
+**License:** Apache 2.0\
 **Chat with us:** Use `ai brain` once installed.
 
----
+______________________________________________________________________
 
 **Made with ❤️ for genuine persistent cognition.**
 

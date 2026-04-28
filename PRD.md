@@ -1,10 +1,8 @@
 # Product Requirements Document — Another-Intelligence v0.1
 
----
-version: "0.1"
-status: draft
-updated: "2026-04-28"
----
+______________________________________________________________________
+
+## version: "0.1" status: draft updated: "2026-04-28"
 
 ## 1. Overview
 
@@ -175,29 +173,29 @@ Each stage completes before the next begins. Complex decisions cycle through mul
 
 ## 6. Technology Requirements
 
-| Layer | Technology | Constraint |
-|---|---|---|
-| Core Runtime | Python 3.12+ with `uv` | `uv` only; no pip |
-| JS Layer | Node 20+ with npm/pnpm | For browser automation / web UI |
-| LLM Client | Ollama (Python + JS clients) | Official client; tool calling + structured outputs |
-| Testing | pytest + Vitest + Playwright | TDD required |
-| Async | asyncio + anyio | Clean concurrency |
-| Configuration | Pydantic Settings + JSON | Type-safe, validated |
-| Plugin System | importlib + entry points | Standard Python packaging |
-| Event Bus | Simple typed event emitter | Lightweight, observable |
+| Layer         | Technology                   | Constraint                                         |
+| ------------- | ---------------------------- | -------------------------------------------------- |
+| Core Runtime  | Python 3.12+ with `uv`       | `uv` only; no pip                                  |
+| JS Layer      | Node 20+ with npm/pnpm       | For browser automation / web UI                    |
+| LLM Client    | Ollama (Python + JS clients) | Official client; tool calling + structured outputs |
+| Testing       | pytest + Vitest + Playwright | TDD required                                       |
+| Async         | asyncio + anyio              | Clean concurrency                                  |
+| Configuration | Pydantic Settings + JSON     | Type-safe, validated                               |
+| Plugin System | importlib + entry points     | Standard Python packaging                          |
+| Event Bus     | Simple typed event emitter   | Lightweight, observable                            |
 
 ## 7. CLI Commands
 
-| Command | Description |
-|---|---|
-| `ai brain <prompt>` | Run full PPAC decision loop |
-| `ai status --extended` | Live brain state, RPE, context usage |
-| `ai compile` | Build knowledge base from daily logs |
-| `ai query <question>` | Semantic search over knowledge |
-| `ai flush` | Process session memory |
-| `ai introspect` | Self-reflection on learning patterns |
-| `ai mcp list` | Show available MCP tools |
-| `ai permissions check ...` | Test permission decisions |
+| Command                    | Description                          |
+| -------------------------- | ------------------------------------ |
+| `ai brain <prompt>`        | Run full PPAC decision loop          |
+| `ai status --extended`     | Live brain state, RPE, context usage |
+| `ai compile`               | Build knowledge base from daily logs |
+| `ai query <question>`      | Semantic search over knowledge       |
+| `ai flush`                 | Process session memory               |
+| `ai introspect`            | Self-reflection on learning patterns |
+| `ai mcp list`              | Show available MCP tools             |
+| `ai permissions check ...` | Test permission decisions            |
 
 ## 8. Non-Goals
 
@@ -234,13 +232,13 @@ A release candidate for v0.1 is ready only when:
 
 ## 11. Timeline
 
-| Phase | Duration | Deliverable |
-|---|---|---|
-| Phase 0 — Foundation | 2–3 weeks | Skeleton, Ollama client, PPAC stub, `~/.brainxio/` loader |
-| Phase 1 — Brain Regions & Monitoring | 3–5 weeks | Full PPAC, RPE, metrics, statusline, baseline green |
-| Phase 2 — Knowledge, Hooks, Permissions | 4–6 weeks | Full knowledge pipeline, mature permissions, plugins |
-| Phase 3 — Release Preparation | 2 weeks | Clean git, public repo, first alpha release |
+| Phase                                   | Duration  | Deliverable                                               |
+| --------------------------------------- | --------- | --------------------------------------------------------- |
+| Phase 0 — Foundation                    | 2–3 weeks | Skeleton, Ollama client, PPAC stub, `~/.brainxio/` loader |
+| Phase 1 — Brain Regions & Monitoring    | 3–5 weeks | Full PPAC, RPE, metrics, statusline, baseline green       |
+| Phase 2 — Knowledge, Hooks, Permissions | 4–6 weeks | Full knowledge pipeline, mature permissions, plugins      |
+| Phase 3 — Release Preparation           | 2 weeks   | Clean git, public repo, first alpha release               |
 
----
+______________________________________________________________________
 
 *This document is the contract between human developers and any autonomous agent working on the project. No feature work should begin until its acceptance criteria are defined here or in a linked test file.*

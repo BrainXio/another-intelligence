@@ -1,9 +1,6 @@
----
-title: "Capability-Based Permissions System"
-version: "0.1"
-status: draft
-updated: "2026-04-28"
----
+______________________________________________________________________
+
+## title: "Capability-Based Permissions System" version: "0.1" status: draft updated: "2026-04-28"
 
 # PERMISSIONS.md — Capability-Based Permissions System
 
@@ -11,7 +8,7 @@ updated: "2026-04-28"
 
 The permissions system is a **core security layer** that enforces least-privilege access for all tools, MCP servers, hooks, and plugins. It replaces any implicit trust from the Claude SDK with explicit, auditable, capability-based control.
 
----
+______________________________________________________________________
 
 ## 1. Design Principles
 
@@ -22,13 +19,14 @@ The permissions system is a **core security layer** that enforces least-privileg
 - **Hook-Aware** — PreToolUse hooks can influence but never bypass explicit denies.
 - **Scoped** — Many capabilities support fine-grained scoping (paths, domains, etc.).
 
----
+______________________________________________________________________
 
 ## 2. Permission Structure
 
 Each permission follows the pattern: `category.action[:scope]`
 
 ### Examples
+
 - `filesystem.read`
 - `filesystem.write:/home/user/projects/another-intelligence`
 - `browser.navigate`
@@ -37,7 +35,7 @@ Each permission follows the pattern: `category.action[:scope]`
 - `mcp.call:filesystem`
 - `hook.execute:PreToolUse`
 
----
+______________________________________________________________________
 
 ## 3. Configuration (`settings.json`)
 
@@ -67,7 +65,7 @@ Each permission follows the pattern: `category.action[:scope]`
 
 Global (`~/.brainxio/settings.json`) + project (`.brainxio/settings.json`) merge with project taking precedence on conflicts.
 
----
+______________________________________________________________________
 
 ## 4. Permission Evaluation Flow
 
@@ -80,23 +78,23 @@ Global (`~/.brainxio/settings.json`) + project (`.brainxio/settings.json`) merge
 7. Execute → log decision with full context.
 8. PostToolUse hook fires.
 
----
+______________________________________________________________________
 
 ## 5. Core Capabilities (Built-in)
 
-| Category          | Capabilities                                      | Default |
-|-------------------|---------------------------------------------------|---------|
-| filesystem        | read, write, list, delete                         | deny |
-| browser           | navigate, screenshot, click, type                 | deny |
-| git               | read, commit, push, clone                         | deny |
-| mcp               | call:<server>                                     | deny |
-| hook              | execute:<event>                                   | allow (limited) |
-| knowledge         | read, write, compile                              | allow |
-| model             | switch_tier, change_context                       | deny |
-| hardware          | gpio, sensors, audio                              | deny |
-| training          | generate_dataset, trigger_fine_tune               | deny |
+| Category   | Capabilities                        | Default         |
+| ---------- | ----------------------------------- | --------------- |
+| filesystem | read, write, list, delete           | deny            |
+| browser    | navigate, screenshot, click, type   | deny            |
+| git        | read, commit, push, clone           | deny            |
+| mcp        | call:<server>                       | deny            |
+| hook       | execute:<event>                     | allow (limited) |
+| knowledge  | read, write, compile                | allow           |
+| model      | switch_tier, change_context         | deny            |
+| hardware   | gpio, sensors, audio                | deny            |
+| training   | generate_dataset, trigger_fine_tune | deny            |
 
----
+______________________________________________________________________
 
 ## 6. Python API
 
@@ -110,7 +108,7 @@ async def safe_write(path: str, content: str):
     ...
 ```
 
----
+______________________________________________________________________
 
 ## 7. Testing Permissions
 
@@ -122,7 +120,7 @@ ai permissions check filesystem.write:/tmp --explain
 uv run pytest tests/permissions/
 ```
 
----
+______________________________________________________________________
 
 ## 8. Security Best Practices
 
@@ -132,7 +130,7 @@ uv run pytest tests/permissions/
 - High-impact actions should require confirmation.
 - All permission decisions are immutable in the brain activity log.
 
----
+______________________________________________________________________
 
 ## 9. Relationship to Other Systems
 
@@ -140,8 +138,7 @@ uv run pytest tests/permissions/
 - **HOOKS.md** — PreToolUse can influence permission outcomes.
 - **ARCHITECTURE.md** — Permissions is a core component, not optional.
 
----
+______________________________________________________________________
 
-**This document defines the security boundary of Another-Intelligence.**  
+**This document defines the security boundary of Another-Intelligence.**\
 Any new capability must be added here first and given a clear default policy.
-

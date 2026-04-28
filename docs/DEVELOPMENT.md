@@ -1,9 +1,6 @@
----
-title: "Development Workflow & Tooling"
-version: "0.1"
-status: draft
-updated: "2026-04-28"
----
+______________________________________________________________________
+
+## title: "Development Workflow & Tooling" version: "0.1" status: draft updated: "2026-04-28"
 
 # DEVELOPMENT.md — Development Workflow & Tooling
 
@@ -12,17 +9,19 @@ updated: "2026-04-28"
 Another-Intelligence is developed with **extreme discipline** around tooling, testing, and autonomy. The goal is to enable a Claude-agent-sdk (or future self-hosted version) to implement large portions of the system with minimal human intervention while maintaining high code quality and security.
 
 **Core Rules**
+
 - Use `uv` for all Python package management (never `pip install --break-system-packages`).
 - Use `npm` / `pnpm` for all JavaScript/TypeScript work.
 - Everything is test-driven. No code is merged without passing tests.
 - The autonomous agent loop (Claude-agent-sdk + MCP servers) is a first-class citizen of the development process.
 - Documentation and architecture are updated **before** implementation begins.
 
----
+______________________________________________________________________
 
 ## 2. Environment Setup
 
 ### 2.1 Prerequisites
+
 - Python 3.12+
 - Node.js 20+
 - uv (latest)
@@ -49,11 +48,12 @@ pnpm install
 ```
 
 ### 2.3 Recommended IDE / Editor Settings
+
 - VS Code + recommended extensions (Pylance, Ruff, ESLint, Markdownlint)
 - Ruff for Python linting/formatting (configured in `pyproject.toml`)
 - Pre-commit hooks (installed via `uv pip install pre-commit && pre-commit install`)
 
----
+______________________________________________________________________
 
 ## 3. Daily Development Workflow
 
@@ -94,7 +94,7 @@ ai status --extended
 ai brain "Explain the PPAC loop in simple terms"
 ```
 
----
+______________________________________________________________________
 
 ## 4. Autonomous Development Loop (Recommended)
 
@@ -103,6 +103,7 @@ Another-Intelligence is explicitly designed to be developed with heavy assistanc
 ### 4.1 Recommended Setup for Autonomous Work
 
 1. Install the following MCP servers globally or in your environment:
+
    - `@modelcontextprotocol/server-filesystem`
    - `@modelcontextprotocol/server-puppeteer` (or Playwright equivalent)
    - `@modelcontextprotocol/server-git`
@@ -111,6 +112,7 @@ Another-Intelligence is explicitly designed to be developed with heavy assistanc
 2. Configure `~/.brainxio/mcp.json` (or project `.brainxio/mcp.json`) to point to these servers.
 
 3. Use a Claude Code / Cline / similar agent with the following context loaded automatically:
+
    - `ARCHITECTURE.md`
    - `BASELINE.md`
    - `DEVELOPMENT.md`
@@ -119,6 +121,7 @@ Another-Intelligence is explicitly designed to be developed with heavy assistanc
    - `MCP.md`
 
 4. Instruct the agent with clear, bounded tasks such as:
+
    > "Implement the PreToolUse hook registration system according to HOOKS.md. Write tests first. All changes must pass `uv run pytest`."
 
 ### 4.2 Best Practices for Agent-Assisted Development
@@ -128,26 +131,31 @@ Another-Intelligence is explicitly designed to be developed with heavy assistanc
 - Always ask the agent to run the test suite and report results before considering work complete.
 - Use `PreToolUse` hooks (once implemented) to add safety rails around file system and shell access.
 
----
+______________________________________________________________________
 
 ## 5. Code Style & Quality Gates
 
 ### Python
+
 - Follow PEP 8 + Ruff rules (configured in `pyproject.toml`).
 - Type hints are **mandatory** on all public functions and classes.
 - Use Pydantic for all configuration and data models.
 - Maximum line length: 100 characters.
 
 ### JavaScript / TypeScript
+
 - Follow the ESLint + Prettier config in the repo.
 - Prefer TypeScript for any new code.
 
 ### Documentation
+
 - Every public module, class, and function must have a docstring.
 - Architecture or behavior changes **must** update the relevant `.md` file in `docs/`.
 
 ### Commit Messages
+
 Use Conventional Commits:
+
 ```
 feat(hooks): add typed PreToolUse event system
 fix(permissions): prevent bypass of explicit deny rules
@@ -155,7 +163,7 @@ docs(architecture): clarify MCP client security model
 test(baseline): add 5 new PPAC loop scenarios
 ```
 
----
+______________________________________________________________________
 
 ## 6. Release Process (v0.1 and beyond)
 
@@ -166,7 +174,7 @@ test(baseline): add 5 new PPAC loop scenarios
 5. Version bump in `pyproject.toml`.
 6. Tag and push (after clean git re-initialization to public repo).
 
----
+______________________________________________________________________
 
 ## 7. Common Commands Cheat Sheet
 
@@ -189,7 +197,7 @@ claude --mcp-config ~/.brainxio/mcp.json
 # or use your preferred agent with the docs/ folder in context
 ```
 
----
+______________________________________________________________________
 
 **End of DEVELOPMENT.md**
 

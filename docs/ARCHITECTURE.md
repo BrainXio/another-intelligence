@@ -1,9 +1,6 @@
----
-title: "Another-Intelligence Architecture"
-version: "0.1"
-status: draft
-updated: "2026-04-28"
----
+______________________________________________________________________
+
+## title: "Another-Intelligence Architecture" version: "0.1" status: draft updated: "2026-04-28"
 
 # Another-Intelligence Architecture
 
@@ -12,6 +9,7 @@ updated: "2026-04-28"
 **Another-Intelligence** is a **persistent, neuroscience-grounded digital brain** that makes decisions the way biological brains do — through a strict serial **PPAC loop** (Proposer → Predictor → Accumulator → Actor → Critic) — while remaining fully independent of any proprietary agent SDK.
 
 ### Core Goals
+
 - **True independence**: Runs 100% on Ollama (Python + JS clients) with no Claude Code SDK dependency.
 - **Neuroscience fidelity**: Every decision flows through five biologically-modeled regions with real RPE-driven learning.
 - **Modular & extensible**: Clean core + pluggable extensions via a first-class **MCP (Model Context Protocol)** client.
@@ -19,7 +17,7 @@ updated: "2026-04-28"
 - **Maintainable for all levels**: Clear architecture, excellent documentation, and TDD so beginners and experts can contribute.
 - **Self-improving**: Continuous RPE-based learning with automated dataset generation for QLoRA fine-tuning.
 
----
+______________________________________________________________________
 
 ## 2. Architectural Principles
 
@@ -32,7 +30,7 @@ updated: "2026-04-28"
 7. **Observable by Default** — Every region, tool call, RPE update, and context change emits events.
 8. **Test-Driven & Autonomous** — The architecture is designed so a Claude-agent-sdk (running on our own models) can implement large parts with minimal human intervention once baseline documents exist.
 
----
+______________________________________________________________________
 
 ## 3. High-Level Architecture
 
@@ -67,16 +65,18 @@ updated: "2026-04-28"
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
+______________________________________________________________________
 
 ## 4. Core Components
 
 ### 4.1 DigitalBrain (Orchestrator)
+
 - Entry point for all decisions (`decide()`, `daydream()`, `introspect()`).
 - Manages session lifecycle, context window tracking, and event emission.
 - Delegates to PPAC loop and routes tool calls through Permissions + Hooks.
 
 ### 4.2 PPAC Loop (Strict Serial)
+
 1. **Strategist** (PFC / DLPFC-OFC) — Proposes options, computes multi-attribute expected value.
 2. **Executor** (Limbic + Basal Ganglia) — Emotional valence tagging + Go/NoGo selection.
 3. **Reflex** (Parietal LIP + Dopamine) — Noisy evidence accumulation + RPE computation.
@@ -84,17 +84,21 @@ updated: "2026-04-28"
 5. **Learning** — Memory-value index update + preference dataset generation (when |RPE| > threshold).
 
 ### 4.3 Model Layer
+
 - Unified Ollama client abstraction (Python primary, JS where needed).
 - Supports tiered models (`:cloud-max`, `:cloud-pro`, local GGUF).
 - Automatic context-length handling and structured outputs + tool calling.
 
 ### 4.4 Permissions Engine
+
 - Capability-based (not just allow/deny lists).
 - Declarative policies in `settings.json`.
 - PreToolUse hooks can influence decisions but cannot bypass explicit deny rules.
 
 ### 4.5 Hook System
+
 Typed events:
+
 - `SessionStart`, `SessionEnd`, `PreToolUse`, `PostToolUse`
 - `BrainRegionActivated`, `RPEUpdated`, `ContextWindowChanged`
 - `PermissionRequested`, `MCPToolCalled`
@@ -102,22 +106,25 @@ Typed events:
 Hooks are registered in `~/.brainxio/settings.json` or project `.brainxio/settings.json` and can be shell commands, Python callables, or MCP tools.
 
 ### 4.6 MCP Client (First-Class)
+
 - Native MCP 2025/2026 client.
 - Auto-discovery of local MCP servers via `mcp.json`.
 - Transparent tool calling: models see MCP tools the same as native tools.
 - Security: MCP tools go through the same Permissions + Hook pipeline.
 
 ### 4.7 Knowledge & Memory
+
 - Daily logs → `ai compile` → structured articles (concepts, mechanisms, outcomes).
 - `memory-value index` (context + option → learned value).
 - Long-term episodic store (pluggable via MCP Memory server or local vector DB).
 
 ### 4.8 Plugin System
+
 - Core plugins (eyes, voice, hardware) live in `src/another_intelligence/plugins/`.
 - Third-party plugins installed via `uv pip install another-intelligence-plugin-foo`.
 - Hot-reload support during development.
 
----
+______________________________________________________________________
 
 ## 5. Configuration (`~/.brainxio/` + `.brainxio/`)
 
@@ -141,22 +148,22 @@ Mirrors the proven `.claude` model with improvements for clarity:
 └── agents/
 ```
 
----
+______________________________________________________________________
 
 ## 6. Technology Choices
 
-| Layer              | Technology                  | Rationale |
-|--------------------|-----------------------------|---------|
-| Core Runtime       | Python 3.12+ (uv)           | Best ecosystem for agents, MCP, scientific computing |
-| JS Layer           | Node + npm/pnpm             | Browser automation, web UI, certain extensions |
-| LLM Client         | `ollama` (Python) + `@ollama/ollama` (JS) | Official, actively maintained, full tool calling + structured outputs |
-| Testing            | pytest + Vitest + Playwright | TDD + browser automation via MCP |
-| Async              | asyncio + anyio             | Clean concurrency across regions and tools |
-| Configuration      | Pydantic Settings + JSON    | Type-safe, validated, easy to extend |
-| Plugin System      | importlib + entry points    | Standard Python packaging, discoverable |
-| Event Bus          | Simple typed event emitter  | Lightweight, observable, easy to hook |
+| Layer         | Technology                                | Rationale                                                             |
+| ------------- | ----------------------------------------- | --------------------------------------------------------------------- |
+| Core Runtime  | Python 3.12+ (uv)                         | Best ecosystem for agents, MCP, scientific computing                  |
+| JS Layer      | Node + npm/pnpm                           | Browser automation, web UI, certain extensions                        |
+| LLM Client    | `ollama` (Python) + `@ollama/ollama` (JS) | Official, actively maintained, full tool calling + structured outputs |
+| Testing       | pytest + Vitest + Playwright              | TDD + browser automation via MCP                                      |
+| Async         | asyncio + anyio                           | Clean concurrency across regions and tools                            |
+| Configuration | Pydantic Settings + JSON                  | Type-safe, validated, easy to extend                                  |
+| Plugin System | importlib + entry points                  | Standard Python packaging, discoverable                               |
+| Event Bus     | Simple typed event emitter                | Lightweight, observable, easy to hook                                 |
 
----
+______________________________________________________________________
 
 ## 7. Security & Governance Model
 
@@ -166,7 +173,7 @@ Mirrors the proven `.claude` model with improvements for clarity:
 - **Human-in-the-loop** — Configurable ask/deny thresholds for high-impact actions.
 - **Sandboxing** — MCP servers and plugins run with restricted filesystem/network access where possible.
 
----
+______________________________________________________________________
 
 ## 8. Extensibility Story
 
@@ -178,13 +185,13 @@ Mirrors the proven `.claude` model with improvements for clarity:
 
 This design ensures the core stays small and stable while the ecosystem can grow rapidly.
 
----
+______________________________________________________________________
 
 ## 9. Relationship to Current Prototype
 
 The existing `ai_brain` / Claude-infused codebase in `~/work/_meta` is treated as **reference implementation and inspiration only**. No code will be ported. The new `another-intelligence` package under `~/work/projects/another-intelligence` is a clean-slate implementation that re-creates the *concepts* (PPAC, RPE, eyes, knowledge pipeline, hooks) using the architecture described in this document.
 
----
+______________________________________________________________________
 
 **End of ARCHITECTURE.md**
 

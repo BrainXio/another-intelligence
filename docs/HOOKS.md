@@ -1,9 +1,6 @@
----
-title: "Hook System Specification"
-version: "0.1"
-status: draft
-updated: "2026-04-28"
----
+______________________________________________________________________
+
+## title: "Hook System Specification" version: "0.1" status: draft updated: "2026-04-28"
 
 # HOOKS.md — Hook System Specification
 
@@ -11,7 +8,7 @@ updated: "2026-04-28"
 
 The hook system provides a secure, extensible, and observable way to extend or modify behavior at key points in the lifecycle of Another-Intelligence — without modifying core code. It fully replaces the functionality previously provided by the Claude SDK hooks while being completely independent and permission-aware.
 
----
+______________________________________________________________________
 
 ## 1. Design Principles
 
@@ -22,23 +19,23 @@ The hook system provides a secure, extensible, and observable way to extend or m
 - **Safe by Default** — Hooks run with least-privilege context; dangerous operations require explicit permission grants.
 - **Debuggable** — Every hook execution is logged with full input/output and timing.
 
----
+______________________________________________________________________
 
 ## 2. Core Hook Events
 
-| Event                  | Trigger Point                          | Payload (Pydantic Model)                  | Use Cases |
-|------------------------|----------------------------------------|-------------------------------------------|---------|
-| **SessionStart**       | Before any decision or tool use        | `SessionContext` (user, tier, model, etc.) | Inject knowledge, load rules, detect tier |
-| **SessionEnd**         | After session completes                | `SessionSummary` (decisions, RPEs, etc.)  | Flush memory, compile knowledge |
-| **PreToolUse**         | Before any tool / MCP call             | `ToolRequest` (tool name, args, caller)   | Permission check, logging, modification |
-| **PostToolUse**        | After tool / MCP call returns          | `ToolResult` (success, result, duration)  | Post-processing, RPE contribution |
-| **BrainRegionActivated**| When a region starts/finishes          | `RegionEvent` (region, input, output)     | Statusline, eyes animation, logging |
-| **RPEUpdated**         | After outcome recorded                 | `RPEEvent` (rpe_value, context_key, etc.) | Trigger dataset generation |
-| **ContextWindowChanged**| When context usage crosses thresholds  | `ContextUsage` (used, total, percentage)  | Warning, compaction |
-| **MCPToolCalled**      | When an MCP server tool is invoked     | `MCPToolEvent`                             | Auditing MCP-specific calls |
-| **PermissionRequested**| When permissions engine evaluates      | `PermissionRequest`                        | Custom approval flows |
+| Event                    | Trigger Point                         | Payload (Pydantic Model)                   | Use Cases                                 |
+| ------------------------ | ------------------------------------- | ------------------------------------------ | ----------------------------------------- |
+| **SessionStart**         | Before any decision or tool use       | `SessionContext` (user, tier, model, etc.) | Inject knowledge, load rules, detect tier |
+| **SessionEnd**           | After session completes               | `SessionSummary` (decisions, RPEs, etc.)   | Flush memory, compile knowledge           |
+| **PreToolUse**           | Before any tool / MCP call            | `ToolRequest` (tool name, args, caller)    | Permission check, logging, modification   |
+| **PostToolUse**          | After tool / MCP call returns         | `ToolResult` (success, result, duration)   | Post-processing, RPE contribution         |
+| **BrainRegionActivated** | When a region starts/finishes         | `RegionEvent` (region, input, output)      | Statusline, eyes animation, logging       |
+| **RPEUpdated**           | After outcome recorded                | `RPEEvent` (rpe_value, context_key, etc.)  | Trigger dataset generation                |
+| **ContextWindowChanged** | When context usage crosses thresholds | `ContextUsage` (used, total, percentage)   | Warning, compaction                       |
+| **MCPToolCalled**        | When an MCP server tool is invoked    | `MCPToolEvent`                             | Auditing MCP-specific calls               |
+| **PermissionRequested**  | When permissions engine evaluates     | `PermissionRequest`                        | Custom approval flows                     |
 
----
+______________________________________________________________________
 
 ## 3. Hook Registration
 
@@ -61,7 +58,7 @@ Hooks are declared in `~/.brainxio/settings.json` and `.brainxio/settings.json` 
 
 **Merging rule**: Global settings are loaded first, then project overrides can append or replace.
 
----
+______________________________________________________________________
 
 ## 4. Hook Execution Contract
 
@@ -75,11 +72,12 @@ For every hook:
    - Critical hooks (e.g. PreToolUse) → can veto the action.
 5. Post-hook: `PostToolUse` or equivalent fires if applicable.
 
----
+______________________________________________________________________
 
 ## 5. Implementation Interfaces
 
 ### Python Hook (Recommended for complex logic)
+
 ```python
 from another_intelligence.hooks import HookContext, register_hook
 
@@ -91,12 +89,14 @@ async def pre_tool_guard(ctx: HookContext):
 ```
 
 ### Shell Hook (Simple & fast)
+
 Just an executable that reads JSON from stdin and writes JSON to stdout.
 
 ### MCP Hook
+
 Delegates to an MCP server tool — automatically permission-checked.
 
----
+______________________________________________________________________
 
 ## 6. Security Model
 
@@ -105,7 +105,7 @@ Delegates to an MCP server tool — automatically permission-checked.
 - All hook output is validated against the expected schema.
 - High-impact hooks (SessionStart with model changes, PreToolUse) require explicit user confirmation if configured.
 
----
+______________________________________________________________________
 
 ## 7. Built-in Hooks (Core)
 
@@ -117,7 +117,7 @@ The following hooks ship with the core package:
 - `rpe_handler.py` — Generates training datasets on high |RPE|.
 - `statusline_updater.py` — Updates real-time status and eyes animation.
 
----
+______________________________________________________________________
 
 ## 8. Testing Hooks
 
@@ -129,19 +129,19 @@ ai hook test PreToolUse --payload '{"tool_name": "filesystem.read"}'
 uv run pytest tests/hooks/
 ```
 
----
+______________________________________________________________________
 
 ## 9. Migration from Claude SDK
 
 Existing Claude hooks can be mapped 1:1:
+
 - `session-start` → `SessionStart`
 - `pre-compact` → `PreToolUse` + `ContextWindowChanged`
 - `session-end` → `SessionEnd`
 
 No direct port of code — only concepts.
 
----
+______________________________________________________________________
 
-**This document is the definitive specification.**  
+**This document is the definitive specification.**\
 Any new hook event must be added here first and kept consistent with `ARCHITECTURE.md` and `PERMISSIONS.md`.
-
