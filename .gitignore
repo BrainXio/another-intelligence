@@ -48,7 +48,7 @@ playwright/
 # Ollama & models
 *.gguf
 *.safetensors
-models/
+/models/
 ollama/
 .modelfiles/*.modelfile.bak
 

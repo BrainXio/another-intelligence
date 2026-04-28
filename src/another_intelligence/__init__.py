@@ -14,18 +14,30 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
+from another_intelligence.permissions.engine import (
+    AuditLogEntry,
+    Grant,
+    PermissionConfig,
+    PermissionDecision,
+    PermissionEngine,
+)
 from another_intelligence.state import ActivityPhase, StateMachine
 
 __version__ = "0.1.0"
 __all__ = [
     "__version__",
     "ActivityPhase",
+    "AuditLogEntry",
     "BrainEvent",
     "BrainRegionActivated",
     "ContextWindow",
     "ContextWindowChanged",
     "DigitalBrain",
+    "Grant",
     "MCPToolCalled",
+    "PermissionConfig",
+    "PermissionDecision",
+    "PermissionEngine",
     "PermissionRequested",
     "PostToolUse",
     "PreToolUse",
