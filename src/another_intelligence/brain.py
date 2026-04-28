@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from another_intelligence.context import ContextWindow
@@ -12,6 +13,8 @@ from another_intelligence.events import (
     BrainRegionActivated,
     RPEUpdated,
 )
+from another_intelligence.memory.value_index import MemoryValueIndex
+from another_intelligence.rpe import RPEEngine
 from another_intelligence.state import ActivityPhase, StateMachine
 
 
@@ -26,13 +29,19 @@ class DigitalBrain:
         5. Learning — Update memory-value index based on RPE.
     """
 
-    def __init__(self, max_tokens: int = 8192) -> None:
+    def __init__(
+        self,
+        max_tokens: int = 8192,
+        rpe_engine: RPEEngine | None = None,
+        memory_index: MemoryValueIndex | None = None,
+    ) -> None:
         self._state = StateMachine()
         self._events: list[BrainEvent] = []
         self._context = ContextWindow(max_tokens=max_tokens)
         self._hooks: dict[str, list[Callable[[BrainEvent], None]]] = {}
-        self._memory: dict[str, float] = {}
-        self._rpe_threshold: float = 0.1
+        self._rpe = rpe_engine if rpe_engine is not None else RPEEngine()
+        self._memory = memory_index if memory_index is not None else MemoryValueIndex()
+        self._decisions: dict[str, dict[str, Any]] = {}
 
     @property
     def state(self) -> StateMachine:
@@ -48,7 +57,15 @@ class DigitalBrain:
 
     @property
     def memory(self) -> dict[str, float]:
-        return self._memory.copy()
+        return self._memory.snapshot()
+
+    @property
+    def rpe_engine(self) -> RPEEngine:
+        return self._rpe
+
+    @property
+    def memory_index(self) -> MemoryValueIndex:
+        return self._memory
 
     def register_hook(self, event_type: str, callback: Callable[[BrainEvent], None]) -> None:
         self._hooks.setdefault(event_type, []).append(callback)
@@ -118,7 +135,7 @@ class DigitalBrain:
         # 4. Outcome Recording (simulated immediate outcome)
         self._state.transition_to(ActivityPhase.LEARNING)
         actual = self._simulate_outcome(chosen_action)
-        rpe = actual - expected
+        rpe = self._rpe.compute(expected=expected, actual=actual)
         self._emit(
             RPEUpdated(
                 region="reflex",
@@ -129,14 +146,30 @@ class DigitalBrain:
         )
 
         # 5. Learning
-        self._update_memory(chosen_action, rpe)
+        memory_key = chosen_action
+        self._memory.update(memory_key, rpe)
+        self._maybe_export_preference_pair(
+            decision_id=decision_id,
+            query=query,
+            chosen=chosen_action,
+            rejected=[opt for i, opt in enumerate(candidate_options) if i != chosen_idx],
+            rpe=rpe,
+        )
+        self._decisions[decision_id] = {
+            "query": query,
+            "chosen": chosen_action,
+            "options": candidate_options,
+            "expected": expected,
+            "actual": actual,
+            "rpe": rpe,
+        }
         self._emit(
             BrainRegionActivated(
                 region="learning",
                 metadata={
                     "decision_id": decision_id,
                     "rpe": rpe,
-                    "memory_key": chosen_action,
+                    "memory_key": memory_key,
                 },
             )
         )
@@ -151,10 +184,15 @@ class DigitalBrain:
         }
 
     def record_outcome(self, decision_id: str, expected: float, actual: float) -> None:
-        """Record an external outcome and compute RPE."""
+        """Record an external outcome and compute RPE.
+
+        If the decision context is known and the RPE exceeds the export
+        threshold, a preference pair is serialised to the training dataset
+        directory.
+        """
         if not decision_id:
             raise ValueError("decision_id is required")
-        rpe = actual - expected
+        rpe = self._rpe.compute(expected=expected, actual=actual)
         self._emit(
             RPEUpdated(
                 expected=expected,
@@ -163,12 +201,36 @@ class DigitalBrain:
                 region="reflex",
             )
         )
-        if abs(rpe) > self._rpe_threshold:
-            self._update_memory(decision_id, rpe)
+        self._memory.update(decision_id, rpe)
+        ctx = self._decisions.get(decision_id)
+        if ctx is not None:
+            self._maybe_export_preference_pair(
+                decision_id=decision_id,
+                query=ctx["query"],
+                chosen=ctx["chosen"],
+                rejected=[opt for opt in ctx["options"] if opt != ctx["chosen"]],
+                rpe=rpe,
+            )
+
+    def _maybe_export_preference_pair(
+        self,
+        decision_id: str,
+        query: str,
+        chosen: str,
+        rejected: list[str],
+        rpe: float,
+    ) -> Path | None:
+        """Export a preference pair when RPE is significant."""
+        return self._memory.export_preference_pair(
+            context=f"{decision_id}::{query}",
+            chosen=chosen,
+            rejected=rejected,
+            rpe=rpe,
+        )
 
     def _expected_value(self, option: str) -> float:
         """Compute expected value for an option (placeholder)."""
-        return self._memory.get(option, 0.0) + 0.5
+        return self._memory.get(option) + 0.5
 
     def _emotional_valence(self, option: str) -> float:
         """Assign emotional valence to an option (placeholder)."""
@@ -180,9 +242,4 @@ class DigitalBrain:
 
     def _simulate_outcome(self, action: str) -> float:
         """Simulate the actual outcome of an action (placeholder)."""
-        return self._memory.get(action, 0.0) + 0.5
-
-    def _update_memory(self, key: str, rpe: float) -> None:
-        """Update the memory-value index with the new RPE."""
-        current = self._memory.get(key, 0.0)
-        self._memory[key] = current + 0.1 * rpe
+        return self._memory.get(action) + 0.5
