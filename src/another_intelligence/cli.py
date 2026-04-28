@@ -257,7 +257,7 @@ def flush(ctx: click.Context) -> None:
 # ---------------------------------------------------------------------------
 
 
-@main.command()
+@main.command(name="compile")
 @click.option(
     "--source-dir",
     type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
