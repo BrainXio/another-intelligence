@@ -12,7 +12,10 @@ from another_intelligence.events import (
     BrainRegionActivated,
     RPEUpdated,
 )
+from another_intelligence.executor import Executor
+from another_intelligence.reflex import Reflex
 from another_intelligence.state import ActivityPhase, StateMachine
+from another_intelligence.strategist import Strategist
 
 
 class DigitalBrain:
@@ -33,6 +36,9 @@ class DigitalBrain:
         self._hooks: dict[str, list[Callable[[BrainEvent], None]]] = {}
         self._memory: dict[str, float] = {}
         self._rpe_threshold: float = 0.1
+        self._strategist = Strategist()
+        self._executor = Executor()
+        self._reflex = Reflex(noise_scale=0.0)
 
     @property
     def state(self) -> StateMachine:
@@ -71,39 +77,39 @@ class DigitalBrain:
 
         # 1. Strategist
         self._state.transition_to(ActivityPhase.PROPOSING)
-        candidate_options = options if options is not None else ["proceed", "wait", "abort"]
-        expected_values = [self._expected_value(opt) for opt in candidate_options]
+        proposal = self._strategist.propose(query, options, self._memory)
         self._emit(
             BrainRegionActivated(
                 region="strategist",
                 metadata={
                     "decision_id": decision_id,
-                    "option_count": len(candidate_options),
-                    "expected_values": expected_values,
+                    "option_count": len(proposal.options),
+                    "expected_values": proposal.expected_values,
                 },
             )
         )
 
         # 2. Executor
         self._state.transition_to(ActivityPhase.ACCUMULATING)
-        valences = [self._emotional_valence(opt) for opt in candidate_options]
-        go_scores = [ev + v for ev, v in zip(expected_values, valences, strict=True)]
+        evaluation = self._executor.evaluate(
+            proposal.options, proposal.expected_values, self._memory
+        )
         self._emit(
             BrainRegionActivated(
                 region="executor",
                 metadata={
                     "decision_id": decision_id,
-                    "valences": valences,
-                    "go_scores": go_scores,
+                    "valences": evaluation.valences,
+                    "go_scores": evaluation.go_scores,
                 },
             )
         )
 
         # 3. Reflex
         self._state.transition_to(ActivityPhase.SELECTING)
-        chosen_idx = self._select_action(go_scores)
-        chosen_action = candidate_options[chosen_idx]
-        expected = go_scores[chosen_idx]
+        selection = self._reflex.accumulate(proposal.options, evaluation.go_scores)
+        chosen_action = proposal.options[selection.chosen_idx]
+        expected = selection.expected_outcome
         self._emit(
             BrainRegionActivated(
                 region="reflex",
@@ -117,8 +123,8 @@ class DigitalBrain:
 
         # 4. Outcome Recording (simulated immediate outcome)
         self._state.transition_to(ActivityPhase.LEARNING)
-        actual = self._simulate_outcome(chosen_action)
-        rpe = actual - expected
+        actual = self._reflex.simulate_outcome(chosen_action, self._memory)
+        rpe = self._reflex.compute_rpe(expected, actual)
         self._emit(
             RPEUpdated(
                 region="reflex",
@@ -146,7 +152,7 @@ class DigitalBrain:
 
         return {
             "chosen_action": chosen_action,
-            "options": candidate_options,
+            "options": proposal.options,
             "decision_id": decision_id,
         }
 
@@ -154,7 +160,7 @@ class DigitalBrain:
         """Record an external outcome and compute RPE."""
         if not decision_id:
             raise ValueError("decision_id is required")
-        rpe = actual - expected
+        rpe = self._reflex.compute_rpe(expected, actual)
         self._emit(
             RPEUpdated(
                 expected=expected,
@@ -165,22 +171,6 @@ class DigitalBrain:
         )
         if abs(rpe) > self._rpe_threshold:
             self._update_memory(decision_id, rpe)
-
-    def _expected_value(self, option: str) -> float:
-        """Compute expected value for an option (placeholder)."""
-        return self._memory.get(option, 0.0) + 0.5
-
-    def _emotional_valence(self, option: str) -> float:
-        """Assign emotional valence to an option (placeholder)."""
-        return 0.0
-
-    def _select_action(self, go_scores: list[float]) -> int:
-        """Select the action with the highest Go score."""
-        return go_scores.index(max(go_scores))
-
-    def _simulate_outcome(self, action: str) -> float:
-        """Simulate the actual outcome of an action (placeholder)."""
-        return self._memory.get(action, 0.0) + 0.5
 
     def _update_memory(self, key: str, rpe: float) -> None:
         """Update the memory-value index with the new RPE."""
