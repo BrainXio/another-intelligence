@@ -27,6 +27,13 @@ from another_intelligence.knowledge import (
     KnowledgeCompiler,
     KnowledgeQuery,
 )
+from another_intelligence.mcp.client import (
+    MCPClient,
+    MCPConnection,
+    MCPRegistry,
+    MCPServerConfig,
+    StdioConnection,
+)
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
@@ -61,9 +68,12 @@ __all__ = [
     "HookType",
     "KnowledgeCompiler",
     "KnowledgeQuery",
+    "MCPClient",
+    "MCPConnection",
+    "MCPRegistry",
+    "MCPServerConfig",
     "MCPToolCalled",
     "MetricsCollector",
-    "StatuslineRenderer",
     "PermissionConfig",
     "PermissionDecision",
     "PermissionEngine",
@@ -77,5 +87,7 @@ __all__ = [
     "SessionEnd",
     "SessionStart",
     "StateMachine",
+    "StatuslineRenderer",
+    "StdioConnection",
     "Strategist",
 ]

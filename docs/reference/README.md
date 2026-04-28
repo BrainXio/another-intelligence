@@ -23,6 +23,7 @@ ______________________________________________________________________
 | `another_intelligence.permissions.engine` | Capability-based permissions engine      |
 | `another_intelligence.knowledge.compiler` | Daily log → structured articles          |
 | `another_intelligence.knowledge.query`    | Knowledge base search                    |
+| `another_intelligence.mcp.client`         | MCP client + registry + transport        |
 
 ## CLI Commands
 
