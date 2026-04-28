@@ -14,6 +14,11 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
+from another_intelligence.knowledge import (
+    Article,
+    KnowledgeCompiler,
+    KnowledgeQuery,
+)
 from another_intelligence.permissions.engine import (
     AuditLogEntry,
     Grant,
@@ -27,6 +32,7 @@ __version__ = "0.1.0"
 __all__ = [
     "__version__",
     "ActivityPhase",
+    "Article",
     "AuditLogEntry",
     "BrainEvent",
     "BrainRegionActivated",
@@ -34,6 +40,8 @@ __all__ = [
     "ContextWindowChanged",
     "DigitalBrain",
     "Grant",
+    "KnowledgeCompiler",
+    "KnowledgeQuery",
     "MCPToolCalled",
     "PermissionConfig",
     "PermissionDecision",
