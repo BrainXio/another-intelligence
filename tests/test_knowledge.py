@@ -60,12 +60,10 @@ class TestKnowledgeCompiler:
         source = tmp_path / "daily"
         source.mkdir()
         (source / "2026-04-18.md").write_text(
-            "## Concepts\n"
-            "- [[concepts/ambiguous-command-resolution]] — First description\n"
+            "## Concepts\n- [[concepts/ambiguous-command-resolution]] — First description\n"
         )
         (source / "2026-04-19.md").write_text(
-            "## Concepts\n"
-            "- [[concepts/ambiguous-command-resolution]] — Updated description\n"
+            "## Concepts\n- [[concepts/ambiguous-command-resolution]] — Updated description\n"
         )
         output = tmp_path / "knowledge"
         compiler = KnowledgeCompiler(source_dir=source, output_dir=output)
@@ -99,8 +97,7 @@ class TestKnowledgeCompiler:
         source = tmp_path / "daily"
         source.mkdir()
         (source / "2026-04-18.md").write_text(
-            "## Concepts\n"
-            "Some plain text entry without a wiki link\n"
+            "## Concepts\nSome plain text entry without a wiki link\n"
         )
         output = tmp_path / "knowledge"
         compiler = KnowledgeCompiler(source_dir=source, output_dir=output)
@@ -120,51 +117,69 @@ class TestKnowledgeQuery:
         assert results == []
 
     def test_search_by_keyword(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id="foo", type="concept", title="Foo", description="Foo is great"),
-            Article(id="bar", type="concept", title="Bar", description="Bar is nice"),
-        ])
+        kq = self._build_query(
+            tmp_path,
+            [
+                Article(id="foo", type="concept", title="Foo", description="Foo is great"),
+                Article(id="bar", type="concept", title="Bar", description="Bar is nice"),
+            ],
+        )
         results = kq.search("foo")
         assert len(results) == 1
         assert results[0]["id"] == "foo"
 
     def test_search_no_match(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id="foo", type="concept", title="Foo", description="Foo is great"),
-        ])
+        kq = self._build_query(
+            tmp_path,
+            [
+                Article(id="foo", type="concept", title="Foo", description="Foo is great"),
+            ],
+        )
         results = kq.search("zzzz")
         assert results == []
 
     def test_search_empty_query_returns_all(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id="foo", type="concept", title="Foo", description="Foo is great"),
-            Article(id="bar", type="mechanism", title="Bar", description="Bar is nice"),
-        ])
+        kq = self._build_query(
+            tmp_path,
+            [
+                Article(id="foo", type="concept", title="Foo", description="Foo is great"),
+                Article(id="bar", type="mechanism", title="Bar", description="Bar is nice"),
+            ],
+        )
         results = kq.search("")
         assert len(results) == 2
 
     def test_filter_by_type(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id="foo", type="concept", title="Foo"),
-            Article(id="bar", type="mechanism", title="Bar"),
-        ])
+        kq = self._build_query(
+            tmp_path,
+            [
+                Article(id="foo", type="concept", title="Foo"),
+                Article(id="bar", type="mechanism", title="Bar"),
+            ],
+        )
         results = kq.search("", type="mechanism")
         assert len(results) == 1
         assert results[0]["id"] == "bar"
 
     def test_filter_by_tag(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id="foo", type="concept", title="Foo", tags=["security"]),
-            Article(id="bar", type="concept", title="Bar", tags=["performance"]),
-        ])
+        kq = self._build_query(
+            tmp_path,
+            [
+                Article(id="foo", type="concept", title="Foo", tags=["security"]),
+                Article(id="bar", type="concept", title="Bar", tags=["performance"]),
+            ],
+        )
         results = kq.search("", tag="security")
         assert len(results) == 1
         assert results[0]["id"] == "foo"
 
     def test_get_by_id(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id="foo", type="concept", title="Foo"),
-        ])
+        kq = self._build_query(
+            tmp_path,
+            [
+                Article(id="foo", type="concept", title="Foo"),
+            ],
+        )
         article = kq.get("foo")
         assert article is not None
         assert article["id"] == "foo"
@@ -174,10 +189,9 @@ class TestKnowledgeQuery:
         assert kq.get("missing") is None
 
     def test_limit(self, tmp_path: Path):
-        kq = self._build_query(tmp_path, [
-            Article(id=f"a{i}", type="concept", title=f"A{i}")
-            for i in range(25)
-        ])
+        kq = self._build_query(
+            tmp_path, [Article(id=f"a{i}", type="concept", title=f"A{i}") for i in range(25)]
+        )
         results = kq.search("")
         assert len(results) == 20
 
@@ -189,5 +203,6 @@ class TestKnowledgeQuery:
         with articles_path.open("w", encoding="utf-8") as fh:
             for article in articles:
                 import json
+
                 fh.write(json.dumps(article.to_dict()) + "\n")
         return KnowledgeQuery(knowledge_dir=knowledge_dir)
