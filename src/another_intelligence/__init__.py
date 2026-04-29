@@ -14,7 +14,10 @@ from another_intelligence.events import (
     SessionEnd,
     SessionStart,
 )
-from another_intelligence.executor import Evaluation, Executor
+from another_intelligence.executor import (
+    Evaluation,
+    Executor,
+)
 from another_intelligence.hooks import (
     HookConfig,
     HookRegistry,
@@ -27,71 +30,104 @@ from another_intelligence.knowledge import (
     KnowledgeCompiler,
     KnowledgeQuery,
 )
-from another_intelligence.mcp.client import (
+from another_intelligence.mcp import (
     MCPClient,
     MCPConnection,
     MCPRegistry,
     MCPServerConfig,
     StdioConnection,
 )
-from another_intelligence.memory.value_index import MemoryValueIndex
+from another_intelligence.memory import (
+    MemoryValueIndex,
+    PreferencePair,
+)
 from another_intelligence.metrics import MetricsCollector
-from another_intelligence.permissions.engine import (
+from another_intelligence.models import (
+    ChatMessage,
+    ChatRequest,
+    GenerateRequest,
+    ModelInfo,
+    ModelResolver,
+    OllamaClient,
+    ResolvedModel,
+)
+from another_intelligence.permissions import (
     AuditLogEntry,
     Grant,
     PermissionConfig,
     PermissionDecision,
     PermissionEngine,
 )
-from another_intelligence.reflex import Reflex, Selection
-from another_intelligence.rpe import RPEEngine
-from another_intelligence.state import ActivityPhase, StateMachine
+from another_intelligence.reflex import (
+    Reflex,
+    Selection,
+)
+from another_intelligence.rpe import (
+    RPEEngine,
+    RPEEntry,
+)
+from another_intelligence.state import (
+    ActivityPhase,
+    StateMachine,
+)
 from another_intelligence.statusline import StatuslineRenderer
-from another_intelligence.strategist import Proposal, Strategist
+from another_intelligence.strategist import (
+    Proposal,
+    Strategist,
+)
 
 __version__ = "0.1.0"
 __all__ = [
     "__version__",
-    "ActivityPhase",
-    "Article",
-    "AuditLogEntry",
+    "DigitalBrain",
+    "ContextWindow",
     "BrainEvent",
     "BrainRegionActivated",
-    "ContextWindow",
     "ContextWindowChanged",
-    "DigitalBrain",
+    "MCPToolCalled",
+    "PermissionRequested",
+    "PostToolUse",
+    "PreToolUse",
+    "RPEUpdated",
+    "SessionEnd",
+    "SessionStart",
     "Evaluation",
     "Executor",
-    "Grant",
     "HookConfig",
     "HookRegistry",
     "HookResult",
     "HookRunner",
     "HookType",
+    "Article",
     "KnowledgeCompiler",
     "KnowledgeQuery",
     "MCPClient",
     "MCPConnection",
     "MCPRegistry",
     "MCPServerConfig",
-    "MCPToolCalled",
+    "StdioConnection",
     "MemoryValueIndex",
+    "PreferencePair",
     "MetricsCollector",
+    "ChatMessage",
+    "ChatRequest",
+    "GenerateRequest",
+    "ModelInfo",
+    "OllamaClient",
+    "ModelResolver",
+    "ResolvedModel",
+    "AuditLogEntry",
+    "Grant",
     "PermissionConfig",
     "PermissionDecision",
     "PermissionEngine",
-    "PermissionRequested",
-    "PostToolUse",
-    "PreToolUse",
-    "Proposal",
-    "RPEEngine",
-    "RPEUpdated",
     "Reflex",
     "Selection",
-    "SessionEnd",
-    "SessionStart",
+    "RPEEntry",
+    "RPEEngine",
+    "ActivityPhase",
     "StateMachine",
     "StatuslineRenderer",
-    "StdioConnection",
+    "Proposal",
     "Strategist",
 ]

@@ -5,6 +5,19 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
+__all__ = [
+    "BrainEvent",
+    "BrainRegionActivated",
+    "ContextWindowChanged",
+    "MCPToolCalled",
+    "PermissionRequested",
+    "PostToolUse",
+    "PreToolUse",
+    "RPEUpdated",
+    "SessionEnd",
+    "SessionStart",
+]
+
 
 class BrainEvent(BaseModel):
     """Base class for all brain events."""

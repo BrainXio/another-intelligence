@@ -2,6 +2,8 @@
 
 from enum import Enum
 
+__all__ = ["ActivityPhase", "StateMachine"]
+
 
 class ActivityPhase(Enum):
     """Phases of the PPAC decision loop."""

@@ -2,6 +2,8 @@
 
 from another_intelligence.events import ContextWindowChanged
 
+__all__ = ["ContextWindow"]
+
 
 class ContextWindow:
     """Tracks token utilization and emits change events."""

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+__all__ = ["Proposal", "Strategist"]
+
 
 @dataclass
 class Proposal:
