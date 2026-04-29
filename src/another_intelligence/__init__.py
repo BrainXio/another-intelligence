@@ -47,8 +47,8 @@ from another_intelligence.models import (
     ChatRequest,
     GenerateRequest,
     ModelInfo,
-    ModelResolver,
     OllamaClient,
+    ModelResolver,
     ResolvedModel,
 )
 from another_intelligence.permissions import (
@@ -58,13 +58,17 @@ from another_intelligence.permissions import (
     PermissionDecision,
     PermissionEngine,
 )
+from another_intelligence.plugins import (
+    Plugin,
+    PluginLoader,
+)
 from another_intelligence.reflex import (
     Reflex,
     Selection,
 )
 from another_intelligence.rpe import (
-    RPEEngine,
     RPEEntry,
+    RPEEngine,
 )
 from another_intelligence.state import (
     ActivityPhase,
@@ -121,6 +125,8 @@ __all__ = [
     "PermissionConfig",
     "PermissionDecision",
     "PermissionEngine",
+    "Plugin",
+    "PluginLoader",
     "Reflex",
     "Selection",
     "RPEEntry",
