@@ -25,6 +25,26 @@ ______________________________________________________________________
 | `another_intelligence.knowledge.query`    | Knowledge base search                    |
 | `another_intelligence.mcp.client`         | MCP client + registry + transport        |
 
+## Declarative Permissions Format
+
+`settings.json` supports human-friendly allow / ask / deny / escalation rules:
+
+```json
+{
+  "permissions": {
+    "allow": ["mcp.fs.read", "mcp.memory.*"],
+    "ask": ["mcp.fs.write"],
+    "deny": ["mcp.fs.delete"],
+    "escalation": ["mcp.*.delete"]
+  }
+}
+```
+
+- `allow` — capabilities granted without confirmation
+- `ask` — capabilities requiring confirmation
+- `deny` — explicit deny rules (checked before grants)
+- `escalation` — promotes allow to ask for high-impact operations
+
 ## CLI Commands
 
 | Command                 | Description                          | Status      |
@@ -39,6 +59,7 @@ ______________________________________________________________________
 | `ai status`             | Show current brain state             | Implemented |
 | `ai status --extended`  | Show state + full event history      | Implemented |
 | `ai permissions check`  | Evaluate a capability against policy | Implemented |
+| `ai permissions check --config` | Evaluate with custom settings.json | Implemented |
 
 ## Exported Classes
 
