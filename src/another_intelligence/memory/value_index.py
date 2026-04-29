@@ -40,6 +40,10 @@ class MemoryValueIndex:
         """Return the learned value for *key*, defaulting to ``0.0``."""
         return self._values.get(key, 0.0)
 
+    def __setitem__(self, key: str, value: float) -> None:
+        """Set a value directly (for state hydration)."""
+        self._values[key] = value
+
     def update(self, key: str, rpe: float) -> float:
         """Apply the delta rule and return the new value.
 

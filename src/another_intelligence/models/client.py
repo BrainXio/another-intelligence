@@ -237,7 +237,7 @@ class OllamaClient:
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         try:
-            return self._client.chat(**kwargs)
+            return self._client.chat(**kwargs)  # type: ignore[no-any-return]
         except ollama.ResponseError as exc:
             raise RuntimeError(f"Chat request failed: {exc}") from exc
 
@@ -255,6 +255,6 @@ class OllamaClient:
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         try:
-            return self._client.generate(**kwargs)
+            return self._client.generate(**kwargs)  # type: ignore[no-any-return]
         except ollama.ResponseError as exc:
             raise RuntimeError(f"Generate request failed: {exc}") from exc

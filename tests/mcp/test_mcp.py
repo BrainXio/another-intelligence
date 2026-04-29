@@ -24,6 +24,102 @@ from another_intelligence.permissions.engine import (
 )
 
 
+class TestMCPRegistryDisciplineServers:
+    """Registry discovery of ADHD, OCD, ASD discipline servers."""
+
+    def test_loads_discipline_servers_from_config(self, tmp_path: Path):
+        data = {
+            "servers": [
+                {
+                    "name": "adhd",
+                    "type": "stdio",
+                    "command": "uv",
+                    "args": ["run", "adhd-mcp"],
+                    "permissions": ["adhd.*"],
+                },
+                {
+                    "name": "asd",
+                    "type": "stdio",
+                    "command": "uv",
+                    "args": ["run", "asd-mcp"],
+                    "permissions": ["asd.*"],
+                },
+                {
+                    "name": "ocd",
+                    "type": "stdio",
+                    "command": "uv",
+                    "args": ["run", "ocd-mcp"],
+                    "permissions": ["ocd.*"],
+                },
+            ]
+        }
+        path = tmp_path / "mcp.json"
+        path.write_text(json.dumps(data))
+        reg = MCPRegistry(path)
+        assert len(reg) == 3
+        assert sorted(reg.list_servers()) == ["adhd", "asd", "ocd"]
+
+    def test_each_server_has_permissions(self, tmp_path: Path):
+        data = {
+            "servers": [
+                {
+                    "name": "adhd",
+                    "command": "uv",
+                    "args": ["run", "adhd-mcp"],
+                    "permissions": ["adhd.*"],
+                },
+                {
+                    "name": "asd",
+                    "command": "uv",
+                    "args": ["run", "asd-mcp"],
+                    "permissions": ["asd.*"],
+                },
+                {
+                    "name": "ocd",
+                    "command": "uv",
+                    "args": ["run", "ocd-mcp"],
+                    "permissions": ["ocd.*"],
+                },
+            ]
+        }
+        path = tmp_path / "mcp.json"
+        path.write_text(json.dumps(data))
+        reg = MCPRegistry(path)
+        for name in ["adhd", "asd", "ocd"]:
+            config = reg.get(name)
+            assert config is not None
+            assert len(config.permissions) > 0
+
+    def test_resolve_path_discovers_project_config(self, tmp_path: Path, monkeypatch):
+        """_resolve_path should find .brainxio/mcp.json in the project dir."""
+        import os
+
+        from another_intelligence.mcp.client import MCPRegistry as Reg
+
+        brainxio_dir = tmp_path / ".brainxio"
+        brainxio_dir.mkdir()
+        config_path = brainxio_dir / "mcp.json"
+        config_path.write_text(
+            json.dumps(
+                {
+                    "servers": [
+                        {
+                            "name": "adhd",
+                            "command": "uv",
+                            "args": ["run", "adhd-mcp"],
+                            "permissions": ["adhd.*"],
+                        }
+                    ]
+                }
+            )
+        )
+
+        monkeypatch.setattr(os, "getcwd", lambda: str(tmp_path))
+        resolved = Reg._resolve_path(None)
+        assert resolved is not None
+        assert resolved.parent.name == ".brainxio"
+
+
 class TestMCPServerConfig:
     """Pydantic validation for server configuration."""
 

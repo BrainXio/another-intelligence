@@ -6,6 +6,7 @@ import json
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -23,14 +24,14 @@ class PreferencePair:
     rpe: float
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to a JSON-serialisable dictionary."""
         d = asdict(self)
         d["timestamp"] = self.timestamp.isoformat()
         return d
 
     @classmethod
-    def from_dict(cls, data: dict) -> PreferencePair:
+    def from_dict(cls, data: dict[str, Any]) -> PreferencePair:
         """Reconstruct a *PreferencePair* from a dictionary."""
         timestamp = datetime.fromisoformat(data["timestamp"])
         return cls(

@@ -46,7 +46,8 @@ class BrainStore:
         """Load persisted brain state or return defaults."""
         if self._state_path.exists():
             with self._state_path.open("r", encoding="utf-8") as f:
-                return json.load(f)
+                result: dict[str, Any] = json.load(f)
+                return result
         return {
             "session_id": None,
             "memory": {},
@@ -139,7 +140,7 @@ def brain_decide(ctx: click.Context, query: str, option: tuple[str, ...]) -> Non
     digital_brain = DigitalBrain()
     # Hydrate memory from store
     for key, value in state.get("memory", {}).items():
-        digital_brain._memory[key] = value  # noqa: SLF001
+        digital_brain.memory_index[key] = value
 
     options = list(option) if option else None
     result = digital_brain.decide(query, options=options)

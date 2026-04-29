@@ -16,7 +16,7 @@ class Selection:
     expected_outcome: float
     accumulated_evidence: list[float]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not (0 <= self.chosen_idx < len(self.accumulated_evidence)):
             raise ValueError("chosen_idx is out of range")
 
