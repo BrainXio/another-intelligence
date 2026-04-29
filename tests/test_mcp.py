@@ -52,8 +52,8 @@ class TestMCPServerConfig:
 class TestMCPRegistry:
     """Configuration loading and server registry."""
 
-    def test_empty_registry(self):
-        reg = MCPRegistry()
+    def test_empty_registry(self, tmp_path: Path):
+        reg = MCPRegistry(tmp_path / "nonexistent.json")
         assert reg.list_servers() == []
         assert len(reg) == 0
         assert "fs" not in reg
