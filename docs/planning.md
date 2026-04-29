@@ -1,6 +1,6 @@
 ______________________________________________________________________
 
-## title: "Project Planning" aliases: ["Planning"] tags: [planning, roadmap] created: 2026-04-28 updated: 2026-04-28
+## title: "Project Planning" aliases: ["Planning"] tags: [planning, roadmap] created: 2026-04-28 updated: 2026-04-29
 
 # Planning
 
@@ -16,7 +16,7 @@ ______________________________________________________________________
 - [x] MCP client
 - [x] Hook system implementation
 - [x] RPE learning + memory-value index
-- [ ] Plugin loader
+- [x] Plugin loader
 
 ### Observability
 
@@ -29,13 +29,13 @@ ______________________________________________________________________
 
 - [x] pytest suite with coverage gates
 - [x] ruff linting
-- [ ] CI pipeline (GitHub Actions)
+- [x] CI pipeline (GitHub Actions)
 - [x] Full CLI command suite
 - [ ] Documentation sync automation
 
 ## In Progress
 
-- Plugin loader and display backends
+- Display backends
 
 ## Done
 

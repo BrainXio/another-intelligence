@@ -58,6 +58,10 @@ from another_intelligence.permissions import (
     PermissionDecision,
     PermissionEngine,
 )
+from another_intelligence.plugins import (
+    Plugin,
+    PluginLoader,
+)
 from another_intelligence.reflex import (
     Reflex,
     Selection,
@@ -121,6 +125,8 @@ __all__ = [
     "PermissionConfig",
     "PermissionDecision",
     "PermissionEngine",
+    "Plugin",
+    "PluginLoader",
     "Reflex",
     "Selection",
     "RPEEntry",
