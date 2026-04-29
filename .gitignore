@@ -104,3 +104,6 @@ ehthumbs.db
 # Progress / checkpoint files
 PROGRESS.md.bak
 *.checkpoint
+
+# Message bus (multi-agent coordination)
+.claude/message_bus*.jsonl

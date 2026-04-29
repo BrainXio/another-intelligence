@@ -27,11 +27,9 @@ def _discover_entry_points() -> list[type[Plugin]]:
         return plugins
 
     eps = entry_points()
-    select = getattr(eps, "select", None)
-    if select is not None:
-        group = select(group="another_intelligence.plugins")
-    else:
-        group = eps.get("another_intelligence.plugins", ())
+    group = getattr(eps, "select", lambda **kw: eps.get(kw.get("group"), ()))(
+        group="another_intelligence.plugins"
+    )
     for ep in group:
         try:
             cls = ep.load()
@@ -118,9 +116,8 @@ class PluginLoader:
         """
         self._plugins = []
         self._capability_map = {}
-        if not self._plugin_classes:
-            self.discover()
-        for cls in self._plugin_classes:
+        classes = self._plugin_classes if self._plugin_classes else self.discover()
+        for cls in classes:
             instance = cls()
             try:
                 await instance.load(brain)
@@ -184,10 +181,12 @@ class PluginLoader:
                     changed = True
         return changed
 
-    def reload(self, brain: Any) -> None:
+    async def reload(self, brain: Any) -> None:
         """Unload all plugins and re-discover / reload them.
 
         Args:
             brain: The DigitalBrain instance.
         """
+        await self.unload_all()
         self.discover()
+        await self.load_all(brain)
