@@ -387,3 +387,90 @@ class TestEdgeCases:
         engine.register_hook(none_hook)
         result = engine.check("filesystem.read")
         assert result.decision == "allow"
+
+
+class TestDeclarativeRules:
+    """Human-friendly ``allow`` / ``ask`` / ``deny`` / ``escalation`` format."""
+
+    def test_allow_list_grants_without_confirmation(self, tmp_path: Path) -> None:
+        settings = {
+            "permissions": {
+                "allow": ["filesystem.read", "mcp.fs.list"],
+                "deny": [],
+            }
+        }
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(settings))
+        engine = PermissionEngine(path)
+        assert engine.check("filesystem.read").decision == "allow"
+        assert engine.check("mcp.fs.list").decision == "allow"
+        assert engine.check("filesystem.write").decision == "deny"
+
+    def test_ask_list_requires_confirmation(self, tmp_path: Path) -> None:
+        settings = {
+            "permissions": {
+                "allow": ["filesystem.read"],
+                "ask": ["filesystem.write"],
+            }
+        }
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(settings))
+        engine = PermissionEngine(path)
+        assert engine.check("filesystem.read").decision == "allow"
+        assert engine.check("filesystem.write").decision == "ask"
+
+    def test_deny_list_blocks_explicitly(self, tmp_path: Path) -> None:
+        settings = {
+            "permissions": {
+                "allow": ["filesystem.*"],
+                "deny": ["filesystem.delete"],
+            }
+        }
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(settings))
+        engine = PermissionEngine(path)
+        assert engine.check("filesystem.read").decision == "allow"
+        assert engine.check("filesystem.delete").decision == "deny"
+
+    def test_escalation_list_promotes_to_ask(self, tmp_path: Path) -> None:
+        settings = {
+            "permissions": {
+                "allow": ["mcp.fs.*"],
+                "escalation": ["mcp.fs.delete"],
+            }
+        }
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(settings))
+        engine = PermissionEngine(path)
+        assert engine.check("mcp.fs.read").decision == "allow"
+        assert engine.check("mcp.fs.delete").decision == "ask"
+
+    def test_load_rules_at_runtime(self, tmp_path: Path) -> None:
+        engine = PermissionEngine()
+        assert engine.check("filesystem.read").decision == "deny"
+
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps({"permissions": {"allow": ["filesystem.read"]}}))
+        engine.load_rules(path)
+        assert engine.check("filesystem.read").decision == "allow"
+
+    def test_combined_declarative_rules(self, tmp_path: Path) -> None:
+        settings = {
+            "permissions": {
+                "allow": ["mcp.memory.read", "mcp.thinking.use"],
+                "ask": ["mcp.fs.write"],
+                "deny": ["mcp.fs.delete", "mcp.fs.execute"],
+                "escalation": ["mcp.*.delete"],
+            }
+        }
+        path = tmp_path / "settings.json"
+        path.write_text(json.dumps(settings))
+        engine = PermissionEngine(path)
+
+        assert engine.check("mcp.memory.read").decision == "allow"
+        assert engine.check("mcp.thinking.use").decision == "allow"
+        assert engine.check("mcp.fs.write").decision == "ask"
+        assert engine.check("mcp.fs.delete").decision == "deny"
+        assert engine.check("mcp.fs.execute").decision == "deny"
+        # Escalation only promotes allow → ask; unallowed capabilities stay deny
+        assert engine.check("mcp.memory.delete").decision == "deny"
