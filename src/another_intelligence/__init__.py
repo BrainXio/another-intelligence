@@ -47,8 +47,8 @@ from another_intelligence.models import (
     ChatRequest,
     GenerateRequest,
     ModelInfo,
-    ModelResolver,
     OllamaClient,
+    ModelResolver,
     ResolvedModel,
 )
 from another_intelligence.permissions import (
@@ -67,8 +67,8 @@ from another_intelligence.reflex import (
     Selection,
 )
 from another_intelligence.rpe import (
-    RPEEngine,
     RPEEntry,
+    RPEEngine,
 )
 from another_intelligence.state import (
     ActivityPhase,
