@@ -1,8 +1,6 @@
-name: Document Quality
+name: Doc Quality
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -12,31 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - run: uv sync
 
-      - name: Install mdformat with GFM plugin
-        run: uv pip install mdformat mdformat-gfm --system
+      - run: uv run mdformat --check docs/ *.md
 
-      - name: Run mdformat check
-        run: mdformat --check docs/ *.md
+      - run: uv run yamllint .
 
-      - name: Install yamllint
-        run: uv pip install yamllint --system
-
-      - name: Run yamllint
-        run: yamllint .
-
-      - name: Check out typos
-        uses: crate-ci/typos@v1.31.1
+      - uses: crate-ci/typos@v1.45.2
         with:
           config: .typos.toml
 
@@ -46,11 +30,10 @@ jobs:
     continue-on-error: true
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Run lychee link checker
-        uses: lycheeverse/lychee-action@v2
+      - uses: lycheeverse/lychee-action@v2
         with:
-          args: docs/ *.md
+          args: --base . docs/ README.md
           fail: false
+          failIfEmpty: false

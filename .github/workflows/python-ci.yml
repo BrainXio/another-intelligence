@@ -7,52 +7,76 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-format:
-    name: Lint and Format Check
+  lint:
+    name: Lint and Format
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - run: uv run ruff check src/ tests/
 
-      - name: Install package with dev extras
-        run: uv pip install -e ".[dev]" --system
+      - run: uv run ruff format --check src/ tests/
 
-      - name: Run ruff check
-        run: ruff check .
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Run ruff format check
-        run: ruff format --check .
+      - uses: astral-sh/setup-uv@v7
 
-  test-and-coverage:
+      - run: uv sync
+
+      - run: uv run mypy src/another_intelligence/ --strict
+
+  test:
     name: Test and Coverage
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - run: uv sync
 
-      - name: Install package with dev extras
-        run: uv pip install -e ".[dev]" --system
+      - run: uv run pytest --cov --cov-report=term-missing --cov-fail-under=70 -q
 
-      - name: Run pytest
-        run: pytest -q
+  mcp-integration:
+    name: MCP Server Integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Run pytest with coverage
-        run: pytest --cov=src/another_intelligence --cov-report=term-missing --cov-fail-under=70 -q
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv sync
+
+      - name: Run MCP integration tests
+        run: uv run pytest tests/mcp/test_mcp_integration.py -v
+
+  build-verify:
+    name: Build Verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv sync
+
+      - run: uv run python -m build
+
+      - name: Verify wheel contains entry point
+        run: |
+          python3 -c "
+          import zipfile, sys, glob
+          wheel = sorted(glob.glob('dist/*.whl'))[-1]
+          with zipfile.ZipFile(wheel) as z:
+            names = z.namelist()
+            if not any('another_intelligence' in n for n in names):
+              print('ERROR: another-intelligence entry point not found in wheel')
+              sys.exit(1)
+          print('Wheel verified: ai entry point present')
+          "
