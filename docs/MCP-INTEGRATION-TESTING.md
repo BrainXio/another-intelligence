@@ -20,11 +20,11 @@ If missing, install Node.js via your system package manager or `nvm`.
 
 The integration suite uses three official reference servers from `@modelcontextprotocol`:
 
-| Server | Package | Purpose |
-|---|---|---|
-| **fs** | `server-filesystem` | Read files from a scoped directory |
-| **memory** | `server-memory` | Key-value memory store |
-| **thinking** | `server-sequential-thinking` | Step-by-step reasoning |
+| Server       | Package                      | Purpose                            |
+| ------------ | ---------------------------- | ---------------------------------- |
+| **fs**       | `server-filesystem`          | Read files from a scoped directory |
+| **memory**   | `server-memory`              | Key-value memory store             |
+| **thinking** | `server-sequential-thinking` | Step-by-step reasoning             |
 
 These servers are installed on-demand via `npx -y` — no manual `npm install` required.
 
@@ -48,21 +48,21 @@ Tests are **automatically skipped** if `npx` is not found on PATH.
 
 ### `TestStdioConnection`
 
-| Test | Validates |
-|---|---|
+| Test                          | Validates                                                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `test_connect_and_list_tools` | `StdioConnection.connect()` initializes JSON-RPC session and `list_tools()` returns non-empty tool definitions |
-| `test_read_file` | `call_tool("read_file", {...})` reads a known temp file and returns its content |
+| `test_read_file`              | `call_tool("read_file", {...})` reads a known temp file and returns its content                                |
 
 ### `TestMCPClientIntegration`
 
-| Test | Validates |
-|---|---|
-| `test_connect_all` | `MCPClient.connect_all()` connects to every server in the registry |
-| `test_list_tools_via_client` | Tool caching and discovery through the client API |
-| `test_call_tool_with_permissions` | Permissive `PermissionEngine` allows `mcp.fs.read_file` |
-| `test_call_tool_denied` | Deny-all `PermissionEngine` blocks execution with correct error |
-| `test_hooks_fire` | `PreToolUse`, `PostToolUse`, and `MCPToolCalled` events are emitted |
-| `test_tool_cache` | Repeated `list_tools()` calls use the in-memory cache |
+| Test                              | Validates                                                           |
+| --------------------------------- | ------------------------------------------------------------------- |
+| `test_connect_all`                | `MCPClient.connect_all()` connects to every server in the registry  |
+| `test_list_tools_via_client`      | Tool caching and discovery through the client API                   |
+| `test_call_tool_with_permissions` | Permissive `PermissionEngine` allows `mcp.fs.read_file`             |
+| `test_call_tool_denied`           | Deny-all `PermissionEngine` blocks execution with correct error     |
+| `test_hooks_fire`                 | `PreToolUse`, `PostToolUse`, and `MCPToolCalled` events are emitted |
+| `test_tool_cache`                 | Repeated `list_tools()` calls use the in-memory cache               |
 
 ## Test Architecture
 

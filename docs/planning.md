@@ -14,35 +14,40 @@ ______________________________________________________________________
 - [x] Capability-based permissions engine
 - [x] Knowledge pipeline (`compile`, `query`)
 - [x] MCP client
-- [ ] Hook system implementation
-- [ ] RPE learning + memory-value index
+- [x] Hook system implementation
+- [x] RPE learning + memory-value index
 - [ ] Plugin loader
 
 ### Observability
 
-- [ ] Context window tracking API
-- [ ] System metrics collection
-- [ ] Statusline renderer
-- [ ] Event log persistence
+- [x] Context window tracking API
+- [x] System metrics collection
+- [x] Statusline renderer
+- [x] Event log persistence
 
 ### Tooling
 
 - [x] pytest suite with coverage gates
 - [x] ruff linting
-- [x] CI pipeline (GitHub Actions)
-- [ ] Full CLI command suite
+- [ ] CI pipeline (GitHub Actions)
+- [x] Full CLI command suite
 - [ ] Documentation sync automation
 
 ## In Progress
 
-- Knowledge pipeline testing and CLI integration
+- Plugin loader and display backends
 
 ## Done
 
 - Project skeleton + pyproject.toml
-- CI pipeline
-- Permissions engine
+- Permissions engine + declarative rules
 - Ollama client + resolver
 - DigitalBrain orchestrator
 - Knowledge compiler + query
-- MCP client + registry + transport
+- MCP client + registry + transport + integration tests
+- Hook system (registry, runner, typed events)
+- RPE engine + memory-value index + preference pair export
+- Statusline renderer + metrics collector
+- Context window tracker
+- Test suite restructured to mirror `src/` layout
+- Multi-agent orchestration rules + scripts

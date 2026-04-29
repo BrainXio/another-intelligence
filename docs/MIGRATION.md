@@ -1,6 +1,6 @@
 ______________________________________________________________________
 
-## title: "From Prototype to Clean Core" version: "0.1" status: draft updated: "2026-04-28"
+## title: "From Prototype to Clean Core" version: "0.1" status: draft updated: "2026-04-29"
 
 # MIGRATION.md — From Prototype to Clean Core
 
@@ -25,7 +25,7 @@ ______________________________________________________________________
 | -------------------------------------- | ------------------------------------------------------ | -------------------------------------- |
 | PPAC Loop in `core/loop.py`            | `DigitalBrain.decide()` + strict PPAC                  | Re-implement from ARCHITECTURE.md spec |
 | Cerebro Strategist / Executor / Reflex | Same names under `Another-Intelligence/*`              | New Ollama ModelFiles + agents         |
-| RPE computation                        | `rpe.py` + memory-value index                          | Fresh implementation with tests        |
+| RPE computation                        | `rpe/` subpackage + memory-value index                 | Fresh implementation with tests        |
 | Animated eyes + statusline             | Plugin system + event-driven DisplayController         | Core events → plugins                  |
 | Claude hooks (session-start etc.)      | Typed Hook System (HOOKS.md)                           | New registration & execution model     |
 | Knowledge base compilation             | `ai compile` + structured articles                     | New pipeline using daily logs          |
