@@ -162,7 +162,9 @@ class StdioConnection(MCPConnection):
         self._write_lock = asyncio.Lock()
 
     async def connect(self) -> None:
-        env = {**dict(asyncio.os.environ), **(self._config.env or {})}
+        import os
+
+        env = {**dict(os.environ), **(self._config.env or {})}
         self._proc = await asyncio.create_subprocess_exec(
             self._config.command,
             *self._config.args,
@@ -182,7 +184,7 @@ class StdioConnection(MCPConnection):
                 "clientInfo": {"name": "another-intelligence", "version": "0.1.0"},
             },
         )
-        await self.send_request("notifications/initialized")
+        await self.send_notification("notifications/initialized")
 
     async def disconnect(self) -> None:
         self._connected = False
@@ -255,6 +257,20 @@ class StdioConnection(MCPConnection):
         except TimeoutError:
             _JsonRpcState.reject(req_id, TimeoutError(f"Request {method} timed out"))
             raise
+
+    async def send_notification(self, method: str, params: dict[str, Any] | None = None) -> None:
+        """Send a JSON-RPC notification (no response expected)."""
+        if not self._connected or self._proc is None or self._proc.stdin is None:
+            raise RuntimeError("Connection not established")
+
+        request: dict[str, Any] = {"jsonrpc": "2.0", "method": method}
+        if params is not None:
+            request["params"] = params
+
+        payload = json.dumps(request) + "\n"
+        async with self._write_lock:
+            self._proc.stdin.write(payload.encode("utf-8"))
+            await self._proc.stdin.drain()
 
 
 class MCPClient:

@@ -139,3 +139,6 @@ class MetricsCollector:
         if self._log_file.exists():
             self._log_file.unlink()
         self._ensure_log_dir()
+
+
+__all__ = ["MetricsCollector"]

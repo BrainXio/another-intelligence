@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Self
 
+__all__ = ["RPEEntry", "RPEEngine"]
+
 
 @dataclass(frozen=True)
 class RPEEntry:

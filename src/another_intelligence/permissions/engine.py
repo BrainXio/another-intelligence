@@ -94,7 +94,51 @@ class PermissionEngine:
         with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
         permissions = data.get("permissions", {})
-        return PermissionConfig(**permissions)
+        return self._normalize_declarative_rules(permissions)
+
+    @staticmethod
+    def _normalize_declarative_rules(raw: dict[str, Any]) -> PermissionConfig:
+        """Support both internal format and human-friendly declarative format.
+
+        Declarative format::
+
+            {
+                "allow": ["mcp.fs.read", "mcp.memory.*"],
+                "ask": ["mcp.fs.write"],
+                "deny": ["mcp.fs.delete"],
+                "escalation": ["mcp.*.delete"]
+            }
+
+        Internal format (pass-through)::
+
+            {
+                "default_policy": "deny",
+                "grants": [...],
+                "deny_rules": [...],
+                "escalation": {...}
+            }
+        """
+        # Detect declarative format by presence of allow/ask/deny keys
+        if any(k in raw for k in ("allow", "ask", "deny")):
+            grants: list[dict[str, Any]] = []
+            for cap in raw.get("allow", []):
+                grants.append({"capability": cap, "require_confirmation": False})
+            for cap in raw.get("ask", []):
+                grants.append({"capability": cap, "require_confirmation": True})
+            return PermissionConfig(
+                default_policy="deny",
+                grants=grants,
+                deny_rules=raw.get("deny", []),
+                escalation=Escalation(
+                    high_impact=raw.get("escalation", []),
+                    require_user_approval=True,
+                ),
+            )
+        return PermissionConfig(**raw)
+
+    def load_rules(self, path: Path | str) -> None:
+        """Reload rules from a declarative settings.json file at runtime."""
+        self._config = self._load_config(path)
 
     @staticmethod
     def _parse_capability(capability: str) -> tuple[str, str, str | None]:

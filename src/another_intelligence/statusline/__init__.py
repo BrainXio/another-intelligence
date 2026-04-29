@@ -7,6 +7,8 @@ from typing import Any
 from another_intelligence.metrics import MetricsCollector
 from another_intelligence.state import StateMachine
 
+__all__ = ["StatuslineRenderer"]
+
 
 class StatuslineRenderer:
     """Render a human-readable status line from current brain metrics.

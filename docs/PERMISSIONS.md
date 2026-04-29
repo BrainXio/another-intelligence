@@ -1,6 +1,6 @@
 ______________________________________________________________________
 
-## title: "Capability-Based Permissions System" version: "0.1" status: draft updated: "2026-04-28"
+## title: "Capability-Based Permissions System" version: "0.1" status: draft updated: "2026-04-29"
 
 # PERMISSIONS.md — Capability-Based Permissions System
 
@@ -39,6 +39,30 @@ ______________________________________________________________________
 
 ## 3. Configuration (`settings.json`)
 
+### Declarative Format (Recommended)
+
+```json
+{
+  "permissions": {
+    "allow": ["mcp.fs.read", "mcp.memory.*"],
+    "ask": ["mcp.fs.write"],
+    "deny": ["mcp.fs.delete", "mcp.fs.execute"],
+    "escalation": ["mcp.*.delete"]
+  }
+}
+```
+
+| Key          | Description                                                      |
+| ------------ | ---------------------------------------------------------------- |
+| `allow`      | Capabilities granted without confirmation                        |
+| `ask`        | Capabilities requiring user confirmation                         |
+| `deny`       | Explicit deny rules (checked before grants, hooks cannot bypass) |
+| `escalation` | Promotes `allow` to `ask` for high-impact operations             |
+
+### Internal Format
+
+For advanced use cases, the full internal format is also supported:
+
 ```json
 {
   "permissions": {
@@ -55,6 +79,7 @@ ______________________________________________________________________
         "require_confirmation": true
       }
     ],
+    "deny_rules": ["filesystem.delete"],
     "escalation": {
       "high_impact": ["filesystem.write:*", "git.push", "hardware.*"],
       "require_user_approval": true
@@ -114,7 +139,10 @@ ______________________________________________________________________
 
 ```bash
 # Test a permission decision
-ai permissions check filesystem.write:/tmp --explain
+ai permissions check filesystem.write:/tmp
+
+# Evaluate against a custom settings file
+ai permissions check filesystem.write:/tmp --config ~/.brainxio/settings.json
 
 # Run permission test suite
 uv run pytest tests/permissions/

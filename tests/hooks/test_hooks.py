@@ -214,7 +214,7 @@ class TestHookRunner:
             HookConfig(
                 event_type="BrainRegionActivated",
                 type=HookType.PYTHON,
-                entry_point="tests.test_hooks._test_hook_callable",
+                entry_point="tests.hooks.test_hooks._test_hook_callable",
             )
         )
         event = BrainRegionActivated(region="strategist")
@@ -229,7 +229,7 @@ class TestHookRunner:
             HookConfig(
                 event_type="BrainRegionActivated",
                 type=HookType.PYTHON,
-                entry_point="tests.test_hooks._test_async_hook_callable",
+                entry_point="tests.hooks.test_hooks._test_async_hook_callable",
             )
         )
         event = BrainRegionActivated(region="executor")

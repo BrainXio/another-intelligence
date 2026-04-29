@@ -1,6 +1,6 @@
 ______________________________________________________________________
 
-## title: "Hook System Specification" version: "0.1" status: draft updated: "2026-04-28"
+## title: "Hook System Specification" version: "0.1" status: draft updated: "2026-04-29"
 
 # HOOKS.md — Hook System Specification
 
@@ -79,13 +79,19 @@ ______________________________________________________________________
 ### Python Hook (Recommended for complex logic)
 
 ```python
-from another_intelligence.hooks import HookContext, register_hook
+from another_intelligence.events import PreToolUse
+from another_intelligence.hooks import HookConfig, HookRegistry, HookType
 
-@register_hook("PreToolUse")
-async def pre_tool_guard(ctx: HookContext):
-    if ctx.payload.tool_name.startswith("dangerous:"):
-        return {"action": "deny", "reason": "Restricted tool"}
-    return {"action": "allow"}
+registry = HookRegistry()
+
+def pre_tool_guard(event: PreToolUse):
+    if event.tool_name.startswith("dangerous:"):
+        raise RuntimeError("Restricted tool")
+    return event
+
+registry.register(
+    HookConfig(event_type="PreToolUse", type=HookType.PYTHON, entry_point="my_module.pre_tool_guard")
+)
 ```
 
 ### Shell Hook (Simple & fast)
@@ -107,15 +113,21 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## 7. Built-in Hooks (Core)
+## 7. Built-in Hook Events (Core)
 
-The following hooks ship with the core package:
+The following events are emitted by the core and can be intercepted by hooks:
 
-- `session_start.py` — Injects knowledge index, rules, and tier detection.
-- `session_end.py` — Triggers flush and knowledge compilation.
-- `pre_tool_guard.py` — Default permission enforcement + logging.
-- `rpe_handler.py` — Generates training datasets on high |RPE|.
-- `statusline_updater.py` — Updates real-time status and eyes animation.
+| Event                  | Source Module                 | Trigger                             |
+| ---------------------- | ----------------------------- | ----------------------------------- |
+| `SessionStart`         | `another_intelligence.events` | Before any decision or tool use     |
+| `SessionEnd`           | `another_intelligence.events` | After session completes             |
+| `PreToolUse`           | `another_intelligence.events` | Before any tool / MCP call          |
+| `PostToolUse`          | `another_intelligence.events` | After tool / MCP call returns       |
+| `BrainRegionActivated` | `another_intelligence.events` | When a brain region starts/finishes |
+| `RPEUpdated`           | `another_intelligence.events` | After outcome recorded              |
+| `ContextWindowChanged` | `another_intelligence.events` | When context usage changes          |
+| `MCPToolCalled`        | `another_intelligence.events` | When an MCP server tool is invoked  |
+| `PermissionRequested`  | `another_intelligence.events` | When permissions engine evaluates   |
 
 ______________________________________________________________________
 
