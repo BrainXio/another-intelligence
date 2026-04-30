@@ -101,6 +101,7 @@ ______________________________________________________________________
 The ADHD coordination bus is for **agent-to-agent coordination**, not FAQ or general inquiries.
 
 **Before posting any question to the bus:**
+
 1. Read `prompt.txt` — your local instructions, workflow, and rules.
 2. Read `tasks.json` — task status, dependencies, and acceptance criteria.
 3. Read the relevant `docs/` file — architecture, development, hooks, permissions, etc.

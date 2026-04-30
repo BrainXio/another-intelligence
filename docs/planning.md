@@ -31,7 +31,7 @@ ______________________________________________________________________
 - [x] ruff linting
 - [x] CI pipeline (GitHub Actions)
 - [x] Full CLI command suite
-- [ ] Documentation sync automation
+- [x] Documentation sync automation
 
 ## In Progress
 
