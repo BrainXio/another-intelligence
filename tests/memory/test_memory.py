@@ -1,13 +1,16 @@
 """Tests for MemoryValueIndex and PreferencePair."""
 
 import json
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
+from another_intelligence.memory.pairs import PreferencePairExporter
 from another_intelligence.memory.preference_pair import PreferencePair
 from another_intelligence.memory.value_index import MemoryValueIndex
+from another_intelligence.rpe.telemetry import TelemetryRecord, TelemetryRecorder
 
 
 class TestMemoryValueIndexInit:
@@ -173,3 +176,88 @@ class TestPreferencePairSerialization:
         pair = PreferencePair(context="hello world", chosen="a", rejected=["b"], rpe=0.1)
         path = pair.write(tmp_path)
         assert "hello_world" in path.name or "hello" in path.name
+
+
+def _make_telemetry_record(
+    decision_id: str,
+    query: str = "test",
+    options: list[str] | None = None,
+    rpe: float = 0.5,
+) -> TelemetryRecord:
+    opts = options or ["a", "b", "c"]
+    idx = 0
+    return TelemetryRecord(
+        decision_id=decision_id,
+        query=query,
+        options=opts,
+        expected_values=[0.5, 0.5, 0.5],
+        valences=[0.1, 0.1, 0.1],
+        go_scores=[0.6, 0.6, 0.6],
+        accumulated_evidence=[0.6, 0.6, 0.6],
+        chosen_idx=idx,
+        chosen_action=opts[idx],
+        expected_outcome=0.6,
+        expected=0.6,
+        actual=0.6 + rpe,
+        rpe=rpe,
+        memory_key=opts[idx],
+        memory_value_after=0.05,
+    )
+
+
+class TestPreferencePairExporter:
+    def test_export_writes_jsonl_dataset(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = TelemetryRecorder(directory=tmpdir)
+            rec.record(_make_telemetry_record("d1", rpe=0.5))
+            rec.record(_make_telemetry_record("d2", rpe=0.8))
+            exporter = PreferencePairExporter(rec)
+            result = exporter.export(output_dir=Path(tmpdir) / "qlora-pairs")
+            assert result["exported"] == 2
+            assert result["skipped"] == 0
+            dataset = Path(result["output_dir"]) / "dataset.jsonl"
+            assert dataset.exists()
+
+    def test_min_abs_rpe_filter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = TelemetryRecorder(directory=tmpdir)
+            rec.record(_make_telemetry_record("d1", rpe=0.05))
+            rec.record(_make_telemetry_record("d2", rpe=0.5))
+            exporter = PreferencePairExporter(rec)
+            result = exporter.export(
+                output_dir=Path(tmpdir) / "qlora-pairs",
+                min_abs_rpe=0.3,
+            )
+            assert result["exported"] == 1
+            assert result["skipped"] == 1
+
+    def test_limit_respected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = TelemetryRecorder(directory=tmpdir)
+            for i in range(10):
+                rec.record(_make_telemetry_record(f"d{i}", rpe=0.5))
+            exporter = PreferencePairExporter(rec)
+            result = exporter.export(
+                output_dir=Path(tmpdir) / "qlora-pairs",
+                limit=3,
+            )
+            assert result["exported"] == 3
+
+    def test_empty_records_produces_no_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = TelemetryRecorder(directory=tmpdir)
+            exporter = PreferencePairExporter(rec)
+            result = exporter.export(output_dir=Path(tmpdir) / "qlora-pairs")
+            assert result["exported"] == 0
+
+    def test_rejected_excludes_chosen(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = TelemetryRecorder(directory=tmpdir)
+            rec.record(_make_telemetry_record("d1", options=["x", "y", "z"], rpe=0.5))
+            exporter = PreferencePairExporter(rec)
+            result = exporter.export(output_dir=Path(tmpdir) / "qlora-pairs")
+            assert result["exported"] == 1
+            data = json.loads(Path(result["files"][0]).read_text())
+            assert data["chosen"] == "x"
+            assert "x" not in data["rejected"]
+            assert len(data["rejected"]) == 2

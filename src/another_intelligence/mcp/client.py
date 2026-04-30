@@ -8,6 +8,7 @@ import json
 import time
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,18 @@ from pydantic import BaseModel, Field
 
 from another_intelligence.events import MCPToolCalled, PostToolUse, PreToolUse
 from another_intelligence.permissions.engine import PermissionEngine
+
+
+class MCPServerHealth(BaseModel):
+    """Health status for a single MCP server."""
+
+    name: str
+    connected: bool
+    healthy: bool = False
+    version: str | None = None
+    tool_count: int = 0
+    last_checked: datetime | None = None
+    error: str | None = None
 
 
 class MCPToolDefinition(BaseModel):
@@ -442,3 +455,108 @@ class MCPClient:
     def clear_cache(self) -> None:
         """Clear the tool definitions cache."""
         self._tools_cache.clear()
+
+    async def health_check(self, server_name: str | None = None) -> dict[str, MCPServerHealth]:
+        """Check health of one or all configured MCP servers."""
+        servers = [server_name] if server_name is not None else self._registry.list_servers()
+        result: dict[str, MCPServerHealth] = {}
+
+        for name in servers:
+            config = self._registry.get(name)
+            if config is None:
+                result[name] = MCPServerHealth(
+                    name=name,
+                    connected=False,
+                    error="Not configured",
+                )
+                continue
+
+            try:
+                conn = self._get_connection(name)
+                if not conn.connected:
+                    await conn.connect()
+                tools = await conn.list_tools()
+                result[name] = MCPServerHealth(
+                    name=name,
+                    connected=True,
+                    healthy=True,
+                    version="2024-11-05",
+                    tool_count=len(tools),
+                    last_checked=datetime.now(UTC),
+                )
+            except Exception as exc:
+                result[name] = MCPServerHealth(
+                    name=name,
+                    connected=getattr(self._connections.get(name), "connected", False),
+                    healthy=False,
+                    error=str(exc),
+                    last_checked=datetime.now(UTC),
+                )
+
+        return result
+
+    async def call_tool_with_retry(
+        self,
+        server_name: str,
+        tool_name: str,
+        params: dict[str, Any] | None = None,
+        max_retries: int = 3,
+        base_delay: float = 0.5,
+    ) -> dict[str, Any]:
+        """Execute a tool with exponential backoff on transient failures.
+
+        Args:
+            server_name: MCP server name.
+            tool_name: Tool to invoke.
+            params: Tool parameters.
+            max_retries: Maximum retry attempts.
+            base_delay: Initial delay in seconds (doubles each retry).
+
+        Returns:
+            Result dict with ``success``, ``result``, and ``retries`` keys.
+        """
+        last_error: str | None = None
+        for attempt in range(max_retries):
+            try:
+                result = await self.call_tool(server_name, tool_name, params)
+                if result.get("success"):
+                    result["retries"] = attempt
+                    return result
+                last_error = result.get("error", "Unknown error")
+            except Exception as exc:
+                last_error = str(exc)
+
+            if attempt < max_retries - 1:
+                delay = base_delay * (2**attempt)
+                await asyncio.sleep(delay)
+
+        return {
+            "success": False,
+            "result": None,
+            "error": last_error,
+            "retries": max_retries,
+        }
+
+    def get_server_status(
+        self,
+        server_name: str | None = None,
+    ) -> dict[str, dict[str, Any]]:
+        """Return configuration and connection status for servers.
+
+        This is a synchronous summary useful for CLI reporting.
+        """
+        servers = [server_name] if server_name is not None else self._registry.list_servers()
+        result: dict[str, dict[str, Any]] = {}
+
+        for name in servers:
+            config = self._registry.get(name)
+            conn = self._connections.get(name)
+            result[name] = {
+                "configured": config is not None,
+                "transport": config.type if config else "unknown",
+                "command": config.command if config else "?",
+                "connected": conn.connected if conn else False,
+                "tools_cached": len(self._tools_cache.get(name, [])),
+            }
+
+        return result

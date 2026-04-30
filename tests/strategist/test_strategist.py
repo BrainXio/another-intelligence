@@ -84,3 +84,46 @@ class TestStrategistExpectedValue:
     def test_memory_missing_key(self):
         s = Strategist(base_value=0.5)
         assert s.expected_value("foo", memory={"bar": 0.3}) == 0.5
+
+
+class TestStrategistIngestPrototypes:
+    def test_ranks_by_expected_value(self) -> None:
+        s = Strategist(base_value=0.5)
+        shortlist = [
+            {"name": "alpha", "description": "First"},
+            {"name": "beta", "description": "Second"},
+            {"name": "gamma", "description": "Third"},
+        ]
+        ranked = s.ingest_prototypes(
+            shortlist,
+            memory={"beta": 0.3, "gamma": 0.1},
+        )
+        assert len(ranked) == 3
+        assert ranked[0]["name"] == "beta"
+        assert ranked[1]["name"] == "gamma"
+        assert ranked[2]["name"] == "alpha"
+
+    def test_respects_top_n(self) -> None:
+        s = Strategist()
+        shortlist = [{"name": f"item_{i}", "description": f"Desc {i}"} for i in range(10)]
+        ranked = s.ingest_prototypes(shortlist, top_n=3)
+        assert len(ranked) == 3
+
+    def test_includes_rationale_and_deps(self) -> None:
+        s = Strategist()
+        shortlist = [
+            {
+                "name": "feat_x",
+                "description": "A feature",
+                "dependencies": ["feat_y"],
+            }
+        ]
+        ranked = s.ingest_prototypes(shortlist)
+        assert len(ranked) == 1
+        assert "rationale" in ranked[0]
+        assert ranked[0]["dependencies"] == ["feat_y"]
+
+    def test_empty_shortlist(self) -> None:
+        s = Strategist()
+        ranked = s.ingest_prototypes([], top_n=5)
+        assert ranked == []

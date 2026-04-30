@@ -6,7 +6,15 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Self
 
-__all__ = ["RPEEntry", "RPEEngine"]
+from another_intelligence.rpe.telemetry import TelemetryAnalyzer, TelemetryRecord, TelemetryRecorder
+
+__all__ = [
+    "RPEEntry",
+    "RPEEngine",
+    "TelemetryAnalyzer",
+    "TelemetryRecorder",
+    "TelemetryRecord",
+]
 
 
 @dataclass(frozen=True)

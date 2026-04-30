@@ -5,6 +5,7 @@ from another_intelligence.mcp.client import (
     MCPConnection,
     MCPRegistry,
     MCPServerConfig,
+    MCPServerHealth,
     StdioConnection,
 )
 
@@ -13,5 +14,6 @@ __all__ = [
     "MCPConnection",
     "MCPRegistry",
     "MCPServerConfig",
+    "MCPServerHealth",
     "StdioConnection",
 ]

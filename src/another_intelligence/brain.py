@@ -17,6 +17,7 @@ from another_intelligence.executor import Executor
 from another_intelligence.memory.value_index import MemoryValueIndex
 from another_intelligence.reflex import Reflex
 from another_intelligence.rpe import RPEEngine
+from another_intelligence.rpe.telemetry import TelemetryRecord, TelemetryRecorder
 from another_intelligence.state import ActivityPhase, StateMachine
 from another_intelligence.strategist import Strategist
 
@@ -37,6 +38,7 @@ class DigitalBrain:
         max_tokens: int = 8192,
         rpe_engine: RPEEngine | None = None,
         memory_index: MemoryValueIndex | None = None,
+        telemetry: TelemetryRecorder | None = None,
     ) -> None:
         self._state = StateMachine()
         self._events: list[BrainEvent] = []
@@ -48,6 +50,7 @@ class DigitalBrain:
         self._strategist = Strategist()
         self._executor = Executor()
         self._reflex = Reflex(noise_scale=0.0)
+        self._telemetry = telemetry
 
     @property
     def state(self) -> StateMachine:
@@ -72,6 +75,10 @@ class DigitalBrain:
     @property
     def memory_index(self) -> MemoryValueIndex:
         return self._memory
+
+    @property
+    def telemetry(self) -> TelemetryRecorder | None:
+        return self._telemetry
 
     def register_hook(self, event_type: str, callback: Callable[[BrainEvent], None]) -> None:
         self._hooks.setdefault(event_type, []).append(callback)
@@ -153,7 +160,7 @@ class DigitalBrain:
 
         # 5. Learning
         memory_key = chosen_action
-        self._memory.update(memory_key, rpe)
+        memory_value_after = self._memory.update(memory_key, rpe)
         self._maybe_export_preference_pair(
             decision_id=decision_id,
             query=query,
@@ -180,6 +187,28 @@ class DigitalBrain:
             )
         )
 
+        # Persist telemetry when recorder is configured
+        if self._telemetry is not None:
+            self._telemetry.record(
+                TelemetryRecord(
+                    decision_id=decision_id,
+                    query=query,
+                    options=proposal.options,
+                    expected_values=proposal.expected_values,
+                    valences=evaluation.valences,
+                    go_scores=evaluation.go_scores,
+                    accumulated_evidence=selection.accumulated_evidence,
+                    chosen_idx=selection.chosen_idx,
+                    chosen_action=chosen_action,
+                    expected_outcome=expected,
+                    expected=expected,
+                    actual=actual,
+                    rpe=rpe,
+                    memory_key=memory_key,
+                    memory_value_after=memory_value_after,
+                )
+            )
+
         self._state.transition_to(ActivityPhase.IDLE)
         self._context.add_message("assistant", chosen_action)
 
@@ -189,7 +218,13 @@ class DigitalBrain:
             "decision_id": decision_id,
         }
 
-    def record_outcome(self, decision_id: str, expected: float, actual: float) -> None:
+    def record_outcome(
+        self,
+        decision_id: str,
+        expected: float,
+        actual: float,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
         """Record an external outcome and compute RPE.
 
         If the decision context is known and the RPE exceeds the export
@@ -216,6 +251,27 @@ class DigitalBrain:
                 chosen=ctx["chosen"],
                 rejected=[opt for opt in ctx["options"] if opt != ctx["chosen"]],
                 rpe=rpe,
+            )
+        if self._telemetry is not None:
+            self._telemetry.record(
+                TelemetryRecord(
+                    decision_id=decision_id,
+                    query=ctx["query"] if ctx else "",
+                    options=ctx["options"] if ctx else [],
+                    expected_values=[],
+                    valences=[],
+                    go_scores=[],
+                    accumulated_evidence=[],
+                    chosen_idx=0,
+                    chosen_action=ctx["chosen"] if ctx else "",
+                    expected_outcome=expected,
+                    expected=expected,
+                    actual=actual,
+                    rpe=rpe,
+                    outcome=metadata,
+                    memory_key=decision_id,
+                    memory_value_after=self._memory.get(decision_id),
+                )
             )
 
     def _maybe_export_preference_pair(

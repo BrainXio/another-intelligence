@@ -24,8 +24,12 @@ from another_intelligence.events import (
 )
 from another_intelligence.knowledge.compiler import KnowledgeCompiler
 from another_intelligence.knowledge.query import KnowledgeQuery
+from another_intelligence.mcp.client import MCPRegistry
+from another_intelligence.memory.pairs import PreferencePairExporter
 from another_intelligence.permissions.engine import PermissionEngine
+from another_intelligence.rpe.telemetry import TelemetryAnalyzer, TelemetryRecorder
 from another_intelligence.state import ActivityPhase
+from another_intelligence.strategist import Strategist
 
 
 class BrainStore:
@@ -137,7 +141,7 @@ def brain_decide(ctx: click.Context, query: str, option: tuple[str, ...]) -> Non
     store: BrainStore = ctx.obj["store"]
     state = store.load_state()
 
-    digital_brain = DigitalBrain()
+    digital_brain = DigitalBrain(telemetry=TelemetryRecorder())
     # Hydrate memory from store
     for key, value in state.get("memory", {}).items():
         digital_brain.memory_index[key] = value
@@ -430,6 +434,365 @@ def permissions_check(ctx: click.Context, capability: str, config: str | None) -
             border_style=color,
         )
     )
+
+
+# ---------------------------------------------------------------------------
+# ai rpe
+# ---------------------------------------------------------------------------
+
+
+@main.group()
+def rpe() -> None:
+    """Reward Prediction Error analysis and learning tools."""
+
+
+@rpe.command(name="analyze")
+@click.option(
+    "--since",
+    type=str,
+    help="Earliest date to include (YYYY-MM-DD).",
+)
+@click.option(
+    "--region",
+    type=str,
+    help="Filter decisions containing this option string.",
+)
+@click.option(
+    "--telemetry-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=Path("telemetry"),
+    help="Directory containing telemetry JSONL files.",
+)
+@click.pass_context
+def rpe_analyze(
+    ctx: click.Context,
+    since: str | None,
+    region: str | None,
+    telemetry_dir: Path,
+) -> None:
+    """Analyze telemetry logs and show RPE metrics."""
+    recorder = TelemetryRecorder(directory=telemetry_dir)
+    analyzer = TelemetryAnalyzer(recorder)
+    results = analyzer.analyze(since=since, region=region)
+
+    console = _get_console()
+
+    if results["count"] == 0:
+        console.print("[dim]No telemetry records found.[/dim]")
+        return
+
+    console.print(
+        Panel(
+            f"[bold]Records:[/bold]       {results['count']}\n"
+            f"[bold]Mean RPE:[/bold]      {results['mean_rpe']}\n"
+            f"[bold]Max |RPE|:[/bold]     {results['abs_max_rpe']}\n"
+            f"[bold]Trend:[/bold]         {results['trend']}\n"
+            f"[bold]Threshold suggestion:[/bold] {results['threshold_suggestion']}",
+            title="RPE Analysis",
+            border_style="cyan",
+        )
+    )
+
+    if results["top_events"]:
+        table = Table(title="Top |RPE| Events")
+        table.add_column("Decision ID", style="cyan")
+        table.add_column("Query", style="white")
+        table.add_column("Action", style="magenta")
+        table.add_column("RPE", style="green")
+        for evt in results["top_events"]:
+            table.add_row(
+                evt["decision_id"][:8],
+                evt["query"],
+                evt["chosen_action"],
+                str(evt["rpe"]),
+            )
+        console.print(table)
+
+    # Learning insights
+    if results["mean_rpe"] > 0.05:
+        console.print("[green]System is consistently overperforming expectations.[/green]")
+    elif results["mean_rpe"] < -0.05:
+        console.print("[yellow]System is consistently underperforming expectations.[/yellow]")
+    else:
+        console.print("[dim]RPE is well-calibrated (near zero).[/dim]")
+
+
+@rpe.command(name="export-pairs")
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=Path("memory/qlora-pairs"),
+    help="Directory for exported preference pairs.",
+)
+@click.option(
+    "--min-abs-rpe",
+    type=float,
+    default=0.1,
+    help="Minimum absolute RPE to include a pair (default: 0.1).",
+)
+@click.option(
+    "--since",
+    type=str,
+    help="Earliest date to include (YYYY-MM-DD).",
+)
+@click.option(
+    "--telemetry-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=Path("telemetry"),
+    help="Directory containing telemetry JSONL files.",
+)
+@click.option(
+    "--limit",
+    type=int,
+    default=10_000,
+    help="Maximum number of pairs to export.",
+)
+@click.pass_context
+def rpe_export_pairs(
+    ctx: click.Context,
+    output_dir: Path,
+    min_abs_rpe: float,
+    since: str | None,
+    telemetry_dir: Path,
+    limit: int,
+) -> None:
+    """Export QLoRA-compatible preference pairs from telemetry."""
+    recorder = TelemetryRecorder(directory=telemetry_dir)
+    exporter = PreferencePairExporter(recorder)
+    result = exporter.export(
+        output_dir=output_dir,
+        min_abs_rpe=min_abs_rpe,
+        since=since,
+        limit=limit,
+    )
+
+    console = _get_console()
+    console.print(
+        Panel(
+            f"[bold]Exported:[/bold]  {result['exported']}\n"
+            f"[bold]Skipped:[/bold]   {result['skipped']}\n"
+            f"[bold]Output:[/bold]    {result['output_dir']}",
+            title="Preference Pair Export",
+            border_style="green",
+        )
+    )
+
+
+@rpe.command(name="record")
+@click.option(
+    "--outcome",
+    "-o",
+    type=float,
+    required=True,
+    help="Actual outcome value (0.0–1.0).",
+)
+@click.option(
+    "--decision-id",
+    "-d",
+    type=str,
+    help="Decision ID to attach the outcome to.",
+)
+@click.option(
+    "--expected",
+    "-e",
+    type=float,
+    default=0.5,
+    help="Expected value at decision time (default: 0.5).",
+)
+@click.option(
+    "--context",
+    "-c",
+    type=str,
+    help="Free-text description of what happened.",
+)
+@click.option(
+    "--telemetry-dir",
+    type=click.Path(file_okay=False, dir_okay=True, path_type=Path),
+    default=Path("telemetry"),
+    help="Directory containing telemetry JSONL files.",
+)
+@click.pass_context
+def rpe_record(
+    ctx: click.Context,
+    outcome: float,
+    decision_id: str | None,
+    expected: float,
+    context: str | None,
+    telemetry_dir: Path,
+) -> None:
+    """Record an external outcome to close the RPE learning loop."""
+    if decision_id is None:
+        decision_id = str(uuid.uuid4())
+
+    metadata: dict[str, Any] = {}
+    if context is not None:
+        metadata["context"] = context
+
+    recorder = TelemetryRecorder(directory=telemetry_dir)
+    brain = DigitalBrain(telemetry=recorder)
+    brain.record_outcome(
+        decision_id=decision_id,
+        expected=expected,
+        actual=outcome,
+        metadata=metadata if metadata else None,
+    )
+
+    console = _get_console()
+    rpe_value = outcome - expected
+    color = "green" if rpe_value > 0 else "red" if rpe_value < 0 else "white"
+    console.print(
+        Panel(
+            f"[bold]Decision ID:[/bold] {decision_id}\n"
+            f"[bold]Expected:[/bold]    {expected}\n"
+            f"[bold]Actual:[/bold]      {outcome}\n"
+            f"[bold]RPE:[/bold]         [{color}]{rpe_value:+.4f}[/{color}]",
+            title="Outcome Recorded",
+            border_style=color,
+        )
+    )
+
+
+@rpe.command(name="ingest")
+@click.argument("shortlist", type=click.File("r"), default="-")
+@click.option(
+    "--top-n",
+    type=int,
+    default=5,
+    help="Number of top candidates to return (default: 5).",
+)
+@click.option(
+    "--base-value",
+    type=float,
+    default=0.5,
+    help="Baseline expected value for unevaluated options.",
+)
+@click.option(
+    "--post-to-bus",
+    is_flag=True,
+    help="Post the ranked result to the ADHD bus.",
+)
+@click.pass_context
+def rpe_ingest(
+    ctx: click.Context,
+    shortlist,
+    top_n: int,
+    base_value: float,
+    post_to_bus: bool,
+) -> None:
+    """Rank a prototype shortlist by expected value.
+
+    SHORTLIST is a JSON file (or stdin with '-') containing an array of
+    objects, each with at least 'name' and 'description' keys.
+    """
+    try:
+        data = json.load(shortlist)
+    except json.JSONDecodeError as exc:
+        ctx.fail(f"Invalid JSON: {exc}")
+
+    if not isinstance(data, list):
+        ctx.fail("Shortlist must be a JSON array of objects.")
+
+    store: BrainStore = ctx.obj["store"]
+    state = store.load_state()
+    memory: dict[str, Any] = state.get("memory", {})
+
+    strategist = Strategist(base_value=base_value)
+    ranked = strategist.ingest_prototypes(
+        shortlist=data,
+        memory={k: float(v) for k, v in memory.items()},
+        top_n=top_n,
+    )
+
+    console = _get_console()
+    table = Table(title="Top Prototype Candidates")
+    table.add_column("Rank", style="cyan")
+    table.add_column("Name", style="magenta")
+    table.add_column("Expected Value", style="green")
+    table.add_column("Rationale", style="white")
+
+    for i, item in enumerate(ranked, 1):
+        table.add_row(
+            str(i),
+            str(item["name"]),
+            f"{item['expected_value']:.4f}",
+            str(item["rationale"]),
+        )
+    console.print(table)
+
+    if post_to_bus:
+        console.print("[dim]Posting to ADHD bus...[/dim]")
+        console.print(
+            Panel(
+                json.dumps(ranked, indent=2),
+                title="Would post to bus",
+                border_style="dim",
+            )
+        )
+
+
+# ---------------------------------------------------------------------------
+# ai mcp
+# ---------------------------------------------------------------------------
+
+
+@main.group()
+def mcp() -> None:
+    """Inspect and manage MCP server connections."""
+
+
+@mcp.command(name="status")
+@click.option("--extended", is_flag=True, help="Show detailed health information.")
+@click.pass_context
+def mcp_status(ctx: click.Context, extended: bool) -> None:
+    """Show MCP server connection status and tool availability."""
+    registry = MCPRegistry()
+    console = _get_console()
+
+    servers = registry.list_servers()
+    if not servers:
+        server_names: list[str] = []
+        # Scan for known servers in common paths
+        for path in (Path(".mcp.json"), Path.home() / ".brainxio" / "mcp.json"):
+            if path.exists():
+                with path.open("r", encoding="utf-8") as f:
+                    raw = json.load(f)
+                for srv in raw.get("servers", raw.get("mcpServers", [])):
+                    if isinstance(srv, dict):
+                        server_names.append(srv.get("name", "?"))
+        if not server_names:
+            console.print("[dim]No MCP servers configured.[/dim]")
+            return
+    else:
+        server_names = servers
+
+    table = Table(title="MCP Server Status")
+    table.add_column("Server", style="cyan")
+    table.add_column("Configured", style="green")
+    table.add_column("Transport", style="magenta")
+    table.add_column("Command", style="white")
+
+    for name in server_names:
+        config = registry.get(name)
+        if config is not None:
+            table.add_row(
+                name,
+                "[green]yes[/green]",
+                config.type,
+                config.command,
+            )
+        else:
+            table.add_row(name, "[dim]unknown[/dim]", "?", "?")
+    console.print(table)
+
+    if extended and server_names:
+        console.print(
+            Panel(
+                "Health checks require a running MCP client.\n"
+                "Use `another_intelligence.mcp.client.MCPClient` for active health probing.",
+                title="Extended Status",
+                border_style="blue",
+            )
+        )
 
 
 if __name__ == "__main__":
