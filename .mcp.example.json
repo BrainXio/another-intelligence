@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "adhd": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "adhd-mcp"],
+      "permissions": ["adhd.*"]
+    },
+    "asd": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "asd-mcp"],
+      "permissions": ["asd.*"]
+    },
+    "ocd": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "ocd-mcp"],
+      "permissions": ["ocd.*"]
+    }
+  }
+}
