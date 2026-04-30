@@ -1,125 +1,112 @@
-______________________________________________________________________
+# Another Intelligence — Cerebro
 
-## title: "Another-Intelligence" version: "0.1" status: draft updated: "2026-04-28"
+> **Another Intelligence** (Cerebro) is the cognitive core of the BrainXio ecosystem — a persistent, neuroscience-grounded digital brain that thinks and learns like a biological brain.
+>
+> It runs 100% on Ollama under three permanent model roles, hosts first-class MCP clients for all external tools, and improves continuously through real reward prediction error (RPE) learning.
 
-# README.md — Another-Intelligence
+## The Cerebro Parallel
 
-**A persistent neuroscience-grounded digital brain**
+Biological brains don't run prompts. They run a strict serial loop: the prefrontal cortex proposes options, the limbic system tags them with emotional valence, the parietal cortex accumulates noisy evidence toward a decision threshold, the basal ganglia select an action through Go/NoGo gating, and dopamine encodes the reward prediction error — actual minus expected — that drives learning.
 
-______________________________________________________________________
+That's the PPAC loop. And that's what Cerebro implements:
 
-## What is Another-Intelligence?
+- **Proposer (PFC/DLPFC-OFC)**: Generates candidate plans and computes multi-attribute expected value for each option
+- **Predictor (Limbic)**: Amygdala tags options with emotional valence (approach/avoid); hippocampus retrieves episodic memories for outcome prediction
+- **Accumulator (Parietal LIP)**: Gradual, noisy evidence accumulation toward a decision threshold — the Shadlen model of perceptual decision-making
+- **Actor (Basal Ganglia)**: Direct pathway (Go/D1) and indirect pathway (NoGo/D2) gate action selection — the Frank model of corticostriatal control
+- **Critic (Dopamine)**: Encodes RPE = actual − expected; positive RPE strengthens Go for the chosen action; negative RPE strengthens NoGo — the Schultz model of dopaminergic learning
 
-**Another-Intelligence** (Cerebro) is a fully independent, Ollama-native cognitive architecture that thinks and learns like a biological brain.
+Every decision produces real RPE that updates a persistent memory-value index. Over time, Cerebro gets better at predicting which actions will succeed — not because it was fine-tuned on a static dataset, but because it learned from its own outcomes. The superpowers this externalizes:
 
-It implements a strict **PPAC loop** (Proposer → Predictor → Accumulator → Actor → Critic) across three permanent roles:
+- **Persistent memory** — Knowledge survives across sessions. Daily logs compile into structured articles that feed semantic query.
+- **Real learning** — RPE updates a memory-value index continuously. Preference pair datasets are exported for future QLoRA fine-tuning.
+- **MCP-native tooling** — All external tools (filesystem, browser, git, memory, hardware) route through a first-class MCP client. Any compliant MCP server works out of the box.
+- **Neuroscience fidelity** — Every component maps to a biological mechanism. The architecture is grounded in the cognitive neuroscience of decision-making, not prompt engineering.
 
-- **Cerebro Strategist** — Prefrontal Cortex (planning & value computation)
-- **Cerebro Executor** — Limbic + Basal Ganglia (emotional tagging & action selection)
-- **Cerebro Reflex** — Parietal + Dopamine (evidence accumulation & RPE learning)
+## What This Is
 
-Every decision produces real **reward prediction error (RPE)** that drives continuous self-improvement through synthetic preference datasets and future QLoRA fine-tuning.
+Another Intelligence is a persistent agent that hosts the PPAC loop and discovers external tools exclusively through MCP. It is the cognitive core of the BrainXio ecosystem — the thing that thinks, decides, and learns. The three discipline packages (ADHD, OCD, ASD) expose MCP servers that Cerebro discovers at runtime. No package imports another. Discovery and communication happen exclusively through the MCP registry.
 
-______________________________________________________________________
+## Core Architecture
 
-## Key Features
+### PPAC Loop Stages
 
-- **100% Ollama** — Runs on Max, Pro, Free, or local GPU tiers under the unified `Another-Intelligence/*` namespace.
-- **MCP-Native** — First-class support for Model Context Protocol (filesystem, browser, git, memory, hardware, etc.).
-- **Permissions-First** — Capability-based security with least-privilege defaults.
-- **Typed Hook System** — Extensible lifecycle events (SessionStart, PreToolUse, RPEUpdated, …).
-- **Observable Brain** — Real-time statusline + pluggable animated eyes.
-- **Knowledge Pipeline** — Daily logs → structured articles → semantic query.
-- **Plugin Architecture** — Easy to add voice, hardware, new displays, etc.
-- **Autonomous Development Ready** — Designed for heavy use with Claude-agent-sdk + MCP servers.
+Every decision flows through a strict serial pipeline:
 
-______________________________________________________________________
+1. **Strategist** (PFC) — proposes options, computes expected value
+2. **Executor** (Limbic + Basal Ganglia) — emotional tagging + Go/NoGo action selection
+3. **Reflex** (Parietal + Dopamine) — noisy evidence accumulation + RPE computation
+4. **Outcome Recording** — real external feedback drives learning
+5. **Learning** — memory-value index update + preference dataset generation
 
-## Quick Start
+### Model Roles
+
+Three Ollama model roles under the `Another-Intelligence/*` namespace:
+
+| Role       | Brain Region                      | Purpose                                                          |
+| ---------- | --------------------------------- | ---------------------------------------------------------------- |
+| Strategist | Prefrontal Cortex (PFC/DLPFC-OFC) | Multi-attribute option evaluation and expected value computation |
+| Executor   | Limbic System + Basal Ganglia     | Emotional valence tagging and Go/NoGo action selection           |
+| Reflex     | Parietal LIP + Dopamine           | Noisy evidence accumulation and RPE encoding                     |
+
+### MCP Client
+
+External tools are discovered and called through a first-class MCP client:
+
+| Server | Neuro Superpower            | Relationship                                           |
+| ------ | --------------------------- | ------------------------------------------------------ |
+| ADHD   | Coordination nervous system | Multi-agent message bus for parallel worktree sessions |
+| ASD    | Systematizing memory        | Knowledge base compilation and semantic storage        |
+| OCD    | Discipline & enforcement    | Rules, gates, modes, and standard enforcement          |
+
+## Installation
 
 ```bash
-# Clone the project
-git clone https://github.com/brainxio/another-intelligence.git
+# Clone the repo
+git clone git@github.com:BrainXio/Another-Intelligence.git
 cd another-intelligence
 
-# Setup Python environment
-uv venv
-source .venv/bin/activate
+# Install with dev dependencies
+uv sync
 uv pip install -e ".[dev]"
-
-# (Optional) Setup JavaScript layer
-npm install
-
-# Pull recommended models
-ollama pull qwen3.5:14b
-# Create your Cerebro models (see docs/ for ModelFiles)
-
-# Run a first decision
-ai brain "Explain how the PPAC loop works in simple terms"
 ```
 
-______________________________________________________________________
+## Usage
 
-## Core Commands
+```bash
+# Run a full PPAC decision
+ai brain "Should I add caching to the API layer?"
 
-| Command                    | Description                          |
-| -------------------------- | ------------------------------------ |
-| `ai brain <prompt>`        | Run full PPAC decision loop          |
-| `ai status --extended`     | Live brain state, RPE, context usage |
-| `ai compile`               | Build knowledge base from daily logs |
-| `ai query <question>`      | Semantic search over knowledge       |
-| `ai flush`                 | Process session memory               |
-| `ai introspect`            | Self-reflection on learning patterns |
-| `ai mcp list`              | Show available MCP tools             |
-| `ai permissions check ...` | Test permission decisions            |
+# Show live brain state, RPE, and context usage
+ai status --extended
 
-______________________________________________________________________
+# List available MCP tools and their servers
+ai mcp list
 
-## Project Structure
-
-```
-another-intelligence/
-├── docs/                      # All architecture & guides (start here)
-├── src/another_intelligence/  # Core Python package
-├── plugins/                   # Example & core plugins
-├── tests/
-├── ~/.brainxio/               # Global config, rules, skills, memory
-└── .brainxio/                 # Project-specific config (committed)
+# Check a permission decision
+ai permissions check "filesystem.write" --config .brainxio/permissions.json
 ```
 
-______________________________________________________________________
+## Configuration Location
 
-## Documentation Index
+Cerebro reads configuration from two directories, mirroring the `.claude` model:
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — High-level design
-- **[BASELINE.md](docs/BASELINE.md)** — v0.1 success criteria
-- **[DEVELOPMENT.md](docs/DEVELOPMENT.md)** — Workflow & tooling
-- **[HOOKS.md](docs/HOOKS.md)** — Hook system
-- **[MCP.md](docs/MCP.md)** — Model Context Protocol
-- **[PERMISSIONS.md](docs/PERMISSIONS.md)** — Security model
-- **[PROMPTING.md](docs/PROMPTING.md)** — Rules & skills system
-- **[PLUGIN-DEVELOPMENT.md](docs/PLUGIN-DEVELOPMENT.md)** — How to extend
+| Location       | Scope                        | Purpose                                               |
+| -------------- | ---------------------------- | ----------------------------------------------------- |
+| `~/.brainxio/` | Global (all projects)        | Rules, skills, agents, memory, MCP server registry    |
+| `.brainxio/`   | Project-specific (committed) | Permissions, project-scoped MCP servers, hooks config |
 
-______________________________________________________________________
+### Environment Variables
 
-## Philosophy
+| Variable          | Purpose                                                           |
+| ----------------- | ----------------------------------------------------------------- |
+| `AI_CONFIG_PATH`  | Override config directory (default: `~/.brainxio`)                |
+| `AI_MODEL_PREFIX` | Override Ollama model namespace (default: `Another-Intelligence`) |
 
-- Neuroscience fidelity over hype
-- Independence over vendor lock-in
-- Modularity and clarity over convenience
-- Real learning (RPE) over stateless prompting
-- Security and observability by default
+## Design Philosophy
 
-______________________________________________________________________
+**Neuroscience fidelity over hype.** Every component maps to a biological mechanism. The architecture is grounded in cognitive neuroscience (Shadlen, Frank, Schultz models), not prompt engineering trends.
 
-## Status
+**Independence over vendor lock-in.** Runs 100% on Ollama. No proprietary SDK dependency. The three model roles are open-weight models you control.
 
-**Current Phase:** Foundation & v0.1 Baseline\
-**License:** Apache 2.0\
-**Chat with us:** Use `ai brain` once installed.
-
-______________________________________________________________________
-
-**Made with ❤️ for genuine persistent cognition.**
-
-*“Not simulating intelligence — building one.”*
+**Real learning over stateless prompting.** RPE = actual − expected. The memory-value index improves continuously from real outcomes. This is learning, not context-stuffing.
