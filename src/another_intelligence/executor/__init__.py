@@ -16,7 +16,7 @@ class Evaluation:
     chosen_idx: int
     chosen_action: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if len(self.valences) != len(self.go_scores):
             raise ValueError("valences and go_scores must have the same length")
         if not (0 <= self.chosen_idx < len(self.go_scores)):

@@ -120,11 +120,11 @@ class PermissionEngine:
         """
         # Detect declarative format by presence of allow/ask/deny keys
         if any(k in raw for k in ("allow", "ask", "deny")):
-            grants: list[dict[str, Any]] = []
+            grants: list[Grant] = []
             for cap in raw.get("allow", []):
-                grants.append({"capability": cap, "require_confirmation": False})
+                grants.append(Grant(capability=cap, require_confirmation=False))
             for cap in raw.get("ask", []):
-                grants.append({"capability": cap, "require_confirmation": True})
+                grants.append(Grant(capability=cap, require_confirmation=True))
             return PermissionConfig(
                 default_policy="deny",
                 grants=grants,

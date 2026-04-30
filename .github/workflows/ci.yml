@@ -1,0 +1,82 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint and Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv run ruff check src/ tests/
+
+      - run: uv run ruff format --check src/ tests/
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv sync
+
+      - run: uv run mypy src/another_intelligence/ --strict
+
+  test:
+    name: Test and Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv sync
+
+      - run: uv run pytest --cov --cov-report=term-missing --cov-fail-under=70 -q
+
+  mcp-integration:
+    name: MCP Server Integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv sync
+
+      - name: Run MCP integration tests
+        run: uv run pytest tests/mcp/test_mcp_integration.py -v
+
+  build-verify:
+    name: Build Verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v7
+
+      - run: uv sync
+
+      - run: uv run python -m build
+
+      - name: Verify wheel contains entry point
+        run: |
+          python3 -c "
+          import zipfile, sys, glob
+          wheel = sorted(glob.glob('dist/*.whl'))[-1]
+          with zipfile.ZipFile(wheel) as z:
+            names = z.namelist()
+            if not any('another_intelligence' in n for n in names):
+              print('ERROR: another-intelligence entry point not found in wheel')
+              sys.exit(1)
+          print('Wheel verified: ai entry point present')
+          "

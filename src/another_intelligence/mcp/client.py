@@ -175,6 +175,7 @@ class StdioConnection(MCPConnection):
         )
         self._connected = True
         self._reader_task = asyncio.create_task(self._read_loop())
+        await asyncio.sleep(0)  # yield so the reader task can start on single-core
         # Initialize session per MCP spec
         await self.send_request(
             "initialize",

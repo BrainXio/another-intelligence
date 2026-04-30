@@ -16,7 +16,7 @@ class Proposal:
     attributes: dict[str, list[float]] = field(default_factory=dict)
     query: str = ""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if len(self.options) != len(self.expected_values):
             raise ValueError("options and expected_values must have the same length")
 

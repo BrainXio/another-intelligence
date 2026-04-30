@@ -43,7 +43,7 @@ def fs_server_config(tmp_path: Path) -> dict[str, Any]:
                 "command": "npx",
                 "args": ["-y", "@modelcontextprotocol/server-filesystem", str(serve_dir)],
                 "permissions": ["filesystem.read"],
-                "timeout": 30.0,
+                "timeout": 120.0,
             }
         ]
     }

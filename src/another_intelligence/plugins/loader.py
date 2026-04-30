@@ -27,9 +27,7 @@ def _discover_entry_points() -> list[type[Plugin]]:
         return plugins
 
     eps = entry_points()
-    group = getattr(eps, "select", lambda **kw: eps.get(kw.get("group"), ()))(
-        group="another_intelligence.plugins"
-    )
+    group = eps.select(group="another_intelligence.plugins")
     for ep in group:
         try:
             cls = ep.load()
