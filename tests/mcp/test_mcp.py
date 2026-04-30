@@ -92,8 +92,6 @@ class TestMCPRegistryDisciplineServers:
 
     def test_resolve_path_discovers_project_config(self, tmp_path: Path, monkeypatch):
         """_resolve_path should find .brainxio/mcp.json in the project dir."""
-        import os
-
         from another_intelligence.mcp.client import MCPRegistry as Reg
 
         brainxio_dir = tmp_path / ".brainxio"
@@ -114,7 +112,7 @@ class TestMCPRegistryDisciplineServers:
             )
         )
 
-        monkeypatch.setattr(os, "getcwd", lambda: str(tmp_path))
+        monkeypatch.chdir(tmp_path)
         resolved = Reg._resolve_path(None)
         assert resolved is not None
         assert resolved.parent.name == ".brainxio"
