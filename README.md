@@ -43,21 +43,21 @@ Every decision flows through a strict serial pipeline:
 
 Three Ollama model roles under the `Another-Intelligence/*` namespace:
 
-| Role | Brain Region | Purpose |
-|------|-------------|---------|
+| Role       | Brain Region                      | Purpose                                                          |
+| ---------- | --------------------------------- | ---------------------------------------------------------------- |
 | Strategist | Prefrontal Cortex (PFC/DLPFC-OFC) | Multi-attribute option evaluation and expected value computation |
-| Executor | Limbic System + Basal Ganglia | Emotional valence tagging and Go/NoGo action selection |
-| Reflex | Parietal LIP + Dopamine | Noisy evidence accumulation and RPE encoding |
+| Executor   | Limbic System + Basal Ganglia     | Emotional valence tagging and Go/NoGo action selection           |
+| Reflex     | Parietal LIP + Dopamine           | Noisy evidence accumulation and RPE encoding                     |
 
 ### MCP Client
 
 External tools are discovered and called through a first-class MCP client:
 
-| Server | Neuro Superpower | Relationship |
-|--------|-----------------|--------------|
-| ADHD | Coordination nervous system | Multi-agent message bus for parallel worktree sessions |
-| ASD | Systematizing memory | Knowledge base compilation and semantic storage |
-| OCD | Discipline & enforcement | Rules, gates, modes, and standard enforcement |
+| Server | Neuro Superpower            | Relationship                                           |
+| ------ | --------------------------- | ------------------------------------------------------ |
+| ADHD   | Coordination nervous system | Multi-agent message bus for parallel worktree sessions |
+| ASD    | Systematizing memory        | Knowledge base compilation and semantic storage        |
+| OCD    | Discipline & enforcement    | Rules, gates, modes, and standard enforcement          |
 
 ## Installation
 
@@ -91,16 +91,16 @@ ai permissions check "filesystem.write" --config .brainxio/permissions.json
 
 Cerebro reads configuration from two directories, mirroring the `.claude` model:
 
-| Location | Scope | Purpose |
-|----------|-------|---------|
-| `~/.brainxio/` | Global (all projects) | Rules, skills, agents, memory, MCP server registry |
-| `.brainxio/` | Project-specific (committed) | Permissions, project-scoped MCP servers, hooks config |
+| Location       | Scope                        | Purpose                                               |
+| -------------- | ---------------------------- | ----------------------------------------------------- |
+| `~/.brainxio/` | Global (all projects)        | Rules, skills, agents, memory, MCP server registry    |
+| `.brainxio/`   | Project-specific (committed) | Permissions, project-scoped MCP servers, hooks config |
 
 ### Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `AI_CONFIG_PATH` | Override config directory (default: `~/.brainxio`) |
+| Variable          | Purpose                                                           |
+| ----------------- | ----------------------------------------------------------------- |
+| `AI_CONFIG_PATH`  | Override config directory (default: `~/.brainxio`)                |
 | `AI_MODEL_PREFIX` | Override Ollama model namespace (default: `Another-Intelligence`) |
 
 ## Design Philosophy
