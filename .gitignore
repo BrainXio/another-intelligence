@@ -107,4 +107,8 @@ PROGRESS.md.bak
 
 # Message bus (multi-agent coordination)
 .claude/message_bus*.jsonl
+
+# Task files
+prompt.txt
+tasks.json
 .mcp.json
