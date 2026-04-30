@@ -289,3 +289,70 @@ class DigitalBrain:
             rejected=rejected,
             rpe=rpe,
         )
+
+    async def ingest_prototypes_from_mcp(
+        self,
+        mcp_client: Any,
+        top_n: int = 5,
+        scan_dir: str | None = None,
+    ) -> dict[str, Any]:
+        """Query ASD scanner via MCP, rank candidates, and return suggestions.
+
+        Does NOT post to bus — callers decide how to surface results.
+        """
+        from another_intelligence.rpe.telemetry import TelemetryRecord
+
+        params: dict[str, Any] = {}
+        if scan_dir is not None:
+            params["scan_dir"] = scan_dir
+
+        scan_result = await mcp_client.call_tool("asd", "asd_scan_prototypes", params)
+        if not scan_result.get("success"):
+            return {"success": False, "error": scan_result.get("error", "ASD scan failed")}
+
+        result_data = scan_result.get("result", {})
+        shortlist_path = result_data.get("shortlist_path") if isinstance(result_data, dict) else None
+
+        if shortlist_path is not None:
+            import json as _json
+            try:
+                shortlist = _json.loads(Path(shortlist_path).read_text())
+            except Exception:
+                return {"success": False, "error": f"Failed to read shortlist: {shortlist_path}"}
+        elif isinstance(result_data, list):
+            shortlist = result_data
+        elif isinstance(result_data, dict) and "candidates" in result_data:
+            shortlist = result_data["candidates"]
+        else:
+            shortlist = []
+
+        if not shortlist:
+            return {"success": False, "error": "ASD scanner returned no candidates"}
+
+        ranked = self._strategist.ingest_prototypes(shortlist, self.memory, top_n=top_n)
+
+        # Record telemetry for the ranking decision
+        if self._telemetry is not None:
+            options = [str(item["name"]) for item in ranked]
+            expected_values = [float(item["expected_value"]) for item in ranked]
+            self._telemetry.record(
+                TelemetryRecord(
+                    decision_id=str(uuid.uuid4()),
+                    query="prototype-ingestion",
+                    options=options,
+                    expected_values=expected_values,
+                    valences=[0.0] * len(options),
+                    go_scores=[0.5] * len(options),
+                    accumulated_evidence=[0.5] * len(options),
+                    chosen_idx=0,
+                    chosen_action=options[0] if options else "",
+                    expected_outcome=expected_values[0] if expected_values else 0.5,
+                    expected=expected_values[0] if expected_values else 0.5,
+                    actual=0.5,
+                    rpe=0.0,
+                    memory_key=options[0] if options else "",
+                    memory_value_after=0.0,
+                )
+            )
+
+        return {"success": True, "ranked": ranked, "shortlist_size": len(shortlist)}
