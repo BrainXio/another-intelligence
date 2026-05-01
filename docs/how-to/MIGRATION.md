@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "From Prototype to Clean Core" version: "0.1" status: draft updated: "2026-04-29"
+---
+title: From Prototype to Clean Core
+tags: [how-to, migration]
+updated: '2026-04-29'
+version: '0.1'
+status: draft
+---
 
 # MIGRATION.md — From Prototype to Clean Core
 
@@ -21,18 +25,18 @@ ______________________________________________________________________
 
 ## 2. Mapping Table (Concepts Only)
 
-| Prototype Concept                      | New Core Equivalent                                    | Migration Approach                     |
-| -------------------------------------- | ------------------------------------------------------ | -------------------------------------- |
-| PPAC Loop in `core/loop.py`            | `DigitalBrain.decide()` + strict PPAC                  | Re-implement from ARCHITECTURE.md spec |
-| Cerebro Strategist / Executor / Reflex | Same names under `Another-Intelligence/*`              | New Ollama ModelFiles + agents         |
-| RPE computation                        | `rpe/` subpackage + memory-value index                 | Fresh implementation with tests        |
-| Animated eyes + statusline             | Plugin system + event-driven DisplayController         | Core events → plugins                  |
-| Claude hooks (session-start etc.)      | Typed Hook System (HOOKS.md)                           | New registration & execution model     |
-| Knowledge base compilation             | `ai compile` + structured articles                     | New pipeline using daily logs          |
-| Model tier detection                   | `model_resolver.py` from ANTHROPIC_MODEL → generalized | Support Ollama tiers + env vars        |
-| `~/.ai/` directory                     | `~/.brainxio/`                                         | New cleaner structure                  |
-| Dev tracker / backlog                  | Built-in via RPE + SQLite                              | Integrated into core                   |
-| Self-fine-tuning (Unsloth)             | RPE → dataset → trainer node (v0.2)                    | Deferred, dataset pipeline first       |
+| Prototype Concept                      | New Core Equivalent                                    | Migration Approach                                    |
+| -------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+| PPAC Loop in `core/loop.py`            | `DigitalBrain.decide()` + strict PPAC                  | Re-implement from ../explanation/ARCHITECTURE.md spec |
+| Cerebro Strategist / Executor / Reflex | Same names under `Another-Intelligence/*`              | New Ollama ModelFiles + agents                        |
+| RPE computation                        | `rpe/` subpackage + memory-value index                 | Fresh implementation with tests                       |
+| Animated eyes + statusline             | Plugin system + event-driven DisplayController         | Core events → plugins                                 |
+| Claude hooks (session-start etc.)      | Typed Hook System (../reference/HOOKS.md)              | New registration & execution model                    |
+| Knowledge base compilation             | `ai compile` + structured articles                     | New pipeline using daily logs                         |
+| Model tier detection                   | `model_resolver.py` from ANTHROPIC_MODEL → generalized | Support Ollama tiers + env vars                       |
+| `~/.ai/` directory                     | `~/.brainxio/`                                         | New cleaner structure                                 |
+| Dev tracker / backlog                  | Built-in via RPE + SQLite                              | Integrated into core                                  |
+| Self-fine-tuning (Unsloth)             | RPE → dataset → trainer node (v0.2)                    | Deferred, dataset pipeline first                      |
 
 ______________________________________________________________________
 
@@ -87,7 +91,7 @@ The migration is considered successful when:
 
 - The new core can run a full PPAC session with tool use, RPE learning, and knowledge persistence.
 - User experience (CLI commands, configuration, output) feels like a natural evolution of the prototype.
-- All baseline criteria in `BASELINE.md` are met.
+- All baseline criteria in `../reference/BASELINE.md` are met.
 - The old prototype can be archived or retired without loss of core functionality.
 
 ______________________________________________________________________

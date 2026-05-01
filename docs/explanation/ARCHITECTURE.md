@@ -1,4 +1,10 @@
-## \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_--- title: "Another-Intelligence Architecture" version: "0.1" status: draft updated: "2026-05-01"
+---
+title: Another-Intelligence Architecture
+tags: [explanation, architecture]
+updated: '2026-05-01'
+version: '0.1'
+status: draft
+---
 
 # Another-Intelligence Architecture
 
@@ -193,4 +199,4 @@ ______________________________________________________________________
 
 **End of ARCHITECTURE.md**
 
-*This document is the single source of truth for architectural decisions. All other documents (BASELINE.md, HOOKS.md, etc.) must remain consistent with it.*
+*This document is the single source of truth for architectural decisions. All other documents (../reference/BASELINE.md, ../reference/HOOKS.md, etc.) must remain consistent with it.*

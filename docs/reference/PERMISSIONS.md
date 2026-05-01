@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "Capability-Based Permissions System" version: "0.1" status: draft updated: "2026-04-29"
+---
+title: Capability-Based Permissions System
+tags: [reference, permissions]
+updated: '2026-04-29'
+version: '0.1'
+status: draft
+---
 
 # PERMISSIONS.md — Capability-Based Permissions System
 
@@ -164,7 +168,7 @@ ______________________________________________________________________
 
 - **MCP.md** — All MCP tools are routed through this engine.
 - **HOOKS.md** — PreToolUse can influence permission outcomes.
-- **ARCHITECTURE.md** — Permissions is a core component, not optional.
+- **../explanation/ARCHITECTURE.md** — Permissions is a core component, not optional.
 
 ______________________________________________________________________
 

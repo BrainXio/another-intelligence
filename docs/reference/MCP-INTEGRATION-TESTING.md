@@ -1,3 +1,9 @@
+---
+title: MCP Integration Testing
+tags: [reference, testing]
+updated: '2026-05-01'
+---
+
 # MCP Integration Testing
 
 ## Overview

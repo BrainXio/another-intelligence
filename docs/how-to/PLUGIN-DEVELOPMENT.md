@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "Plugin System Guide" version: "0.1" status: draft updated: "2026-04-28"
+---
+title: Plugin System Guide
+tags: [how-to, plugins]
+updated: '2026-04-28'
+version: '0.1'
+status: draft
+---
 
 # PLUGIN-DEVELOPMENT.md — Plugin System Guide
 
