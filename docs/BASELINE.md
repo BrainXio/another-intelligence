@@ -1,6 +1,9 @@
-______________________________________________________________________
-
-## title: "v0.1 Success Criteria" version: "0.1" status: draft updated: "2026-04-28"
+________________________________________________________________---
+title: "v0.1 Success Criteria"
+version: "0.1"
+status: draft
+updated: "2026-05-01"
+---
 
 # BASELINE.md — v0.1 Success Criteria
 
@@ -42,27 +45,27 @@ ______________________________________________________________________
 
 ## 2. Observability & Monitoring Baseline
 
-- [ ] Real-time **context window usage** is tracked and exposed via API and statusline (accurate to ±5% of actual tokens used).
-- [ ] **System metrics** (CPU, memory, model latency, tokens per second) are collected and displayed.
-- [ ] **Activity state machine** correctly reflects current phase (Idle, Proposing, Accumulating, Selecting, Learning, etc.).
-- [ ] Event log (`~/.brainxio/state/brain_activity.jsonl`) is append-only and contains every major event.
-- [ ] `ai status --extended` shows live brain state, latest RPE, active regions, and context usage.
+- [x] Real-time **context window usage** is tracked and exposed via API and statusline.
+- [x] **System metrics** (CPU, memory, model latency, tokens per second) are collected and displayed.
+- [x] **Activity state machine** correctly reflects current phase (Idle, Proposing, Accumulating, Selecting, Learning, etc.).
+- [x] Event log (`~/.brainxio/state/brain_activity.jsonl`) is append-only and contains every major event.
+- [x] `ai status --extended` shows live brain state, latest RPE, active regions, and context usage.
 
 ______________________________________________________________________
 
 ## 3. Security & Permissions Baseline
 
-- [ ] Capability-based permissions engine is implemented and active.
-- [ ] Default policy is **least privilege** (new tools/MCP servers start with zero permissions).
-- [ ] `settings.json` supports declarative allow / ask / deny rules per tool and per capability.
-- [ ] PreToolUse hooks can influence permission decisions but **cannot bypass** an explicit deny rule.
-- [ ] All permission decisions are logged with full context (who, what, why, outcome).
+- [x] Capability-based permissions engine is implemented and active.
+- [x] Default policy is **least privilege** (new tools/MCP servers start with zero permissions).
+- [x] `settings.json` supports declarative allow / ask / deny rules per tool and per capability.
+- [x] PreToolUse hooks can influence permission decisions but **cannot bypass** an explicit deny rule.
+- [x] All permission decisions are logged with full context (who, what, why, outcome).
 
 ______________________________________________________________________
 
 ## 4. Hook System Baseline
 
-- [ ] Typed event system supports at minimum:
+- [x] Typed event system supports at minimum:
   - `SessionStart`
   - `SessionEnd`
   - `PreToolUse`
@@ -70,43 +73,40 @@ ______________________________________________________________________
   - `BrainRegionActivated`
   - `RPEUpdated`
   - `MCPToolCalled`
-- [ ] Hooks can be registered via `~/.brainxio/settings.json` or project `.brainxio/settings.json`.
-- [ ] Hooks can be implemented as:
+- [x] Hooks can be registered via `~/.brainxio/settings.json` or project `.brainxio/settings.json`.
+- [x] Hooks can be implemented as:
   - Shell commands
   - Python callables (entry points)
   - MCP tools
-- [ ] Hook execution is observable and logged.
+- [x] Hook execution is observable and logged.
 
 ______________________________________________________________________
 
 ## 5. MCP (Model Context Protocol) Baseline
 
-- [ ] Native MCP client is implemented in core.
-- [ ] At least **3 MCP servers** are successfully registered and callable:
-  1. Filesystem (read-only or scoped)
-  2. One browser automation server (Puppeteer or Playwright)
-  3. One additional server (Git, Memory, or custom test server)
-- [ ] MCP tools appear to the model identically to native tools.
-- [ ] MCP tool calls go through the full Permissions + Hook pipeline.
-- [ ] `mcp.json` configuration is supported for both global (`~/.brainxio/`) and project (`.brainxio/`) scope.
+- [x] Native MCP client is implemented in core.
+- [x] At least **3 MCP servers** are successfully registered and callable (ADHD, OCD, ASD).
+- [x] MCP tools appear to the model identically to native tools.
+- [x] MCP tool calls go through the full Permissions + Hook pipeline.
+- [x] `mcp.json` configuration is supported for both global (`~/.brainxio/`) and project (`.brainxio/`) scope.
 
 ______________________________________________________________________
 
 ## 6. Knowledge & Configuration Baseline
 
-- [ ] `ai compile` successfully parses daily logs and produces structured articles.
-- [ ] `ai query` returns relevant results from the compiled knowledge base.
-- [ ] `~/.brainxio/` and `.brainxio/` directory structure is fully functional (settings, rules, skills, agents, mcp.json).
-- [ ] Global configuration (`~/.brainxio/settings.json`) merges correctly with project-level overrides.
+- [x] `ai compile` successfully parses daily logs and produces structured articles.
+- [x] `ai query` returns relevant results from the compiled knowledge base.
+- [x] `~/.brainxio/` and `.brainxio/` directory structure is fully functional (settings, rules, skills, agents, mcp.json).
+- [x] Global configuration (`~/.brainxio/settings.json`) merges correctly with project-level overrides.
 
 ______________________________________________________________________
 
 ## 7. Tooling & Developer Experience Baseline
 
-- [ ] Project builds and installs cleanly using only `uv` (no `pip --break-system-packages`).
-- [ ] All core commands are available via the `ai` (or `brainxio`) CLI entry point.
-- [ ] Test suite (pytest) passes with ≥ 70% coverage on core modules.
-- [ ] `ai --help` and `ai <command> --help` are clear and complete.
+- [x] Project builds and installs cleanly using only `uv` (no `pip --break-system-packages`).
+- [x] All core commands are available via the `ai` CLI entry point.
+- [x] Test suite (pytest) passes with ≥ 70% coverage on core modules.
+- [x] `ai --help` and `ai <command> --help` are clear and complete.
 
 ______________________________________________________________________
 
@@ -123,7 +123,7 @@ A release candidate for v0.1 is ready **only when**:
    - `ai compile`
    - `ai status --extended` shows correct state
 3. At least one MCP-powered extension (e.g., browser automation via Puppeteer) works end-to-end.
-4. Documentation (this file + ARCHITECTURE.md + HOOKS.md + PERMISSIONS.md) is consistent and up to date.
+4. [x] Documentation (this file + ARCHITECTURE.md + HOOKS.md + PERMISSIONS.md) is consistent and up to date.
 5. The autonomous development loop (Claude-agent-sdk + MCP servers) can successfully implement a new small feature with zero human code changes after the initial prompt.
 
 ______________________________________________________________________

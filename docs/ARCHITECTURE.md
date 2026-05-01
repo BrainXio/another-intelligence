@@ -1,6 +1,9 @@
-______________________________________________________________________
-
-## title: "Another-Intelligence Architecture" version: "0.1" status: draft updated: "2026-04-28"
+________________________________________________________________---
+title: "Another-Intelligence Architecture"
+version: "0.1"
+status: draft
+updated: "2026-05-01"
+---
 
 # Another-Intelligence Architecture
 
