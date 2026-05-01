@@ -1,6 +1,4 @@
-______________________________________________________________________
-
-## title: "Project Planning" aliases: ["Planning"] tags: [planning, roadmap] created: 2026-04-28 updated: 2026-04-29
+## \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_--- title: "Project Planning" aliases: ["Planning"] tags: [planning, roadmap] created: 2026-04-28 updated: 2026-05-01
 
 # Planning
 
@@ -32,10 +30,6 @@ ______________________________________________________________________
 - [x] CI pipeline (GitHub Actions)
 - [x] Full CLI command suite
 - [x] Documentation sync automation
-
-## In Progress
-
-- Display backends
 
 ## Done
 
