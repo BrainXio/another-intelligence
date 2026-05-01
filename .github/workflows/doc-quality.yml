@@ -23,7 +23,7 @@ jobs:
 
       - run: uv run yamllint .
 
-      - uses: crate-ci/typos@v1.45.2
+      - uses: crate-ci/typos@v1.46.0
         with:
           config: .typos.toml
 
