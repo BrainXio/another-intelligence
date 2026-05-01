@@ -48,7 +48,6 @@ Fact-oriented documents that describe the system precisely:
 - [MCP.md](reference/MCP.md) — Model Context Protocol integration
 - [MCP-INTEGRATION-TESTING.md](reference/MCP-INTEGRATION-TESTING.md) — MCP integration testing
 - [PERMISSIONS.md](reference/PERMISSIONS.md) — Capability-based permissions
-- [planning.md](reference/planning.md) — Project planning and roadmap
 - [README.md](reference/README.md) — API and module reference
 
 ______________________________________________________________________
