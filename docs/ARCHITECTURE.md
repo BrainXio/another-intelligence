@@ -1,9 +1,4 @@
-________________________________________________________________---
-title: "Another-Intelligence Architecture"
-version: "0.1"
-status: draft
-updated: "2026-05-01"
----
+## \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_--- title: "Another-Intelligence Architecture" version: "0.1" status: draft updated: "2026-05-01"
 
 # Another-Intelligence Architecture
 
