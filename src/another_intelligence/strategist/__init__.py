@@ -92,7 +92,7 @@ class Strategist:
         for item in shortlist:
             name = item.get("name", "unknown")
             desc = item.get("description", "")
-            deps = item.get("dependencies", [])
+            deps: list[object] = item.get("dependencies", [])  # type: ignore[assignment]
             ev = self.expected_value(name, memory)
 
             rationale = (
@@ -113,5 +113,5 @@ class Strategist:
                 }
             )
 
-        evaluated.sort(key=lambda x: float(x["expected_value"]), reverse=True)
+        evaluated.sort(key=lambda x: round(float(str(x["expected_value"])), 4), reverse=True)
         return evaluated[:top_n]

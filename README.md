@@ -16,18 +16,39 @@ That's the PPAC loop. And that's what Cerebro implements:
 - **Actor (Basal Ganglia)**: Direct pathway (Go/D1) and indirect pathway (NoGo/D2) gate action selection — the Frank model of corticostriatal control
 - **Critic (Dopamine)**: Encodes RPE = actual − expected; positive RPE strengthens Go for the chosen action; negative RPE strengthens NoGo — the Schultz model of dopaminergic learning
 
-Every decision produces real RPE that updates a persistent memory-value index. Over time, Cerebro gets better at predicting which actions will succeed — not because it was fine-tuned on a static dataset, but because it learned from its own outcomes. The superpowers this externalizes:
+Every decision produces real RPE that updates a persistent memory-value index. Over time, Cerebro gets better at predicting which actions will succeed — not because it was fine-tuned on a static dataset, but because it learned from its own outcomes.
 
-- **Persistent memory** — Knowledge survives across sessions. Daily logs compile into structured articles that feed semantic query.
-- **Real learning** — RPE updates a memory-value index continuously. Preference pair datasets are exported for future QLoRA fine-tuning.
-- **MCP-native tooling** — All external tools (filesystem, browser, git, memory, hardware) route through a first-class MCP client. Any compliant MCP server works out of the box.
-- **Neuroscience fidelity** — Every component maps to a biological mechanism. The architecture is grounded in the cognitive neuroscience of decision-making, not prompt engineering.
+## Superpowers
 
-## What This Is
+The PPAC loop externalizes four cognitive superpowers that biological brains already have but digital systems consistently lack:
 
-Another Intelligence is a persistent agent that hosts the PPAC loop and discovers external tools exclusively through MCP. It is the cognitive core of the BrainXio ecosystem — the thing that thinks, decides, and learns. The three discipline packages (ADHD, OCD, ASD) expose MCP servers that Cerebro discovers at runtime. No package imports another. Discovery and communication happen exclusively through the MCP registry.
+- **Persistent memory** — Knowledge survives across sessions. Daily logs compile into structured articles that feed semantic query. No context window limits, no forgetting between sessions.
+- **Real learning** — RPE updates a memory-value index continuously. Every decision outcome strengthens or weakens the pathways that produced it. Preference pair datasets are exported for future QLoRA fine-tuning.
+- **MCP-native tooling** — All external tools (filesystem, browser, git, memory, hardware) route through a first-class MCP client. Any compliant MCP server works out of the box. No vendor lock-in, no proprietary SDK.
+- **Neuroscience fidelity** — Every component maps to a biological mechanism grounded in the cognitive neuroscience literature (Shadlen, Frank, Schultz models). This isn't prompt engineering — it's computational psychiatry.
 
-## Core Architecture
+## Quick Start
+
+```bash
+# Clone and install
+git clone git@github.com:BrainXio/Another-Intelligence.git
+cd another-intelligence
+uv sync
+uv pip install -e ".[dev]"
+
+# Run a full PPAC decision
+ai brain "Should I add caching to the API layer?"
+
+# Show live brain state, RPE, and context usage
+ai status --extended
+
+# List available MCP tools and their servers
+ai mcp list
+```
+
+Requires [Ollama](https://ollama.ai) with three model roles under the `Another-Intelligence/*` namespace. See `docs/DEVELOPMENT.md` for detailed setup.
+
+## Architecture
 
 ### PPAC Loop Stages
 
@@ -39,6 +60,39 @@ Every decision flows through a strict serial pipeline:
 4. **Outcome Recording** — real external feedback drives learning
 5. **Learning** — memory-value index update + preference dataset generation
 
+### Component Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              Another-Intelligence                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐    │
+│   │   DigitalBrain   │────▶│   PPAC Loop      │────▶│   5 Brain Regions│    │
+│   │   (Orchestrator) │     │   (Strict Serial)│     │   (Strategist,   │    │
+│   └──────────────────┘     └──────────────────┘     │    Executor,     │    │
+│                                                     │    Reflex)       │    │
+│   ┌──────────────────┐     ┌──────────────────┐     └──────────────────┘    │
+│   │   Permissions    │◀────│   Hook System    │                             │
+│   │   Engine         │     │   (Typed Events) │                             │
+│   └──────────────────┘     └──────────────────┘                             │
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │                        MCP Client (Core)                            │   │
+│   │  • Puppeteer / Playwright  • Filesystem  • Git  • Memory  • Custom  │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐    │
+│   │   Knowledge      │     │   RPE + Memory   │     │   Plugin Loader  │    │
+│   │   Pipeline       │     │   Value Index    │     │   (Core + Ext)   │    │
+│   └──────────────────┘     └──────────────────┘     └──────────────────┘    │
+│                                                                             │
+│   Configuration: ~/.brainxio/  +  .brainxio/ (project)                      │
+│   Models: Another-Intelligence/strategist, /executor, /reflex (tiered)      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ### Model Roles
 
 Three Ollama model roles under the `Another-Intelligence/*` namespace:
@@ -49,45 +103,7 @@ Three Ollama model roles under the `Another-Intelligence/*` namespace:
 | Executor   | Limbic System + Basal Ganglia     | Emotional valence tagging and Go/NoGo action selection           |
 | Reflex     | Parietal LIP + Dopamine           | Noisy evidence accumulation and RPE encoding                     |
 
-### MCP Client
-
-External tools are discovered and called through a first-class MCP client:
-
-| Server | Neuro Superpower            | Relationship                                           |
-| ------ | --------------------------- | ------------------------------------------------------ |
-| ADHD   | Coordination nervous system | Multi-agent message bus for parallel worktree sessions |
-| ASD    | Systematizing memory        | Knowledge base compilation and semantic storage        |
-| OCD    | Discipline & enforcement    | Rules, gates, modes, and standard enforcement          |
-
-## Installation
-
-```bash
-# Clone the repo
-git clone git@github.com:BrainXio/Another-Intelligence.git
-cd another-intelligence
-
-# Install with dev dependencies
-uv sync
-uv pip install -e ".[dev]"
-```
-
-## Usage
-
-```bash
-# Run a full PPAC decision
-ai brain "Should I add caching to the API layer?"
-
-# Show live brain state, RPE, and context usage
-ai status --extended
-
-# List available MCP tools and their servers
-ai mcp list
-
-# Check a permission decision
-ai permissions check "filesystem.write" --config .brainxio/permissions.json
-```
-
-## Configuration Location
+### Configuration
 
 Cerebro reads configuration from two directories, mirroring the `.claude` model:
 
@@ -96,17 +112,88 @@ Cerebro reads configuration from two directories, mirroring the `.claude` model:
 | `~/.brainxio/` | Global (all projects)        | Rules, skills, agents, memory, MCP server registry    |
 | `.brainxio/`   | Project-specific (committed) | Permissions, project-scoped MCP servers, hooks config |
 
-### Environment Variables
+## MCP Integration
 
-| Variable          | Purpose                                                           |
-| ----------------- | ----------------------------------------------------------------- |
-| `AI_CONFIG_PATH`  | Override config directory (default: `~/.brainxio`)                |
-| `AI_MODEL_PREFIX` | Override Ollama model namespace (default: `Another-Intelligence`) |
+Cerebro discovers and calls external tools exclusively through its first-class MCP client. No package imports another — discovery and communication happen at runtime through the MCP registry.
 
-## Design Philosophy
+| Server | Neuro Superpower            | Role                                            |
+| ------ | --------------------------- | ----------------------------------------------- |
+| ADHD   | Coordination nervous system | Multi-agent message bus for parallel worktrees  |
+| ASD    | Systematizing memory        | Knowledge base compilation and semantic storage |
+| OCD    | Discipline & enforcement    | Quality gates, standards, modes, and linting    |
 
-**Neuroscience fidelity over hype.** Every component maps to a biological mechanism. The architecture is grounded in cognitive neuroscience (Shadlen, Frank, Schultz models), not prompt engineering trends.
+If any MCP server is unavailable, Cerebro degrades gracefully: no OCD means manual standards checks, no ASD means ephemeral knowledge, no ADHD means solo operation.
 
-**Independence over vendor lock-in.** Runs 100% on Ollama. No proprietary SDK dependency. The three model roles are open-weight models you control.
+## Persistent Memory & RPE Learning
 
-**Real learning over stateless prompting.** RPE = actual − expected. The memory-value index improves continuously from real outcomes. This is learning, not context-stuffing.
+### Knowledge Pipeline
+
+Raw daily logs (`USER/logs/daily/`) are compiled by ASD into structured, versioned knowledge artifacts (`USER/kb/`) with YAML frontmatter, typed categories (concept, mechanism, outcome, reference, connection), cross-references, and TF-IDF semantic search.
+
+### RPE Learning Loop
+
+Every decision produces a reward prediction error — the difference between expected and actual outcome. This RPE updates a persistent memory-value index:
+
+- **Positive RPE** (outcome exceeded expectations → dopamine burst): Strengthens Go pathways for the chosen action
+- **Negative RPE** (outcome fell short → dopamine dip): Strengthens NoGo pathways, suppressing the chosen action
+
+Over time, this creates a self-improving system that learns from its own outcomes without requiring fine-tuning on static datasets.
+
+## Development & Contribution
+
+```bash
+# Setup dev environment
+uv sync
+uv pip install -e ".[dev]"
+
+# Run tests
+uv run pytest -q
+uv run pytest --cov=src/another_intelligence --cov-report=term-missing
+
+# Lint & format
+uv run ruff check .
+uv run ruff format --check .
+
+# CLI
+ai --help
+ai brain "prompt"
+ai status --extended
+```
+
+**Contribution guidelines**: See `CONTRIBUTING.md` for branch naming, conventional commits, PR workflow, and code style. All development must happen in worktrees — never edit directly on `main`.
+
+**Key documents** in `docs/`:
+
+- `ARCHITECTURE.md` — Full system design and component reference
+- `BASELINE.md` — v0.1 acceptance criteria
+- `DEVELOPMENT.md` — Workflow and environment setup
+- `PERMISSIONS.md` — Capability-based permission system
+- `HOOKS.md` — Typed lifecycle events
+- `MCP.md` — MCP client protocol and server registration
+
+## Related Repos & Roadmap
+
+### Ecosystem
+
+| Package  | Directory                                 | Role                                                    | Type       |
+| -------- | ----------------------------------------- | ------------------------------------------------------- | ---------- |
+| **ADHD** | `attention-deficit-hyperactivity-driver/` | Coordination nervous system — multi-agent message bus   | MCP Server |
+| **ASD**  | `autism-spectrum-driver/`                 | Systematizing memory — KB compilation, semantic storage | MCP Server |
+| **OCD**  | `obsessive-compulsive-driver/`            | Discipline & enforcement — rules, gates, modes          | MCP Server |
+
+### v0.1 Roadmap (Current)
+
+- [x] Architecture docs and acceptance criteria
+- [ ] Core PPAC loop implementation (Strategist, Executor, Reflex)
+- [ ] Permissions engine with capability-based checks
+- [ ] Hook system with typed lifecycle events
+- [ ] MCP client with auto-discovery
+- [ ] Knowledge pipeline integration with ASD
+- [ ] RPE learning with memory-value index
+- [ ] CLI with brain, status, and mcp subcommands
+
+See `docs/BASELINE.md` for the complete acceptance criteria.
+
+## License
+
+Apache-2.0. See `LICENSE`.

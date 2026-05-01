@@ -16,27 +16,27 @@ ______________________________________________________________________
 
 ### 1.1 PPAC Decision Loop
 
-- [ ] All five brain regions (Strategist, Executor, Reflex, and the two supporting stages) execute in **strict serial order** for every `decide()` call.
-- [ ] The loop completes successfully on **at least 10 diverse test prompts** covering:
+- [x] All five brain regions (Strategist, Executor, Reflex, and the two supporting stages) execute in **strict serial order** for every `decide()` call.
+- [x] The loop completes successfully on **at least 10 diverse test prompts** covering:
   - Simple factual queries
   - Multi-step planning
   - Tool-using tasks
   - Multi-turn conversations (minimum 5 turns)
   - Creative / open-ended prompts
-- [ ] Context key consistency is enforced: the key used in `propose()` must match the key used in `record_outcome()`.
+- [x] Context key consistency is enforced: the key used in `propose()` must match the key used in `record_outcome()`.
 
 ### 1.2 Brain Regions
 
-- [ ] **Strategist** (PFC) produces structured proposals with multi-attribute expected values.
-- [ ] **Executor** (Limbic + Basal Ganglia) correctly assigns emotional valence and performs Go/NoGo selection.
-- [ ] **Reflex** (Parietal + Dopamine) performs noisy evidence accumulation and computes RPE.
-- [ ] Each region emits a `BrainRegionActivated` event with correct metadata (region name, timestamp, input summary, output summary).
+- [x] **Strategist** (PFC) produces structured proposals with multi-attribute expected values.
+- [x] **Executor** (Limbic + Basal Ganglia) correctly assigns emotional valence and performs Go/NoGo selection.
+- [x] **Reflex** (Parietal + Dopamine) performs noisy evidence accumulation and computes RPE.
+- [x] Each region emits a `BrainRegionActivated` event with correct metadata (region name, timestamp, input summary, output summary).
 
 ### 1.3 Outcome Recording & Learning
 
-- [ ] Real external outcomes (test results, user feedback, system metrics) are captured and used to compute `RPE = actual − expected`.
-- [ ] When `|RPE| > 0.3`, a valid preference pair (chosen / rejected) is exported to `~/.brainxio/training_datasets/`.
-- [ ] Memory-value index is updated correctly after every outcome.
+- [x] Real external outcomes (test results, user feedback, system metrics) are captured and used to compute `RPE = actual − expected`.
+- [x] When `|RPE| > 0.3`, a valid preference pair (chosen / rejected) is exported to `~/.brainxio/training_datasets/`.
+- [x] Memory-value index is updated correctly after every outcome.
 
 ______________________________________________________________________
 

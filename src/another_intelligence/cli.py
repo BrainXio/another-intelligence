@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import json
 import uuid
+from datetime import datetime
+from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import click
 from rich.console import Console
@@ -493,25 +495,27 @@ def rpe_analyze(
         )
     )
 
-    if results["top_events"]:
+    top_events = cast("list[dict[str, object]]", results["top_events"])
+    if top_events:
         table = Table(title="Top |RPE| Events")
         table.add_column("Decision ID", style="cyan")
         table.add_column("Query", style="white")
         table.add_column("Action", style="magenta")
         table.add_column("RPE", style="green")
-        for evt in results["top_events"]:
+        for evt in top_events:
             table.add_row(
-                evt["decision_id"][:8],
-                evt["query"],
-                evt["chosen_action"],
+                str(evt["decision_id"])[:8],
+                str(evt["query"]),
+                str(evt["chosen_action"]),
                 str(evt["rpe"]),
             )
         console.print(table)
 
     # Learning insights
-    if results["mean_rpe"] > 0.05:
+    mean_rpe = float(str(results["mean_rpe"]))
+    if mean_rpe > 0.05:
         console.print("[green]System is consistently overperforming expectations.[/green]")
-    elif results["mean_rpe"] < -0.05:
+    elif mean_rpe < -0.05:
         console.print("[yellow]System is consistently underperforming expectations.[/yellow]")
     else:
         console.print("[dim]RPE is well-calibrated (near zero).[/dim]")
@@ -653,7 +657,7 @@ def rpe_record(
 
 
 @rpe.command(name="ingest")
-@click.argument("shortlist", type=click.File("r"), default="-")
+@click.argument("shortlist", type=click.File("r"), default="-", required=False)
 @click.option(
     "--top-n",
     type=int,
@@ -667,6 +671,17 @@ def rpe_record(
     help="Baseline expected value for unevaluated options.",
 )
 @click.option(
+    "--from-mcp",
+    is_flag=True,
+    help="Query ASD scanner via MCP instead of reading a file.",
+)
+@click.option(
+    "--scan-dir",
+    type=str,
+    default=None,
+    help="Directory for ASD scanner to scan (only with --from-mcp).",
+)
+@click.option(
     "--post-to-bus",
     is_flag=True,
     help="Post the ranked result to the ADHD bus.",
@@ -674,34 +689,73 @@ def rpe_record(
 @click.pass_context
 def rpe_ingest(
     ctx: click.Context,
-    shortlist,
+    shortlist: TextIOWrapper | None,
     top_n: int,
     base_value: float,
+    from_mcp: bool,
+    scan_dir: str | None,
     post_to_bus: bool,
 ) -> None:
     """Rank a prototype shortlist by expected value.
 
-    SHORTLIST is a JSON file (or stdin with '-') containing an array of
+    Reads from SHORTLIST JSON file (or stdin with '-') containing an array of
     objects, each with at least 'name' and 'description' keys.
+
+    With --from-mcp, queries the ASD scanner via MCP instead of reading a file.
     """
-    try:
-        data = json.load(shortlist)
-    except json.JSONDecodeError as exc:
-        ctx.fail(f"Invalid JSON: {exc}")
-
-    if not isinstance(data, list):
-        ctx.fail("Shortlist must be a JSON array of objects.")
-
     store: BrainStore = ctx.obj["store"]
     state = store.load_state()
     memory: dict[str, Any] = state.get("memory", {})
+    memory_float: dict[str, float] = {k: float(v) for k, v in memory.items()}
 
-    strategist = Strategist(base_value=base_value)
-    ranked = strategist.ingest_prototypes(
-        shortlist=data,
-        memory={k: float(v) for k, v in memory.items()},
-        top_n=top_n,
-    )
+    if from_mcp:
+        console = _get_console()
+        console.print("[dim]Querying ASD scanner via MCP...[/dim]")
+
+        from another_intelligence.brain import DigitalBrain
+        from another_intelligence.mcp.client import MCPClient, MCPRegistry
+        from another_intelligence.permissions.engine import PermissionEngine
+
+        registry = MCPRegistry()
+        engine = PermissionEngine()
+        mcp_client = MCPClient(registry, engine)
+
+        brain = DigitalBrain(telemetry=TelemetryRecorder())
+        for key, value in memory_float.items():
+            brain.memory_index[key] = value
+
+        async def _run() -> dict[str, Any]:
+            result = await brain.ingest_prototypes_from_mcp(
+                mcp_client, top_n=top_n, scan_dir=scan_dir
+            )
+            await mcp_client.disconnect_all()
+            return result
+
+        import asyncio as _asyncio
+
+        result = _asyncio.run(_run())
+
+        if not result.get("success"):
+            ctx.fail(f"MCP ingestion failed: {result.get('error', 'Unknown error')}")
+
+        ranked = result["ranked"]
+    else:
+        if shortlist is None:
+            ctx.fail("SHORTLIST argument is required when not using --from-mcp")
+        try:
+            data = json.loads(shortlist.read())
+        except json.JSONDecodeError as exc:
+            ctx.fail(f"Invalid JSON: {exc}")
+
+        if not isinstance(data, list):
+            ctx.fail("Shortlist must be a JSON array of objects.")
+
+        strategist = Strategist(base_value=base_value)
+        ranked = strategist.ingest_prototypes(
+            shortlist=data,
+            memory=memory_float,
+            top_n=top_n,
+        )
 
     console = _get_console()
     table = Table(title="Top Prototype Candidates")
@@ -720,12 +774,47 @@ def rpe_ingest(
     console.print(table)
 
     if post_to_bus:
-        console.print("[dim]Posting to ADHD bus...[/dim]")
+        import subprocess as _sp
+
+        bus_msg = json.dumps(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "type": "dependency",
+                "topic": "prototype-ingestion",
+                "payload": {
+                    "source": "ai-cognitive-core",
+                    "ranked": [
+                        {
+                            "name": item["name"],
+                            "expected_value": item["expected_value"],
+                            "rationale": item["rationale"],
+                            "dependencies": item.get("dependencies", []),
+                        }
+                        for item in ranked
+                    ],
+                },
+            }
+        )
+        _sp.run(
+            [
+                "uv",
+                "run",
+                "adhd",
+                "post",
+                "--type",
+                "dependency",
+                "--topic",
+                "prototype-ingestion",
+                "--payload",
+                bus_msg,
+            ],
+            check=False,
+        )
         console.print(
             Panel(
-                json.dumps(ranked, indent=2),
-                title="Would post to bus",
-                border_style="dim",
+                f"Top-{len(ranked)} candidates posted to ADHD bus.",
+                title="Bus Post",
+                border_style="green",
             )
         )
 
@@ -751,7 +840,6 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
     servers = registry.list_servers()
     if not servers:
         server_names: list[str] = []
-        # Scan for known servers in common paths
         for path in (Path(".mcp.json"), Path.home() / ".brainxio" / "mcp.json"):
             if path.exists():
                 with path.open("r", encoding="utf-8") as f:
@@ -784,15 +872,46 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
             table.add_row(name, "[dim]unknown[/dim]", "?", "?")
     console.print(table)
 
-    if extended and server_names:
-        console.print(
-            Panel(
-                "Health checks require a running MCP client.\n"
-                "Use `another_intelligence.mcp.client.MCPClient` for active health probing.",
-                title="Extended Status",
-                border_style="blue",
+    if extended and servers:
+        import asyncio as _asyncio
+
+        from another_intelligence.mcp.client import MCPClient
+        from another_intelligence.permissions.engine import PermissionEngine
+
+        engine = PermissionEngine()
+        client = MCPClient(registry, engine)
+
+        async def _probe() -> dict[str, Any]:
+            await client.connect_all()
+            health = await client.health_check()
+            await client.disconnect_all()
+            return health
+
+        console.print("[dim]Running health checks...[/dim]")
+        try:
+            health = _asyncio.run(_probe())
+        except Exception as exc:
+            console.print(f"[red]Health check failed: {exc}[/red]")
+            return
+
+        health_table = Table(title="Extended Health Status")
+        health_table.add_column("Server", style="cyan")
+        health_table.add_column("Connected", style="green")
+        health_table.add_column("Healthy", style="green")
+        health_table.add_column("Tools", style="magenta")
+        health_table.add_column("Version", style="white")
+        health_table.add_column("Error", style="red")
+
+        for name, h in sorted(health.items()):
+            health_table.add_row(
+                name,
+                "[green]yes[/green]" if h.connected else "[red]no[/red]",
+                "[green]yes[/green]" if h.healthy else "[red]no[/red]",
+                str(h.tool_count) if h.healthy else "-",
+                h.version or "?",
+                h.error or "-",
             )
-        )
+        console.print(health_table)
 
 
 if __name__ == "__main__":

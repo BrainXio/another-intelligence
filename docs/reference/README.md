@@ -22,6 +22,7 @@ ______________________________________________________________________
 | `another_intelligence.executor`           | Limbic + Basal Ganglia evaluator         |
 | `another_intelligence.reflex`             | Parietal evidence accumulator            |
 | `another_intelligence.rpe`                | Reward Prediction Error engine           |
+| `another_intelligence.rpe.telemetry`      | Structured JSONL telemetry for PPAC      |
 | `another_intelligence.memory.value_index` | Learned memory-value index               |
 | `another_intelligence.models.client`      | Ollama client wrapper                    |
 | `another_intelligence.models.resolver`    | Tiered model resolver                    |
@@ -56,50 +57,64 @@ ______________________________________________________________________
 
 ## CLI Commands
 
-| Command                         | Description                          | Status      |
-| ------------------------------- | ------------------------------------ | ----------- |
-| `ai brain decide`               | Run the PPAC decision loop           | Implemented |
-| `ai brain regions`              | Show recent brain region activations | Implemented |
-| `ai hook session-start`         | Start a session and emit event       | Implemented |
-| `ai hook session-end`           | End a session and emit event         | Implemented |
-| `ai flush`                      | Clear persisted state and event log  | Implemented |
-| `ai compile`                    | Compile knowledge from daily logs    | Implemented |
-| `ai query`                      | Search the compiled knowledge base   | Implemented |
-| `ai status`                     | Show current brain state             | Implemented |
-| `ai status --extended`          | Show state + full event history      | Implemented |
-| `ai permissions check`          | Evaluate a capability against policy | Implemented |
-| `ai permissions check --config` | Evaluate with custom settings.json   | Implemented |
+| Command                         | Description                            | Status      |
+| ------------------------------- | -------------------------------------- | ----------- |
+| `ai brain decide`               | Run the PPAC decision loop             | Implemented |
+| `ai brain regions`              | Show recent brain region activations   | Implemented |
+| `ai hook session-start`         | Start a session and emit event         | Implemented |
+| `ai hook session-end`           | End a session and emit event           | Implemented |
+| `ai flush`                      | Clear persisted state and event log    | Implemented |
+| `ai compile`                    | Compile knowledge from daily logs      | Implemented |
+| `ai query`                      | Search the compiled knowledge base     | Implemented |
+| `ai status`                     | Show current brain state               | Implemented |
+| `ai status --extended`          | Show state + full event history        | Implemented |
+| `ai permissions check`          | Evaluate a capability against policy   | Implemented |
+| `ai permissions check --config` | Evaluate with custom settings.json     | Implemented |
+| `ai rpe analyze`                | Analyze telemetry and show RPE metrics | Implemented |
+| `ai rpe analyze --since`        | Filter analysis by date range          | Implemented |
+| `ai rpe analyze --region`       | Filter by decision option              | Implemented |
+| `ai rpe export-pairs`           | Export QLoRA preference-pair dataset   | Implemented |
+| `ai rpe record --outcome`       | Record external outcome for RPE loop   | Implemented |
+| `ai rpe ingest`                 | Rank prototype shortlist by EV         | Implemented |
+| `ai rpe ingest --from-mcp`      | Query ASD scanner via MCP              | Implemented |
+| `ai rpe ingest --post-to-bus`   | Post ranked results to ADHD bus        | Implemented |
+| `ai mcp status`                 | Show MCP server connection status      | Implemented |
+| `ai mcp status --extended`      | Live health probe with tool counts     | Implemented |
 
 ## Exported Classes
 
-| Class                | Module                                    |
-| -------------------- | ----------------------------------------- |
-| `DigitalBrain`       | `another_intelligence.brain`              |
-| `BrainEvent`         | `another_intelligence.events`             |
-| `StateMachine`       | `another_intelligence.state`              |
-| `ContextWindow`      | `another_intelligence.context`            |
-| `Strategist`         | `another_intelligence.strategist`         |
-| `Proposal`           | `another_intelligence.strategist`         |
-| `Executor`           | `another_intelligence.executor`           |
-| `Evaluation`         | `another_intelligence.executor`           |
-| `Reflex`             | `another_intelligence.reflex`             |
-| `Selection`          | `another_intelligence.reflex`             |
-| `RPEEngine`          | `another_intelligence.rpe`                |
-| `MemoryValueIndex`   | `another_intelligence.memory`             |
-| `PermissionEngine`   | `another_intelligence.permissions.engine` |
-| `PermissionDecision` | `another_intelligence.permissions.engine` |
-| `HookRegistry`       | `another_intelligence.hooks`              |
-| `HookRunner`         | `another_intelligence.hooks`              |
-| `HookConfig`         | `another_intelligence.hooks`              |
-| `HookType`           | `another_intelligence.hooks`              |
-| `HookResult`         | `another_intelligence.hooks`              |
-| `KnowledgeCompiler`  | `another_intelligence.knowledge`          |
-| `KnowledgeQuery`     | `another_intelligence.knowledge`          |
-| `Article`            | `another_intelligence.knowledge`          |
-| `MCPClient`          | `another_intelligence.mcp`                |
-| `MCPRegistry`        | `another_intelligence.mcp`                |
-| `StdioConnection`    | `another_intelligence.mcp`                |
-| `MCPServerConfig`    | `another_intelligence.mcp`                |
-| `MCPToolDefinition`  | `another_intelligence.mcp`                |
-| `MetricsCollector`   | `another_intelligence.metrics`            |
-| `StatuslineRenderer` | `another_intelligence.statusline`         |
+| Class                    | Module                                    |
+| ------------------------ | ----------------------------------------- |
+| `DigitalBrain`           | `another_intelligence.brain`              |
+| `BrainEvent`             | `another_intelligence.events`             |
+| `StateMachine`           | `another_intelligence.state`              |
+| `ContextWindow`          | `another_intelligence.context`            |
+| `Strategist`             | `another_intelligence.strategist`         |
+| `Proposal`               | `another_intelligence.strategist`         |
+| `Executor`               | `another_intelligence.executor`           |
+| `Evaluation`             | `another_intelligence.executor`           |
+| `Reflex`                 | `another_intelligence.reflex`             |
+| `Selection`              | `another_intelligence.reflex`             |
+| `RPEEngine`              | `another_intelligence.rpe`                |
+| `TelemetryRecord`        | `another_intelligence.rpe.telemetry`      |
+| `TelemetryRecorder`      | `another_intelligence.rpe.telemetry`      |
+| `TelemetryAnalyzer`      | `another_intelligence.rpe.telemetry`      |
+| `MemoryValueIndex`       | `another_intelligence.memory`             |
+| `PreferencePairExporter` | `another_intelligence.memory.pairs`       |
+| `PermissionEngine`       | `another_intelligence.permissions.engine` |
+| `PermissionDecision`     | `another_intelligence.permissions.engine` |
+| `HookRegistry`           | `another_intelligence.hooks`              |
+| `HookRunner`             | `another_intelligence.hooks`              |
+| `HookConfig`             | `another_intelligence.hooks`              |
+| `HookType`               | `another_intelligence.hooks`              |
+| `HookResult`             | `another_intelligence.hooks`              |
+| `KnowledgeCompiler`      | `another_intelligence.knowledge`          |
+| `KnowledgeQuery`         | `another_intelligence.knowledge`          |
+| `Article`                | `another_intelligence.knowledge`          |
+| `MCPClient`              | `another_intelligence.mcp`                |
+| `MCPRegistry`            | `another_intelligence.mcp`                |
+| `StdioConnection`        | `another_intelligence.mcp`                |
+| `MCPServerConfig`        | `another_intelligence.mcp`                |
+| `MCPToolDefinition`      | `another_intelligence.mcp`                |
+| `MetricsCollector`       | `another_intelligence.metrics`            |
+| `StatuslineRenderer`     | `another_intelligence.statusline`         |

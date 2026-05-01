@@ -96,7 +96,19 @@ ai brain "Explain the PPAC loop in simple terms"
 
 ______________________________________________________________________
 
-## 4. Autonomous Development Loop (Recommended)
+## 4. Bus Communication Etiquette
+
+The ADHD coordination bus is for **agent-to-agent coordination**, not FAQ or general inquiries.
+
+**Before posting any question to the bus:**
+
+1. Read `prompt.txt` — your local instructions, workflow, and rules.
+2. Read `tasks.json` — task status, dependencies, and acceptance criteria.
+3. Read the relevant `docs/` file — architecture, development, hooks, permissions, etc.
+4. If the answer is in any of those, **do not post**. Redundant questions waste supporter bandwidth.
+5. Only post for: task claiming, schema/dependency declarations, blocker reports, PR announcements, or review requests.
+
+## 5. Autonomous Development Loop (Recommended)
 
 Another-Intelligence is explicitly designed to be developed with heavy assistance from an LLM agent.
 
