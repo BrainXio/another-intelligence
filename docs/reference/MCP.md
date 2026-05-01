@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "Model Context Protocol Integration" version: "0.1" status: draft updated: "2026-04-28"
+---
+title: Model Context Protocol Integration
+tags: [reference, mcp]
+updated: '2026-04-28'
+version: '0.1'
+status: draft
+---
 
 # MCP.md — Model Context Protocol Integration
 
@@ -157,9 +161,9 @@ ______________________________________________________________________
 
 ## 10. Relationship to Other Systems
 
-- **Permissions.md** — All MCP tools are governed by the capability system.
+- **PERMISSIONS.md** — All MCP tools are governed by the capability system.
 - **HOOKS.md** — MCP calls trigger PreToolUse / PostToolUse / MCPToolCalled.
-- **ARCHITECTURE.md** — MCP Client is part of the core, not a plugin.
+- **../explanation/ARCHITECTURE.md** — MCP Client is part of the core, not a plugin.
 
 ______________________________________________________________________
 

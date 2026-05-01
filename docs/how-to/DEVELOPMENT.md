@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "Development Workflow & Tooling" version: "0.1" status: draft updated: "2026-04-28"
+---
+title: Development Workflow & Tooling
+tags: [how-to, development]
+updated: '2026-04-28'
+version: '0.1'
+status: draft
+---
 
 # DEVELOPMENT.md — Development Workflow & Tooling
 
@@ -60,9 +64,9 @@ ______________________________________________________________________
 ### 3.1 Starting Work on a Feature
 
 1. Read the relevant documents:
-   - `ARCHITECTURE.md`
-   - `BASELINE.md` (if working toward v0.1)
-   - The specific `.md` file for the area (e.g., `HOOKS.md`, `MCP.md`)
+   - `../explanation/ARCHITECTURE.md`
+   - `../reference/BASELINE.md` (if working toward v0.1)
+   - The specific `.md` file for the area (e.g., `../reference/HOOKS.md`, `../reference/MCP.md`)
 2. Create a feature branch: `git checkout -b feat/add-mcp-memory-server`
 3. Write or update tests **first** (TDD).
 4. Implement until all tests pass.
@@ -103,7 +107,7 @@ The ADHD coordination bus is for **agent-to-agent coordination**, not FAQ or gen
 **Before posting any question to the bus:**
 
 1. Read `prompt.txt` — your local instructions, workflow, and rules.
-2. Read `tasks.json` — task status, dependencies, and acceptance criteria.
+2. Read tasks from `~/.brainxio/ocd/tasks/ai.json` — task status, dependencies, and acceptance criteria.
 3. Read the relevant `docs/` file — architecture, development, hooks, permissions, etc.
 4. If the answer is in any of those, **do not post**. Redundant questions waste supporter bandwidth.
 5. Only post for: task claiming, schema/dependency declarations, blocker reports, PR announcements, or review requests.
@@ -125,16 +129,16 @@ Another-Intelligence is explicitly designed to be developed with heavy assistanc
 
 3. Use a Claude Code / Cline / similar agent with the following context loaded automatically:
 
-   - `ARCHITECTURE.md`
-   - `BASELINE.md`
+   - `../explanation/ARCHITECTURE.md`
+   - `../reference/BASELINE.md`
    - `DEVELOPMENT.md`
-   - `HOOKS.md`
-   - `PERMISSIONS.md`
-   - `MCP.md`
+   - `../reference/HOOKS.md`
+   - `../reference/PERMISSIONS.md`
+   - `../reference/MCP.md`
 
 4. Instruct the agent with clear, bounded tasks such as:
 
-   > "Implement the PreToolUse hook registration system according to HOOKS.md. Write tests first. All changes must pass `uv run pytest`."
+   > "Implement the PreToolUse hook registration system according to ../reference/HOOKS.md. Write tests first. All changes must pass `uv run pytest`."
 
 ### 4.2 Best Practices for Agent-Assisted Development
 
@@ -179,7 +183,7 @@ ______________________________________________________________________
 
 ## 6. Release Process (v0.1 and beyond)
 
-1. All baseline criteria in `BASELINE.md` are green.
+1. All baseline criteria in `../reference/BASELINE.md` are green.
 2. Full test suite passes with ≥ 80% coverage on core.
 3. Documentation is complete and consistent.
 4. `CHANGELOG.md` is updated.

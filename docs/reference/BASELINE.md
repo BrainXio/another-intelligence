@@ -1,4 +1,10 @@
-## \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_--- title: "v0.1 Success Criteria" version: "0.1" status: draft updated: "2026-05-01"
+---
+title: v0.1 Success Criteria
+tags: [reference, baseline]
+updated: '2026-05-01'
+version: '0.1'
+status: draft
+---
 
 # BASELINE.md — v0.1 Success Criteria
 
@@ -118,7 +124,7 @@ A release candidate for v0.1 is ready **only when**:
    - `ai compile`
    - `ai status --extended` shows correct state
 3. At least one MCP-powered extension (e.g., browser automation via Puppeteer) works end-to-end.
-4. [x] Documentation (this file + ARCHITECTURE.md + HOOKS.md + PERMISSIONS.md) is consistent and up to date.
+4. [x] Documentation (this file + ../explanation/ARCHITECTURE.md + HOOKS.md + PERMISSIONS.md) is consistent and up to date.
 5. The autonomous development loop (Claude-agent-sdk + MCP servers) can successfully implement a new small feature with zero human code changes after the initial prompt.
 
 ______________________________________________________________________

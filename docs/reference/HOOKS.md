@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "Hook System Specification" version: "0.1" status: draft updated: "2026-04-29"
+---
+title: Hook System Specification
+tags: [reference, hooks]
+updated: '2026-04-29'
+version: '0.1'
+status: draft
+---
 
 # HOOKS.md — Hook System Specification
 
@@ -156,4 +160,4 @@ No direct port of code — only concepts.
 ______________________________________________________________________
 
 **This document is the definitive specification.**\
-Any new hook event must be added here first and kept consistent with `ARCHITECTURE.md` and `PERMISSIONS.md`.
+Any new hook event must be added here first and kept consistent with `../explanation/ARCHITECTURE.md` and `PERMISSIONS.md`.

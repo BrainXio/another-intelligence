@@ -1,6 +1,10 @@
-______________________________________________________________________
-
-## title: "Prompt Engineering & Rules System" version: "0.1" status: draft updated: "2026-04-28"
+---
+title: Prompt Engineering & Rules System
+tags: [how-to, prompting]
+updated: '2026-04-28'
+version: '0.1'
+status: draft
+---
 
 # PROMPTING.md — Prompt Engineering & Rules System
 
@@ -136,9 +140,9 @@ ______________________________________________________________________
 
 ## 8. Relationship to Other Systems
 
-- **ARCHITECTURE.md** — Prompting is part of the model layer.
-- **MCP.md** — Tools are injected dynamically into the prompt.
-- **HOOKS.md** — SessionStart can modify active rules/skills.
+- **../explanation/ARCHITECTURE.md** — Prompting is part of the model layer.
+- **../reference/MCP.md** — Tools are injected dynamically into the prompt.
+- **../reference/HOOKS.md** — SessionStart can modify active rules/skills.
 
 ______________________________________________________________________
 
