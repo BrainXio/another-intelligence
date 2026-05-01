@@ -729,6 +729,7 @@ def rpe_ingest(
             return result
 
         import asyncio as _asyncio
+
         result = _asyncio.run(_run())
 
         if not result.get("success"):
@@ -771,35 +772,48 @@ def rpe_ingest(
 
     if post_to_bus:
         import subprocess as _sp
-        bus_msg = json.dumps({
-            "timestamp": datetime.now().isoformat(),
-            "type": "dependency",
-            "topic": "prototype-ingestion",
-            "payload": {
-                "source": "ai-cognitive-core",
-                "ranked": [
-                    {
-                        "name": item["name"],
-                        "expected_value": item["expected_value"],
-                        "rationale": item["rationale"],
-                        "dependencies": item.get("dependencies", []),
-                    }
-                    for item in ranked
-                ],
-            },
-        })
+
+        bus_msg = json.dumps(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "type": "dependency",
+                "topic": "prototype-ingestion",
+                "payload": {
+                    "source": "ai-cognitive-core",
+                    "ranked": [
+                        {
+                            "name": item["name"],
+                            "expected_value": item["expected_value"],
+                            "rationale": item["rationale"],
+                            "dependencies": item.get("dependencies", []),
+                        }
+                        for item in ranked
+                    ],
+                },
+            }
+        )
         _sp.run(
-            ["uv", "run", "adhd", "post",
-             "--type", "dependency",
-             "--topic", "prototype-ingestion",
-             "--payload", bus_msg],
+            [
+                "uv",
+                "run",
+                "adhd",
+                "post",
+                "--type",
+                "dependency",
+                "--topic",
+                "prototype-ingestion",
+                "--payload",
+                bus_msg,
+            ],
             check=False,
         )
-        console.print(Panel(
-            f"Top-{len(ranked)} candidates posted to ADHD bus.",
-            title="Bus Post",
-            border_style="green",
-        ))
+        console.print(
+            Panel(
+                f"Top-{len(ranked)} candidates posted to ADHD bus.",
+                title="Bus Post",
+                border_style="green",
+            )
+        )
 
 
 # ---------------------------------------------------------------------------

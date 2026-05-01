@@ -311,10 +311,13 @@ class DigitalBrain:
             return {"success": False, "error": scan_result.get("error", "ASD scan failed")}
 
         result_data = scan_result.get("result", {})
-        shortlist_path = result_data.get("shortlist_path") if isinstance(result_data, dict) else None
+        shortlist_path = (
+            result_data.get("shortlist_path") if isinstance(result_data, dict) else None
+        )
 
         if shortlist_path is not None:
             import json as _json
+
             try:
                 shortlist = _json.loads(Path(shortlist_path).read_text())
             except Exception:
