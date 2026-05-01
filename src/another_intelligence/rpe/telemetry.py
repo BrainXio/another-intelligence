@@ -57,7 +57,7 @@ class TelemetryAnalyzer:
         self,
         since: str | None = None,
         region: str | None = None,
-    ) -> dict[str, object]:
+    ) -> dict[str, Any]:
         """Compute summary statistics over telemetry records.
 
         Args:

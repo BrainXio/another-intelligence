@@ -9,8 +9,9 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import datetime
+from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import click
 from rich.console import Console
@@ -494,25 +495,27 @@ def rpe_analyze(
         )
     )
 
-    if results["top_events"]:
+    top_events = cast("list[dict[str, object]]", results["top_events"])
+    if top_events:
         table = Table(title="Top |RPE| Events")
         table.add_column("Decision ID", style="cyan")
         table.add_column("Query", style="white")
         table.add_column("Action", style="magenta")
         table.add_column("RPE", style="green")
-        for evt in results["top_events"]:
+        for evt in top_events:
             table.add_row(
-                evt["decision_id"][:8],
-                evt["query"],
-                evt["chosen_action"],
+                str(evt["decision_id"])[:8],
+                str(evt["query"]),
+                str(evt["chosen_action"]),
                 str(evt["rpe"]),
             )
         console.print(table)
 
     # Learning insights
-    if results["mean_rpe"] > 0.05:
+    mean_rpe = float(str(results["mean_rpe"]))
+    if mean_rpe > 0.05:
         console.print("[green]System is consistently overperforming expectations.[/green]")
-    elif results["mean_rpe"] < -0.05:
+    elif mean_rpe < -0.05:
         console.print("[yellow]System is consistently underperforming expectations.[/yellow]")
     else:
         console.print("[dim]RPE is well-calibrated (near zero).[/dim]")
@@ -686,7 +689,7 @@ def rpe_record(
 @click.pass_context
 def rpe_ingest(
     ctx: click.Context,
-    shortlist: list[dict[str, object]],
+    shortlist: TextIOWrapper | None,
     top_n: int,
     base_value: float,
     from_mcp: bool,
@@ -740,7 +743,7 @@ def rpe_ingest(
         if shortlist is None:
             ctx.fail("SHORTLIST argument is required when not using --from-mcp")
         try:
-            data = json.load(shortlist)
+            data = json.loads(shortlist.read())
         except json.JSONDecodeError as exc:
             ctx.fail(f"Invalid JSON: {exc}")
 
@@ -878,7 +881,7 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
         engine = PermissionEngine()
         client = MCPClient(registry, engine)
 
-        async def _probe() -> dict[str, object]:
+        async def _probe() -> dict[str, Any]:
             await client.connect_all()
             health = await client.health_check()
             await client.disconnect_all()
