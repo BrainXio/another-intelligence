@@ -337,7 +337,7 @@ class DigitalBrain:
         # Record telemetry for the ranking decision
         if self._telemetry is not None:
             options = [str(item["name"]) for item in ranked]
-            expected_values = [float(item["expected_value"]) for item in ranked]
+            expected_values = [float(str(item["expected_value"])) for item in ranked]
             self._telemetry.record(
                 TelemetryRecord(
                     decision_id=str(uuid.uuid4()),

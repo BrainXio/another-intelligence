@@ -686,7 +686,7 @@ def rpe_record(
 @click.pass_context
 def rpe_ingest(
     ctx: click.Context,
-    shortlist,
+    shortlist: list[dict[str, object]],
     top_n: int,
     base_value: float,
     from_mcp: bool,
@@ -878,7 +878,7 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
         engine = PermissionEngine()
         client = MCPClient(registry, engine)
 
-        async def _probe() -> dict:
+        async def _probe() -> dict[str, object]:
             await client.connect_all()
             health = await client.health_check()
             await client.disconnect_all()
