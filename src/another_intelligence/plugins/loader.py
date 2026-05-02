@@ -9,6 +9,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from another_intelligence.paths import PLUGINS_DIR
 from another_intelligence.plugins.plugin import Plugin
 
 logger = logging.getLogger(__name__)
@@ -86,9 +87,7 @@ class PluginLoader:
     def __init__(self, plugin_dirs: Sequence[Path | str] | None = None) -> None:
         self._plugin_classes: list[type[Plugin]] = []
         self._plugins: list[Plugin] = []
-        self._plugin_dirs = (
-            list(plugin_dirs) if plugin_dirs else [Path.home() / ".brainxio" / "plugins"]
-        )
+        self._plugin_dirs = list(plugin_dirs) if plugin_dirs else [PLUGINS_DIR]
         self._capability_map: dict[str, list[Plugin]] = {}
         self._mtimes: dict[Path, float] = {}
 

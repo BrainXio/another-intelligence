@@ -15,6 +15,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from another_intelligence.events import MCPToolCalled, PostToolUse, PreToolUse
+from another_intelligence.paths import GLOBAL_MCP_CONFIG, PROJECT_MCP_CONFIG
 from another_intelligence.permissions.engine import PermissionEngine
 
 
@@ -63,12 +64,10 @@ class MCPRegistry:
         if config_path is not None:
             return Path(config_path)
         # Search global then project config
-        global_path = Path.home() / ".brainxio" / "mcp.json"
-        if global_path.exists():
-            return global_path
-        project_path = Path(".brainxio") / "mcp.json"
-        if project_path.exists():
-            return project_path
+        if GLOBAL_MCP_CONFIG.exists():
+            return GLOBAL_MCP_CONFIG
+        if PROJECT_MCP_CONFIG.exists():
+            return PROJECT_MCP_CONFIG
         return None
 
     def _load(self) -> None:

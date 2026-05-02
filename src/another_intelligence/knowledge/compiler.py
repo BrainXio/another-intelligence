@@ -9,6 +9,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from another_intelligence.paths import DAILY_LOGS_DIR, KNOWLEDGE_DIR
+
 
 class Article:
     """A compiled knowledge article."""
@@ -93,11 +95,11 @@ class KnowledgeCompiler:
 
     @staticmethod
     def _default_source_dir() -> Path:
-        return Path.home() / ".brainxio" / "daily"
+        return DAILY_LOGS_DIR
 
     @staticmethod
     def _default_output_dir() -> Path:
-        return Path.home() / ".brainxio" / "knowledge"
+        return KNOWLEDGE_DIR
 
     def compile(self) -> dict[str, Any]:
         """Run the full compile pipeline.
