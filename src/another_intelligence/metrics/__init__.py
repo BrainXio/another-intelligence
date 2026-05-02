@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections import deque
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -129,10 +130,12 @@ class MetricsCollector:
         """Read the last *limit* lines from the event log."""
         if not self._log_file.exists():
             return []
+        recent_lines: deque[str] = deque(maxlen=limit)
         with self._log_file.open("r", encoding="utf-8") as fh:
-            lines = fh.readlines()
-        records = [json.loads(line) for line in lines if line.strip()]
-        return records[-limit:]
+            for line in fh:
+                recent_lines.append(line)
+        records = [json.loads(line) for line in recent_lines if line.strip()]
+        return list(records)
 
     def clear_log(self) -> None:
         """Truncate the event log file (testing helper)."""
