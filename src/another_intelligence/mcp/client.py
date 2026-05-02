@@ -132,33 +132,30 @@ class MCPConnection(ABC):
 
 
 class _JsonRpcState:
-    """Shared JSON-RPC request state for stdio transport."""
+    """Per-connection JSON-RPC request state for stdio transport."""
 
-    _counter: int = 0
-    _pending: dict[int, asyncio.Future[Any]] = {}
-    _lock: asyncio.Lock = asyncio.Lock()
+    def __init__(self) -> None:
+        self._counter: int = 0
+        self._pending: dict[int, asyncio.Future[Any]] = {}
+        self._lock: asyncio.Lock = asyncio.Lock()
 
-    @classmethod
-    async def next_id(cls) -> int:
-        async with cls._lock:
-            cls._counter += 1
-            return cls._counter
+    async def next_id(self) -> int:
+        async with self._lock:
+            self._counter += 1
+            return self._counter
 
-    @classmethod
-    def register_future(cls, req_id: int, future: asyncio.Future[Any]) -> None:
-        cls._pending[req_id] = future
+    def register_future(self, req_id: int, future: asyncio.Future[Any]) -> None:
+        self._pending[req_id] = future
 
-    @classmethod
-    def resolve(cls, req_id: int, result: Any) -> bool:
-        future = cls._pending.pop(req_id, None)
+    def resolve(self, req_id: int, result: Any) -> bool:
+        future = self._pending.pop(req_id, None)
         if future is not None and not future.done():
             future.set_result(result)
             return True
         return False
 
-    @classmethod
-    def reject(cls, req_id: int, error: Exception) -> bool:
-        future = cls._pending.pop(req_id, None)
+    def reject(self, req_id: int, error: Exception) -> bool:
+        future = self._pending.pop(req_id, None)
         if future is not None and not future.done():
             future.set_exception(error)
             return True
@@ -173,6 +170,7 @@ class StdioConnection(MCPConnection):
         self._proc: asyncio.subprocess.Process | None = None
         self._reader_task: asyncio.Task[None] | None = None
         self._write_lock = asyncio.Lock()
+        self._rpc_state = _JsonRpcState()
 
     async def connect(self) -> None:
         import os
@@ -235,12 +233,12 @@ class StdioConnection(MCPConnection):
                     continue
                 if "error" in msg:
                     error = msg["error"]
-                    _JsonRpcState.reject(
+                    self._rpc_state.reject(
                         req_id,
                         RuntimeError(f"JSON-RPC error {error.get('code')}: {error.get('message')}"),
                     )
                 else:
-                    _JsonRpcState.resolve(req_id, msg.get("result"))
+                    self._rpc_state.resolve(req_id, msg.get("result"))
         except asyncio.CancelledError:
             raise
 
@@ -248,7 +246,7 @@ class StdioConnection(MCPConnection):
         if not self._connected or self._proc is None or self._proc.stdin is None:
             raise RuntimeError("Connection not established")
 
-        req_id = await _JsonRpcState.next_id()
+        req_id = await self._rpc_state.next_id()
         request: dict[str, Any] = {
             "jsonrpc": "2.0",
             "id": req_id,
@@ -259,7 +257,7 @@ class StdioConnection(MCPConnection):
 
         loop = asyncio.get_event_loop()
         future: asyncio.Future[Any] = loop.create_future()
-        _JsonRpcState.register_future(req_id, future)
+        self._rpc_state.register_future(req_id, future)
 
         payload = json.dumps(request) + "\n"
         async with self._write_lock:
@@ -269,7 +267,7 @@ class StdioConnection(MCPConnection):
         try:
             return await asyncio.wait_for(future, timeout=self._config.timeout)
         except TimeoutError:
-            _JsonRpcState.reject(req_id, TimeoutError(f"Request {method} timed out"))
+            self._rpc_state.reject(req_id, TimeoutError(f"Request {method} timed out"))
             raise
 
     async def send_notification(self, method: str, params: dict[str, Any] | None = None) -> None:
@@ -288,7 +286,12 @@ class StdioConnection(MCPConnection):
 
 
 class MCPClient:
-    """MCP client integrating with permissions, hooks, and the event bus."""
+    """MCP client integrating with permissions, hooks, and the event bus.
+
+    Uses persistent connection pooling with health checks and automatic
+    reconnection. Connections are reused across calls and re-established
+    transparently when the subprocess dies.
+    """
 
     def __init__(
         self,
@@ -308,30 +311,43 @@ class MCPClient:
         for callback in self._hooks.get(type(event).__name__, []):
             try:
                 callback(event)
-            except Exception:
+            except (RuntimeError, TypeError, ValueError):
                 continue
 
-    def _get_connection(self, server_name: str) -> MCPConnection:
-        if server_name not in self._connections:
-            config = self._registry.get(server_name)
-            if config is None:
-                raise ValueError(f"Unknown MCP server: {server_name}")
-            if config.type == "stdio":
-                self._connections[server_name] = StdioConnection(config)
-            else:
-                raise ValueError(f"Unsupported transport type: {config.type}")
-        return self._connections[server_name]
+    def _create_connection(self, server_name: str) -> MCPConnection:
+        """Instantiate a connection object from registry config."""
+        config = self._registry.get(server_name)
+        if config is None:
+            raise ValueError(f"Unknown MCP server: {server_name}")
+        if config.type == "stdio":
+            return StdioConnection(config)
+        raise ValueError(f"Unsupported transport type: {config.type}")
+
+    async def _get_or_connect(self, server_name: str) -> MCPConnection:
+        """Return a live connection, reconnecting if the previous one died.
+
+        Caches the connection object and reuses it across calls. If the
+        subprocess died or was never started, creates a fresh connection
+        and connects transparently.
+        """
+        conn = self._connections.get(server_name)
+        if conn is not None and conn.connected:
+            return conn
+        if conn is None:
+            conn = self._create_connection(server_name)
+            self._connections[server_name] = conn
+        if not conn.connected:
+            await conn.connect()
+        return conn
 
     async def connect_all(self) -> list[str]:
         """Connect to all configured servers and return connected names."""
         connected: list[str] = []
         for name in self._registry.list_servers():
             try:
-                conn = self._get_connection(name)
-                if not conn.connected:
-                    await conn.connect()
+                await self._get_or_connect(name)
                 connected.append(name)
-            except Exception:
+            except (OSError, RuntimeError, TimeoutError, ValueError):
                 continue
         return connected
 
@@ -353,9 +369,7 @@ class MCPClient:
             if name in self._tools_cache:
                 result[name] = self._tools_cache[name]
                 continue
-            conn = self._get_connection(name)
-            if not conn.connected:
-                await conn.connect()
+            conn = await self._get_or_connect(name)
             tools = await conn.list_tools()
             self._tools_cache[name] = tools
             result[name] = tools
@@ -418,13 +432,11 @@ class MCPClient:
         # 4. Execute
         start = time.perf_counter()
         try:
-            conn = self._get_connection(server_name)
-            if not conn.connected:
-                await conn.connect()
+            conn = await self._get_or_connect(server_name)
             result = await conn.call_tool(tool_name, params)
             success = True
             error: str | None = None
-        except Exception as exc:
+        except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
             success = False
             result = None
             error = str(exc)
@@ -472,9 +484,7 @@ class MCPClient:
                 continue
 
             try:
-                conn = self._get_connection(name)
-                if not conn.connected:
-                    await conn.connect()
+                conn = await self._get_or_connect(name)
                 tools = await conn.list_tools()
                 result[name] = MCPServerHealth(
                     name=name,
@@ -484,7 +494,7 @@ class MCPClient:
                     tool_count=len(tools),
                     last_checked=datetime.now(UTC),
                 )
-            except Exception as exc:
+            except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
                 result[name] = MCPServerHealth(
                     name=name,
                     connected=getattr(self._connections.get(name), "connected", False),
@@ -523,7 +533,7 @@ class MCPClient:
                     result["retries"] = attempt
                     return result
                 last_error = result.get("error", "Unknown error")
-            except Exception as exc:
+            except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
                 last_error = str(exc)
 
             if attempt < max_retries - 1:
