@@ -285,7 +285,12 @@ class StdioConnection(MCPConnection):
 
 
 class MCPClient:
-    """MCP client integrating with permissions, hooks, and the event bus."""
+    """MCP client integrating with permissions, hooks, and the event bus.
+
+    Uses persistent connection pooling with health checks and automatic
+    reconnection. Connections are reused across calls and re-established
+    transparently when the subprocess dies.
+    """
 
     def __init__(
         self,
@@ -308,25 +313,38 @@ class MCPClient:
             except (RuntimeError, TypeError, ValueError):
                 continue
 
-    def _get_connection(self, server_name: str) -> MCPConnection:
-        if server_name not in self._connections:
-            config = self._registry.get(server_name)
-            if config is None:
-                raise ValueError(f"Unknown MCP server: {server_name}")
-            if config.type == "stdio":
-                self._connections[server_name] = StdioConnection(config)
-            else:
-                raise ValueError(f"Unsupported transport type: {config.type}")
-        return self._connections[server_name]
+    def _create_connection(self, server_name: str) -> MCPConnection:
+        """Instantiate a connection object from registry config."""
+        config = self._registry.get(server_name)
+        if config is None:
+            raise ValueError(f"Unknown MCP server: {server_name}")
+        if config.type == "stdio":
+            return StdioConnection(config)
+        raise ValueError(f"Unsupported transport type: {config.type}")
+
+    async def _get_or_connect(self, server_name: str) -> MCPConnection:
+        """Return a live connection, reconnecting if the previous one died.
+
+        Caches the connection object and reuses it across calls. If the
+        subprocess died or was never started, creates a fresh connection
+        and connects transparently.
+        """
+        conn = self._connections.get(server_name)
+        if conn is not None and conn.connected:
+            return conn
+        if conn is None:
+            conn = self._create_connection(server_name)
+            self._connections[server_name] = conn
+        if not conn.connected:
+            await conn.connect()
+        return conn
 
     async def connect_all(self) -> list[str]:
         """Connect to all configured servers and return connected names."""
         connected: list[str] = []
         for name in self._registry.list_servers():
             try:
-                conn = self._get_connection(name)
-                if not conn.connected:
-                    await conn.connect()
+                await self._get_or_connect(name)
                 connected.append(name)
             except (OSError, RuntimeError, ConnectionError):
                 continue
@@ -350,9 +368,7 @@ class MCPClient:
             if name in self._tools_cache:
                 result[name] = self._tools_cache[name]
                 continue
-            conn = self._get_connection(name)
-            if not conn.connected:
-                await conn.connect()
+            conn = await self._get_or_connect(name)
             tools = await conn.list_tools()
             self._tools_cache[name] = tools
             result[name] = tools
@@ -415,9 +431,7 @@ class MCPClient:
         # 4. Execute
         start = time.perf_counter()
         try:
-            conn = self._get_connection(server_name)
-            if not conn.connected:
-                await conn.connect()
+            conn = await self._get_or_connect(server_name)
             result = await conn.call_tool(tool_name, params)
             success = True
             error: str | None = None
@@ -469,9 +483,7 @@ class MCPClient:
                 continue
 
             try:
-                conn = self._get_connection(name)
-                if not conn.connected:
-                    await conn.connect()
+                conn = await self._get_or_connect(name)
                 tools = await conn.list_tools()
                 result[name] = MCPServerHealth(
                     name=name,
