@@ -31,6 +31,7 @@ from another_intelligence.memory.pairs import PreferencePairExporter
 from another_intelligence.permissions.engine import PermissionEngine
 from another_intelligence.rpe.telemetry import TelemetryAnalyzer, TelemetryRecorder
 from another_intelligence.state import ActivityPhase
+from another_intelligence.paths import GLOBAL_MCP_CONFIG, STATE_DIR
 from another_intelligence.strategist import Strategist
 
 
@@ -42,7 +43,7 @@ class BrainStore:
 
     def __init__(self, base_dir: Path | None = None) -> None:
         if base_dir is None:
-            base_dir = Path.home() / ".brainxio" / "state"
+            base_dir = STATE_DIR
         self._base = base_dir
         self._base.mkdir(parents=True, exist_ok=True)
         self._state_path = self._base / self._STATE_FILE
@@ -840,7 +841,7 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
     servers = registry.list_servers()
     if not servers:
         server_names: list[str] = []
-        for path in (Path(".mcp.json"), Path.home() / ".brainxio" / "mcp.json"):
+        for path in (Path(".mcp.json"), GLOBAL_MCP_CONFIG):
             if path.exists():
                 with path.open("r", encoding="utf-8") as f:
                     raw = json.load(f)

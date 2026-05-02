@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Self
+
+from another_intelligence.paths import TRAINING_DATASETS_DIR
 
 from another_intelligence.memory.preference_pair import PreferencePair
 
@@ -33,7 +34,7 @@ class MemoryValueIndex:
         self._learning_rate = learning_rate
         self._export_threshold = export_threshold
         if training_dir is None:
-            training_dir = os.path.expanduser("~/.brainxio/training_datasets")
+            training_dir = TRAINING_DATASETS_DIR
         self._training_dir = Path(training_dir)
 
     def get(self, key: str) -> float:

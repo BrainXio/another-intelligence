@@ -10,6 +10,8 @@ from typing import Any
 
 import psutil
 
+from another_intelligence.paths import STATE_DIR
+
 from another_intelligence.events import (
     BrainEvent,
     BrainRegionActivated,
@@ -27,7 +29,7 @@ class MetricsCollector:
     ``~/.brainxio/state/brain_activity.jsonl``.
     """
 
-    _DEFAULT_LOG_DIR = Path.home() / ".brainxio" / "state"
+    _DEFAULT_LOG_DIR = STATE_DIR
     _DEFAULT_LOG_FILE = _DEFAULT_LOG_DIR / "brain_activity.jsonl"
 
     def __init__(
