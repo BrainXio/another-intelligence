@@ -347,7 +347,7 @@ class MCPClient:
             try:
                 await self._get_or_connect(name)
                 connected.append(name)
-            except (OSError, RuntimeError, TimeoutError, ValueError):
+            except (OSError, RuntimeError, ConnectionError):
                 continue
         return connected
 
@@ -436,7 +436,7 @@ class MCPClient:
             result = await conn.call_tool(tool_name, params)
             success = True
             error: str | None = None
-        except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
+        except (OSError, RuntimeError, TimeoutError, ConnectionError) as exc:
             success = False
             result = None
             error = str(exc)
@@ -494,7 +494,7 @@ class MCPClient:
                     tool_count=len(tools),
                     last_checked=datetime.now(UTC),
                 )
-            except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
+            except (OSError, RuntimeError, TimeoutError, ConnectionError) as exc:
                 result[name] = MCPServerHealth(
                     name=name,
                     connected=getattr(self._connections.get(name), "connected", False),
@@ -533,7 +533,7 @@ class MCPClient:
                     result["retries"] = attempt
                     return result
                 last_error = result.get("error", "Unknown error")
-            except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
+            except (OSError, RuntimeError, TimeoutError, ConnectionError) as exc:
                 last_error = str(exc)
 
             if attempt < max_retries - 1:

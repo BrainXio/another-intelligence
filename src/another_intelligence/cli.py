@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from collections import deque
 from datetime import datetime
 from io import TextIOWrapper
 from pathlib import Path
@@ -79,11 +80,12 @@ class BrainStore:
         """Read events from the log, newest first, optionally filtered."""
         if not self._event_path.exists():
             return []
-        lines: list[str] = []
+        recent_lines: deque[str] = deque(maxlen=limit)
         with self._event_path.open("r", encoding="utf-8") as f:
-            lines = f.readlines()
+            for line in f:
+                recent_lines.append(line)
         records: list[dict[str, Any]] = []
-        for line in reversed(lines):
+        for line in reversed(recent_lines):
             line = line.strip()
             if not line:
                 continue
@@ -890,7 +892,7 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
         console.print("[dim]Running health checks...[/dim]")
         try:
             health = _asyncio.run(_probe())
-        except Exception as exc:
+        except (OSError, RuntimeError, TimeoutError) as exc:
             console.print(f"[red]Health check failed: {exc}[/red]")
             return
 

@@ -83,6 +83,7 @@ class PermissionEngine:
         """
         self._hooks: list[Callable[[PermissionDecision], PermissionDecision]] = []
         self._audit_log: list[AuditLogEntry] = []
+        self._audit_log_path = Path.home() / ".brainxio" / "state" / "permission_audit.jsonl"
         self._config = self._load_config(config_path)
 
     def _load_config(self, config_path: Path | str | None) -> PermissionConfig:
@@ -242,7 +243,7 @@ class PermissionEngine:
         for hook in self._hooks:
             try:
                 result = hook(current)
-            except Exception:
+            except (RuntimeError, TypeError, ValueError):
                 continue
             if result is None:
                 continue
@@ -253,7 +254,7 @@ class PermissionEngine:
         return current
 
     def _log_decision(self, decision: PermissionDecision) -> None:
-        """Record a decision in the audit log."""
+        """Record a decision in the audit log (in-memory and on disk)."""
         entry = AuditLogEntry(
             timestamp=datetime.now(UTC).isoformat(),
             capability=decision.capability,
@@ -262,6 +263,9 @@ class PermissionEngine:
             context=decision.context,
         )
         self._audit_log.append(entry)
+        self._audit_log_path.parent.mkdir(parents=True, exist_ok=True)
+        with self._audit_log_path.open("a", encoding="utf-8") as f:
+            f.write(entry.model_dump_json() + "\n")
 
     def check(self, capability: str, context: dict[str, Any] | None = None) -> PermissionDecision:
         """Evaluate a capability request against the policy.

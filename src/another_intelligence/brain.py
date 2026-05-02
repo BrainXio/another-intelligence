@@ -320,7 +320,7 @@ class DigitalBrain:
 
             try:
                 shortlist = _json.loads(Path(shortlist_path).read_text())
-            except Exception:
+            except (_json.JSONDecodeError, OSError):
                 return {"success": False, "error": f"Failed to read shortlist: {shortlist_path}"}
         elif isinstance(result_data, list):
             shortlist = result_data
