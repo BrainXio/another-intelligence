@@ -33,7 +33,7 @@ def _discover_entry_points() -> list[type[Plugin]]:
             cls = ep.load()
             if issubclass(cls, Plugin):
                 plugins.append(cls)
-        except Exception:
+        except (ImportError, AttributeError, TypeError):
             logger.exception("Failed to load plugin entry point: %s", ep.name)
     return plugins
 
@@ -69,7 +69,7 @@ def _discover_directory(path: Path | str) -> list[type[Plugin]]:
                 obj = getattr(module, obj_name)
                 if isinstance(obj, type) and issubclass(obj, Plugin) and obj is not Plugin:
                     plugins.append(obj)
-        except Exception:
+        except (ImportError, OSError, SyntaxError, TypeError):
             logger.exception("Failed to load plugin file: %s", file)
     return plugins
 
@@ -122,7 +122,7 @@ class PluginLoader:
                 self._plugins.append(instance)
                 for cap in instance.capabilities:
                     self._capability_map.setdefault(cap, []).append(instance)
-            except Exception:
+            except (RuntimeError, TypeError, ValueError, OSError, ImportError):
                 logger.exception("Plugin %s failed to load", cls.__name__)
         return list(self._plugins)
 
@@ -131,7 +131,7 @@ class PluginLoader:
         for plugin in reversed(self._plugins):
             try:
                 await plugin.unload()
-            except Exception:
+            except (RuntimeError, TypeError, ValueError, OSError):
                 logger.exception("Plugin %s failed to unload", plugin.name)
         self._plugins.clear()
         self._capability_map.clear()
@@ -145,7 +145,7 @@ class PluginLoader:
         for plugin in self._plugins:
             try:
                 await plugin.on_event(event)
-            except Exception:
+            except (RuntimeError, TypeError, ValueError, OSError):
                 logger.exception("Plugin %s failed to handle event", plugin.name)
 
     def get_plugins_for_capability(self, capability: str) -> list[Plugin]:

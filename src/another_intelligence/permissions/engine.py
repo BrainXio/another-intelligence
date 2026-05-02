@@ -243,7 +243,7 @@ class PermissionEngine:
         for hook in self._hooks:
             try:
                 result = hook(current)
-            except Exception:
+            except (RuntimeError, TypeError, ValueError):
                 continue
             if result is None:
                 continue
