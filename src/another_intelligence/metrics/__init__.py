@@ -10,14 +10,13 @@ from typing import Any
 
 import psutil
 
-from another_intelligence.paths import STATE_DIR
-
 from another_intelligence.events import (
     BrainEvent,
     BrainRegionActivated,
     ContextWindowChanged,
     RPEUpdated,
 )
+from another_intelligence.paths import STATE_DIR
 from another_intelligence.state import ActivityPhase
 
 

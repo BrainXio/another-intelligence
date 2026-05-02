@@ -28,10 +28,10 @@ from another_intelligence.knowledge.compiler import KnowledgeCompiler
 from another_intelligence.knowledge.query import KnowledgeQuery
 from another_intelligence.mcp.client import MCPRegistry
 from another_intelligence.memory.pairs import PreferencePairExporter
+from another_intelligence.paths import GLOBAL_MCP_CONFIG, STATE_DIR
 from another_intelligence.permissions.engine import PermissionEngine
 from another_intelligence.rpe.telemetry import TelemetryAnalyzer, TelemetryRecorder
 from another_intelligence.state import ActivityPhase
-from another_intelligence.paths import GLOBAL_MCP_CONFIG, STATE_DIR
 from another_intelligence.strategist import Strategist
 
 

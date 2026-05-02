@@ -5,9 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Self
 
-from another_intelligence.paths import TRAINING_DATASETS_DIR
-
 from another_intelligence.memory.preference_pair import PreferencePair
+from another_intelligence.paths import TRAINING_DATASETS_DIR
 
 
 class MemoryValueIndex:
@@ -26,7 +25,7 @@ class MemoryValueIndex:
 
     def __init__(
         self,
-        training_dir: str | None = None,
+        training_dir: str | Path | None = None,
         learning_rate: float = 0.1,
         export_threshold: float = 0.3,
     ) -> None:
