@@ -132,33 +132,30 @@ class MCPConnection(ABC):
 
 
 class _JsonRpcState:
-    """Shared JSON-RPC request state for stdio transport."""
+    """Per-connection JSON-RPC request state for stdio transport."""
 
-    _counter: int = 0
-    _pending: dict[int, asyncio.Future[Any]] = {}
-    _lock: asyncio.Lock = asyncio.Lock()
+    def __init__(self) -> None:
+        self._counter: int = 0
+        self._pending: dict[int, asyncio.Future[Any]] = {}
+        self._lock: asyncio.Lock = asyncio.Lock()
 
-    @classmethod
-    async def next_id(cls) -> int:
-        async with cls._lock:
-            cls._counter += 1
-            return cls._counter
+    async def next_id(self) -> int:
+        async with self._lock:
+            self._counter += 1
+            return self._counter
 
-    @classmethod
-    def register_future(cls, req_id: int, future: asyncio.Future[Any]) -> None:
-        cls._pending[req_id] = future
+    def register_future(self, req_id: int, future: asyncio.Future[Any]) -> None:
+        self._pending[req_id] = future
 
-    @classmethod
-    def resolve(cls, req_id: int, result: Any) -> bool:
-        future = cls._pending.pop(req_id, None)
+    def resolve(self, req_id: int, result: Any) -> bool:
+        future = self._pending.pop(req_id, None)
         if future is not None and not future.done():
             future.set_result(result)
             return True
         return False
 
-    @classmethod
-    def reject(cls, req_id: int, error: Exception) -> bool:
-        future = cls._pending.pop(req_id, None)
+    def reject(self, req_id: int, error: Exception) -> bool:
+        future = self._pending.pop(req_id, None)
         if future is not None and not future.done():
             future.set_exception(error)
             return True
@@ -173,6 +170,7 @@ class StdioConnection(MCPConnection):
         self._proc: asyncio.subprocess.Process | None = None
         self._reader_task: asyncio.Task[None] | None = None
         self._write_lock = asyncio.Lock()
+        self._rpc_state = _JsonRpcState()
 
     async def connect(self) -> None:
         import os
@@ -235,12 +233,12 @@ class StdioConnection(MCPConnection):
                     continue
                 if "error" in msg:
                     error = msg["error"]
-                    _JsonRpcState.reject(
+                    self._rpc_state.reject(
                         req_id,
                         RuntimeError(f"JSON-RPC error {error.get('code')}: {error.get('message')}"),
                     )
                 else:
-                    _JsonRpcState.resolve(req_id, msg.get("result"))
+                    self._rpc_state.resolve(req_id, msg.get("result"))
         except asyncio.CancelledError:
             raise
 
@@ -248,7 +246,7 @@ class StdioConnection(MCPConnection):
         if not self._connected or self._proc is None or self._proc.stdin is None:
             raise RuntimeError("Connection not established")
 
-        req_id = await _JsonRpcState.next_id()
+        req_id = await self._rpc_state.next_id()
         request: dict[str, Any] = {
             "jsonrpc": "2.0",
             "id": req_id,
@@ -259,7 +257,7 @@ class StdioConnection(MCPConnection):
 
         loop = asyncio.get_event_loop()
         future: asyncio.Future[Any] = loop.create_future()
-        _JsonRpcState.register_future(req_id, future)
+        self._rpc_state.register_future(req_id, future)
 
         payload = json.dumps(request) + "\n"
         async with self._write_lock:
@@ -269,7 +267,7 @@ class StdioConnection(MCPConnection):
         try:
             return await asyncio.wait_for(future, timeout=self._config.timeout)
         except TimeoutError:
-            _JsonRpcState.reject(req_id, TimeoutError(f"Request {method} timed out"))
+            self._rpc_state.reject(req_id, TimeoutError(f"Request {method} timed out"))
             raise
 
     async def send_notification(self, method: str, params: dict[str, Any] | None = None) -> None:
