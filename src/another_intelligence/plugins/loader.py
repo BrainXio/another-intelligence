@@ -87,9 +87,7 @@ class PluginLoader:
     def __init__(self, plugin_dirs: Sequence[Path | str] | None = None) -> None:
         self._plugin_classes: list[type[Plugin]] = []
         self._plugins: list[Plugin] = []
-        self._plugin_dirs = (
-            list(plugin_dirs) if plugin_dirs else [PLUGINS_DIR]
-        )
+        self._plugin_dirs = list(plugin_dirs) if plugin_dirs else [PLUGINS_DIR]
         self._capability_map: dict[str, list[Plugin]] = {}
         self._mtimes: dict[Path, float] = {}
 
