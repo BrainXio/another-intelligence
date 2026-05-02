@@ -890,7 +890,7 @@ def mcp_status(ctx: click.Context, extended: bool) -> None:
         console.print("[dim]Running health checks...[/dim]")
         try:
             health = _asyncio.run(_probe())
-        except Exception as exc:
+        except (OSError, RuntimeError, asyncio.TimeoutError) as exc:
             console.print(f"[red]Health check failed: {exc}[/red]")
             return
 

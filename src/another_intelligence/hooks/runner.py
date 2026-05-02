@@ -72,7 +72,7 @@ class HookRunner:
                         duration_ms=duration_ms,
                         config=config,
                     )
-            except Exception as exc:
+            except (OSError, json.JSONDecodeError, RuntimeError) as exc:
                 duration_ms = (time.perf_counter() - start) * 1000
                 return HookResult(
                     success=False,

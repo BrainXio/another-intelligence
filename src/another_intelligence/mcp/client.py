@@ -308,7 +308,7 @@ class MCPClient:
         for callback in self._hooks.get(type(event).__name__, []):
             try:
                 callback(event)
-            except Exception:
+            except (RuntimeError, TypeError, ValueError):
                 continue
 
     def _get_connection(self, server_name: str) -> MCPConnection:
@@ -331,7 +331,7 @@ class MCPClient:
                 if not conn.connected:
                     await conn.connect()
                 connected.append(name)
-            except Exception:
+            except (OSError, RuntimeError, ConnectionError):
                 continue
         return connected
 
@@ -424,7 +424,7 @@ class MCPClient:
             result = await conn.call_tool(tool_name, params)
             success = True
             error: str | None = None
-        except Exception as exc:
+        except (OSError, RuntimeError, asyncio.TimeoutError, ConnectionError) as exc:
             success = False
             result = None
             error = str(exc)
@@ -484,7 +484,7 @@ class MCPClient:
                     tool_count=len(tools),
                     last_checked=datetime.now(UTC),
                 )
-            except Exception as exc:
+            except (OSError, RuntimeError, asyncio.TimeoutError, ConnectionError) as exc:
                 result[name] = MCPServerHealth(
                     name=name,
                     connected=getattr(self._connections.get(name), "connected", False),
@@ -523,7 +523,7 @@ class MCPClient:
                     result["retries"] = attempt
                     return result
                 last_error = result.get("error", "Unknown error")
-            except Exception as exc:
+            except (OSError, RuntimeError, asyncio.TimeoutError, ConnectionError) as exc:
                 last_error = str(exc)
 
             if attempt < max_retries - 1:
